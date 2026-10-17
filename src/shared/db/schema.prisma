@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// DOMAIN: CORE & GUILD SETTINGS
+// ==========================================
+model GuildSetting {
+  guildId   String   @id
+  locale    String   @default("vi")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("guild_settings")
+}

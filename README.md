@@ -1,6 +1,6 @@
-# 🤖 Discord Bot Core (Modular Re-architecture)
+# 🤖 Lora - Discord Bot Core (Modular Re-architecture)
 
-> Hệ thống Discord Bot thế hệ mới được xây dựng theo kiến trúc **Vertical Slice Architecture**, tối ưu hóa 100% cho quy trình phát triển bằng AI Coding Agents (Vibecoding). Không spaghetti code, module hóa tuyệt đối, chịu tải cao và sẵn sàng mở rộng lâu dài.
+> Hệ thống bot **Lora** (`discordbot_lora`) thế hệ mới được xây dựng theo kiến trúc **Vertical Slice Architecture**, tối ưu hóa 100% cho quy trình phát triển bằng AI Coding Agents (Vibecoding). Không spaghetti code, module hóa tuyệt đối, chịu tải cao và sẵn sàng mở rộng lâu dài.
 
 ---
 
@@ -31,7 +31,7 @@
 ## 📂 Cấu Trúc Dự Án
 
 ```text
-my-discord-bot/
+discordbot_lora/
 ├── AGENTS.md                     # Chỉ thị hệ thống bắt buộc cho AI Agents
 ├── docs/                         # Context Anchors (Kiến trúc & Quy chuẩn)
 │   ├── ARCHITECTURE.md           # Bản vẽ kỹ thuật, quy tắc phân tầng & ranh giới
@@ -58,13 +58,16 @@ my-discord-bot/
 * Node.js version `>= 20.0.0`
 * Trình quản lý gói `npm` hoặc `pnpm`
 * Đã tạo Discord Application và Bot Token trên [Discord Developer Portal](https://discord.com/developers/applications).
+* **Lưu ý quan trọng về Gateway Intents:** Bắt buộc kích hoạt 2 công tắc đặc quyền trong tab **Bot** $\rightarrow$ **Privileged Gateway Intents** trên Discord Portal:
+  - `Server Members Intent` (`GatewayIntentBits.GuildMembers`)
+  - `Message Content Intent` (`GatewayIntentBits.MessageContent`)
 
 ### 2. Cài Đặt
 
 ```bash
 # Clone repository
 git clone <repo-url>
-cd my-discord-bot
+cd discordbot_lora
 
 # Cài đặt thư viện
 npm install

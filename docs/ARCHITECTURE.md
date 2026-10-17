@@ -1,6 +1,6 @@
 # ARCHITECTURE SPECIFICATION
 
-Tài liệu này xác định bản vẽ kỹ thuật, quy tắc phân tầng và ranh giới kiến trúc bất biến cho dự án Discord Bot. Mọi dòng code sinh ra phải tuân thủ 100% các nguyên tắc trong tài liệu này; không có ngoại lệ.
+Tài liệu này xác định bản vẽ kỹ thuật, quy tắc phân tầng và ranh giới kiến trúc bất biến cho dự án Lora (discordbot_lora). Mọi dòng code sinh ra phải tuân thủ 100% các nguyên tắc trong tài liệu này; không có ngoại lệ.
 
 ---
 
@@ -40,7 +40,7 @@ Request / Gateway Event
 ## 2. Bản đồ Thư mục & Trách nhiệm Phân vùng
 
 ```text
-my-discord-bot/
+discordbot_lora/
 ├── docs/                         # Context Anchors (ARCHITECTURE, CONVENTIONS, ROADMAP)
 ├── dashboard/                    # Frontend độc lập hoàn toàn (Browser Runtime - React/Vite/...)
 │

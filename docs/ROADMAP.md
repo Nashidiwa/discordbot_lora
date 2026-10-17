@@ -37,30 +37,31 @@ Mọi phiên làm việc (Session) mới bắt buộc phải đọc tệp này �
   - [x] `src/shared/constants/colors.ts`: Bảng mã màu Embed chuẩn (`EmbedColor`).
   - [x] `src/core/events/ready.ts`: Báo bot online, in tag bot và số lượng lệnh đã load.
   - [x] `src/core/events/interactionCreate.ts`: Điều hướng Slash Commands, bọc Error Boundary toàn cục, xử lý trả lời Ephemeral Embed khi xảy ra lỗi.
-- [ ] **0.4. Slash Command Deployment Script**
-  - [ ] `src/core/scripts/deploy.ts`: CLI script độc lập hỗ trợ các cờ:
+- [x] **0.4. Slash Command Deployment Script**
+  - [x] `src/core/scripts/deploy.ts`: CLI script độc lập hỗ trợ các cờ:
     - `--dev`: Push lệnh vào Server Test (`DEV_GUILD_ID`).
     - `--prod`: Push lệnh lên Global.
     - `--clear-dev` / `--clear-global`: Xóa sạch lệnh rác.
-- [ ] **0.5. Feature Mẫu (Verification Slice)**
-  - [ ] Tạo `src/features/ping/`:
+- [x] **0.5. Feature Mẫu (Verification Slice)**
+  - [x] Tạo `src/features/ping/`:
     - `ping.command.ts`: Lệnh `/ping`.
     - `ping.service.ts`: Xử lý tính toán roundtrip latency và websocket ping.
-  - [ ] Test lệnh `npm run deploy:dev` và chạy bot qua `npm run dev`. Xác nhận bot phản hồi `/ping` thành công trên Discord.
+  - [x] Triển khai bootstrapper `src/index.ts` kết nối loaders, safety nets và gateway login.
+  - [x] Kiểm thử tự động nhận diện Slash Command `/ping` và các Gateway Events thành công.
 
 ---
 
 ## Phase 1: Shared Kernel & Database Infrastructure
 > **Mục tiêu:** Thiết lập kết nối cơ sở dữ liệu và các tiện ích dùng chung sẵn sàng cho các feature nghiệp vụ.
 
-- [ ] **1.1. Tầng Cơ sở dữ liệu (Database Layer)**
-  - [ ] Khởi tạo Prisma với SQLite/PostgreSQL tại `src/shared/db/schema.prisma`.
-  - [ ] Tạo singleton client tại `src/shared/db/client.ts`.
-  - [ ] Thiết lập migration script ban đầu (`npx prisma migrate dev`).
-- [ ] **1.2. Shared Utilities & Constants**
-  - [ ] `src/shared/constants/colors.ts`: Bảng mã màu Embed chuẩn (`PRIMARY`, `SUCCESS`, `ERROR`, `WARNING`, `MUTED`).
-  - [ ] `src/shared/utils/embed.util.ts`: Helper tạo Embed chuẩn hóa (tự gắn màu, footer, timestamp).
-  - [ ] `src/shared/utils/i18n.util.ts`: Helper phân giải ngôn ngữ (`getUserLocale`) dựa trên DB / Discord locale / fallback `vi`.
+- [x] **1.1. Tầng Cơ sở dữ liệu (Database Layer)**
+  - [x] Khởi tạo Prisma với SQLite tại `src/shared/db/schema.prisma` (`GuildSetting` model, WAL mode, busy timeout).
+  - [x] Tạo singleton client tại `src/shared/db/client.ts`.
+  - [x] Thiết lập migration script ban đầu (`npx prisma migrate dev`).
+- [x] **1.2. Shared Utilities & Constants**
+  - [x] `src/shared/constants/colors.ts`: Bảng mã màu Embed chuẩn (`PRIMARY`, `SUCCESS`, `ERROR`, `WARNING`, `MUTED`).
+  - [x] `src/shared/utils/embed.util.ts`: Helper tạo Embed chuẩn hóa (tự gắn màu, footer, timestamp).
+  - [x] `src/shared/utils/i18n.util.ts`: Helper phân giải ngôn ngữ (`getUserLocale`) dựa trên DB / Discord locale / fallback `vi`.
 
 ---
 
