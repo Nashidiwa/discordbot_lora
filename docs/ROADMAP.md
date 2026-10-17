@@ -68,13 +68,13 @@ Mọi phiên làm việc (Session) mới bắt buộc phải đọc tệp này �
 ## Phase 2: Asynchronous Runners & Web Infrastructure
 > **Mục tiêu:** Hoàn thiện 2 loader còn lại: Background Scheduler và Fastify Web Server.
 
-- [ ] **2.1. Background Jobs Engine**
-  - [ ] `src/core/loaders/job.loader.ts`: Quét các tệp `*.job.ts`, khởi tạo lịch với `node-cron`, tích hợp cờ chống chạy đè (concurrency guard).
-- [ ] **2.2. Fastify Web Server**
-  - [ ] `src/core/server/server.ts`: Khởi tạo Fastify instance, mở cổng `PORT`.
-  - [ ] `src/core/loaders/route.loader.ts`: Quét các tệp `*.route.ts`, inject context `{ client, db }` vào từng route plugin.
-- [ ] **2.3. Vòng đời tắt an toàn (Graceful Shutdown)**
-  - [ ] `src/core/lifecycle.ts`: Bắt `SIGINT`/`SIGTERM`, tuần tự dừng Jobs $\rightarrow$ đóng Server HTTP $\rightarrow$ ngắt kết nối DB $\rightarrow$ ngắt kết nối Gateway.
+- [x] **2.1. Background Jobs Engine**
+  - [x] `src/core/loaders/job.loader.ts`: Quét các tệp `*.job.ts`, khởi tạo lịch với `node-cron`, tích hợp cờ chống chạy đè (concurrency guard).
+- [x] **2.2. Fastify Web Server**
+  - [x] `src/core/server/server.ts`: Khởi tạo Fastify instance, mở cổng `PORT`, tích hợp CORS và `requireDiscordReady`.
+  - [x] `src/core/loaders/route.loader.ts`: Quét các tệp `*.route.ts`, inject context `{ client, db }` vào từng route plugin.
+- [x] **2.3. Vòng đời tắt an toàn (Graceful Shutdown)**
+  - [x] `src/core/lifecycle.ts`: Bắt `SIGINT`/`SIGTERM`, tuần tự dừng Jobs $\rightarrow$ đóng Server HTTP $\rightarrow$ ngắt kết nối DB $\rightarrow$ ngắt kết nối Gateway.
 
 ---
 

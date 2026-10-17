@@ -3,6 +3,11 @@ import { logger } from './core/logger.js';
 import { ExtendedClient } from './core/client.js';
 import { loadCommands } from './core/loaders/command.loader.js';
 import { loadEvents } from './core/loaders/event.loader.js';
+import { loadJobs } from './core/loaders/job.loader.js';
+import { loadRoutes } from './core/loaders/route.loader.js';
+import { startServer } from './core/server/server.js';
+import { registerGracefulShutdown } from './core/lifecycle.js';
+import { db } from './shared/db/client.js';
 
 // Process Safety Nets
 process.on('unhandledRejection', (reason: unknown) => {
@@ -19,14 +24,26 @@ async function bootstrap(): Promise<void> {
 
   const client = new ExtendedClient();
 
+  // 1. Register Graceful Shutdown
+  registerGracefulShutdown(client, db);
+
+  // 2. Load Commands & Events
   const commandsCount = await loadCommands(client);
   const eventsCount = await loadEvents(client);
 
+  // 3. Load Background Jobs
+  const jobsCount = await loadJobs(client, db);
+
+  // 4. Load HTTP Routes & Start Fastify Server
+  const routesCount = await loadRoutes(client, db);
+  await startServer(config.PORT);
+
   logger.info(
-    { commandsCount, eventsCount },
+    { commandsCount, eventsCount, jobsCount, routesCount },
     'Core dynamic loaders initialized successfully',
   );
 
+  // 5. Connect to Discord Gateway
   await client.login(config.DISCORD_TOKEN);
 }
 
