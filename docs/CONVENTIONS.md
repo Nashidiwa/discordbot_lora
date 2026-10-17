@@ -82,8 +82,9 @@ export const EmbedColor = {
   WARNING: 0xFEE75C,  // Vàng/Cam - Cảnh báo, hết hạn, trạng thái chờ
   MUTED: 0x2B2D31,    // Xám đậm - Thông tin phụ, footer
 } as const;
-
 ```
+
+* **Quy chế Đề xuất & Bổ sung Màu Sắc:** Cả Chief Architect & Prompt Director lẫn Lead Developer đều có quyền chủ động đề xuất mã màu phù hợp với từng giao diện/tính năng đặc thù (như bảng xếp hạng, mini-game, quản lý quyền lợi). Khi áp dụng, **bắt buộc phải khai báo màu mới vào `src/shared/constants/colors.ts` trước**, sau đó trích xuất dưới dạng hằng số (`EmbedColor.<TÊN_MÀU>`). Nghiêm cấm tuyệt đối việc gõ trực tiếp mã màu hex/decimal bên trong các file logic hoặc UI.
 
 ---
 

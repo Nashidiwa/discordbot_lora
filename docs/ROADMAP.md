@@ -33,9 +33,10 @@ Mọi phiên làm việc (Session) mới bắt buộc phải đọc tệp này �
 - [x] **0.2. Dynamic Loaders**
   - [x] `src/core/loaders/command.loader.ts`: Quét đệ quy thư mục `src/features/` tìm các tệp `*.command.ts` (bỏ qua `*.sub.ts`).
   - [x] `src/core/loaders/event.loader.ts`: Quét đệ quy tìm các tệp `*.event.ts` và đăng ký listener với Client (bọc Error Boundary).
-- [ ] **0.3. Gateway Handlers & Error Boundary**
-  - [ ] `src/core/events/ready.ts`: Báo bot online, in tag bot và số lượng lệnh đã load.
-  - [ ] `src/core/events/interactionCreate.ts`: Điều hướng Slash Commands, bọc Error Boundary toàn cục, xử lý trả lời Ephemeral Embed khi xảy ra lỗi.
+- [x] **0.3. Gateway Handlers & Error Boundary**
+  - [x] `src/shared/constants/colors.ts`: Bảng mã màu Embed chuẩn (`EmbedColor`).
+  - [x] `src/core/events/ready.ts`: Báo bot online, in tag bot và số lượng lệnh đã load.
+  - [x] `src/core/events/interactionCreate.ts`: Điều hướng Slash Commands, bọc Error Boundary toàn cục, xử lý trả lời Ephemeral Embed khi xảy ra lỗi.
 - [ ] **0.4. Slash Command Deployment Script**
   - [ ] `src/core/scripts/deploy.ts`: CLI script độc lập hỗ trợ các cờ:
     - `--dev`: Push lệnh vào Server Test (`DEV_GUILD_ID`).
