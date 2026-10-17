@@ -1,22 +1,36 @@
 {
   "name": "discordbot_lora",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Modular Discord Bot with Vertical Slice Architecture",
+  "main": "dist/index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "deploy:dev": "tsx src/core/scripts/deploy.ts --dev",
+    "deploy:prod": "tsx src/core/scripts/deploy.ts --prod",
+    "deploy:clear:dev": "tsx src/core/scripts/deploy.ts --clear-dev",
+    "deploy:clear:global": "tsx src/core/scripts/deploy.ts --clear-global"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "discord.js": "^14.27.0",
-    "dotenv": "^18.0.8"
+    "@fastify/cors": "^10.0.2",
+    "@prisma/client": "^6.4.1",
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1",
+    "node-cron": "^3.0.3",
+    "pino": "^9.6.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5",
-    "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "@types/node": "^22.13.9",
+    "@types/node-cron": "^3.0.11",
+    "pino-pretty": "^13.0.0",
+    "prisma": "^6.4.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
   }
 }

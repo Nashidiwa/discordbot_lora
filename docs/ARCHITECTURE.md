@@ -83,7 +83,8 @@ Hệ thống Core sử dụng cơ chế **File Convention Discovery** để tự
 
 | Hậu tố tệp tin | Giao diện thực thi (Interface) | Hành vi của Core Loader |
 | --- | --- | --- |
-| `*.command.ts` | `BotCommand` | Đăng ký vào `client.commands` Collection để router điều hướng |
+| `*.command.ts` | `BotCommand` | Đăng ký vào `client.commands` Collection (Chỉ dành cho Top-level / Root Slash Commands) |
+| `*.sub.ts` | `SubcommandExecutor` | Lệnh con (Subcommand): Được nạp nội bộ bởi Root Command, Dynamic Loader bỏ qua không quét độc lập |
 | `*.event.ts` | `BotEvent` | Bind trực tiếp vào `client.on(...)` hoặc `client.once(...)` |
 | `*.job.ts` | `BotJob` | Đăng ký lịch chạy với `node-cron` kèm cơ chế chống chạy đè |
 | `*.route.ts` | `BotRoute` | Khởi tạo plugin route trên Fastify Server, inject `{ client, db }` |
@@ -92,10 +93,11 @@ Hệ thống Core sử dụng cơ chế **File Convention Discovery** để tự
 
 ### Quy chuẩn Subcommands (Lệnh con)
 
-Đối với các tính năng có cấu trúc Slash Command phức tạp:
+Đối với các tính năng có cấu trúc Slash Command phức tạp gồm nhiều lệnh con:
 
-* Bắt buộc bóc tách từng subcommand thành các file riêng nằm trong thư mục `src/features/<feature-name>/commands/`.
-* File `index.command.ts` (hoặc `<feature-name>.command.ts`) tại root của feature sẽ đóng vai trò tập hợp metadata (`SlashCommandBuilder`) và router điều hướng đến từng subcommand executor tương ứng.
+* **Tên file & Thư mục:** Bắt buộc bóc tách từng subcommand thành các file mang hậu tố `*.sub.ts` nằm trong thư mục `src/features/<feature-name>/commands/` (ví dụ: `claim.sub.ts`, `check.sub.ts`).
+* **Tránh xung đột Loader:** Việc sử dụng hậu tố `*.sub.ts` đảm bảo Dynamic Command Loader (chỉ tìm `*.command.ts`) không đăng ký nhầm subcommand thành một Slash Command cấp cao nhất trên Discord REST API.
+* **Router điều phối:** File `<feature-name>.command.ts` tại root của feature sẽ tập hợp toàn bộ metadata (`SlashCommandBuilder.addSubcommand(...)`) và điều hướng tương tác đến từng executor tương ứng.
 
 ---
 
@@ -118,14 +120,14 @@ Nhằm đảm bảo dự án có thể mở rộng lâu dài và không bao gi�
 Khi một hành động ở Feature A cần kích hoạt hệ quả ở Feature B:
 
 * **Hành động từ Discord Gateway:** Nếu cả hai feature cùng quan tâm một sự kiện (ví dụ: thành viên bị ban, rời server, đổi role), mỗi feature phải tự khai báo file `*.event.ts` của riêng mình để lắng nghe sự kiện đó một cách độc lập.
-* **Hành động nghiệp vụ nội bộ:** Feature A phát tín hiệu qua Internal Event Bus (`src/core/bus.ts`):
+* **Hành động nghiệp vụ nội bộ (Async Event Bus):** Feature A phát tín hiệu qua `eventBus` (`src/core/bus.ts`):
 ```typescript
-eventBus.emit('perk:expired', { userId, guildId, perkType });
-
+await eventBus.emitAsync('perk:expired', { userId, guildId, perkType });
 ```
-
-
-Feature B khai báo listener tại lifecycle của mình để tiếp nhận và xử lý payload. Feature A không quan tâm ai nghe và xử lý như thế nào.
+* **Quy chuẩn Kỹ thuật của `AsyncEventBus`:**
+  - Nâng `maxListeners` lên tối thiểu 50 để tránh cảnh báo rò rỉ bộ nhớ khi nhiều feature cùng đăng ký lắng nghe sự kiện.
+  - Sử dụng `emitAsync` bọc bằng `Promise.allSettled` để thực thi song song các listener bất đồng bộ.
+  - Mỗi listener được cô lập trong Error Boundary: Nếu Feature B gặp lỗi khi xử lý sự kiện, lỗi sẽ được ghi log chi tiết (kèm context) qua `core/logger.ts`, hoàn toàn không làm sập tiến trình, không gây `unhandledRejection` và không ảnh hưởng đến listener của Feature C.
 
 ### 4.3. Phân tách Luồng Dữ liệu Nội bộ (Internal Data Flow)
 
@@ -199,8 +201,14 @@ model FeatureTable {
   createdAt DateTime @default(now())
   // ...
 }
-
 ```
+
+* **Quy chuẩn Cơ sở Dữ liệu Môi trường Dev (SQLite Optimization):**
+  - Trong môi trường local development, hệ thống sử dụng SQLite.
+  - Để tránh lỗi `SQLITE_BUSY: database is locked` do các tiến trình đồng thời (Cron Jobs quét định kỳ, Discord Gateway Events, Fastify Webhooks), chuỗi kết nối `DATABASE_URL` bắt buộc kích hoạt:
+    - **Write-Ahead Logging (WAL mode):** `PRAGMA journal_mode=WAL;`
+    - **Busy Timeout:** `busy_timeout=5000` (chờ tối đa 5 giây khi có transaction ghi khác đang thực thi).
+    - Ví dụ chuỗi kết nối: `file:./dev.db?connection_limit=1&busy_timeout=5000`.
 
 
 
@@ -243,10 +251,16 @@ export interface RouteContext {
   client: ExtendedClient;
   db: PrismaClient;
 }
-
 ```
 
 Cấm route tự ý import hoặc tạo mới instance Client/Prisma.
+
+### 7.4. Cơ chế Gateway Readiness Guard (PreHandler Hook)
+
+* **Độc lập Vòng đời Khởi động:** Fastify Server khởi động và mở cổng `PORT` ngay khi bot boot để sẵn sàng đón nhận các probe liveness/readiness của hạ tầng (`/healthz`).
+* **Bảo vệ Tài nguyên Gateway:** Đối với các route có tương tác trực tiếp với tài nguyên Discord (ví dụ: OAuth2 callback, Linked Roles, Discord cache/API fetch), Core Router cung cấp sẵn preHandler hook/middleware `requireDiscordReady`:
+  - Kiểm tra trạng thái `client.isReady()`.
+  - Nếu Gateway chưa sẵn sàng (đang reconnect hoặc đang boot), endpoint trả về HTTP `503 Service Unavailable` kèm thông báo JSON có cấu trúc, ngăn ngừa lỗi runtime crash do cache rỗng hoặc WebSocket chưa kết nối.
 
 ---
 
