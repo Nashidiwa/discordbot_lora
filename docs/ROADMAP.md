@@ -23,15 +23,16 @@ Mọi phiên làm việc (Session) mới bắt buộc phải đọc tệp này �
   - [x] Cập nhật `docs/CONVENTIONS.md`: Nới lỏng quy tắc 2.5s, bổ sung ngoại lệ rõ ràng cho Autocomplete (`respond`), Modal (`showModal`), và Component update (`deferUpdate`).
   - [x] Cập nhật `docs/ARCHITECTURE.md`: Đổi quy ước hậu tố subcommand thành `*.sub.ts`, thiết kế lại Event Bus thành `AsyncEventBus` (`Promise.allSettled`, `maxListeners: 50`), bổ sung Gateway Readiness Guard cho Fastify routes, bổ sung chuẩn cấu hình SQLite WAL.
 
-- [ ] **0.1. Cấu hình Môi trường & Core Modules**
-  - [ ] Khởi tạo `src/core/config.ts`: Validate `.env` bằng Zod (`DISCORD_TOKEN`, `CLIENT_ID`, `DEV_GUILD_ID`, `PORT`).
-  - [ ] Khởi tạo `src/core/logger.ts`: Logger chuẩn bằng Pino (`pino-pretty` khi dev).
-  - [ ] Khởi tạo `src/core/bus.ts`: Internal Event Bus singleton kế thừa `EventEmitter`.
-  - [ ] Khởi tạo `src/core/errors.ts`: Định nghĩa class `AppError`.
-  - [ ] Khởi tạo `src/core/client.ts`: `ExtendedClient` kế thừa `Client` của discord.js (tích hợp Collection lưu trữ commands, bus).
-- [ ] **0.2. Dynamic Loaders**
-  - [ ] `src/core/loaders/command.loader.ts`: Quét đệ quy thư mục `src/features/` tìm các tệp `*.command.ts`.
-  - [ ] `src/core/loaders/event.loader.ts`: Quét đệ quy tìm các tệp `*.event.ts` và đăng ký listener với Client.
+- [x] **0.1. Cấu hình Môi trường & Core Modules**
+  - [x] Khởi tạo `src/core/types/index.ts`: Khai báo `BotCommand`, `SubcommandExecutor`, `BotEvent`.
+  - [x] Khởi tạo `src/core/errors.ts`: Định nghĩa class `AppError`.
+  - [x] Khởi tạo `src/core/config.ts`: Validate `.env` bằng Zod (`DISCORD_TOKEN`, `CLIENT_ID`, `DEV_GUILD_ID`, `DATABASE_URL`, `PORT`, `NODE_ENV`, `LOG_LEVEL`).
+  - [x] Khởi tạo `src/core/logger.ts`: Logger chuẩn bằng Pino (`pino-pretty` khi dev).
+  - [x] Khởi tạo `src/core/bus.ts`: `AsyncEventBus` singleton kế thừa `EventEmitter` (`emitAsync`, `maxListeners: 50`).
+  - [x] Khởi tạo `src/core/client.ts`: `ExtendedClient` kế thừa `Client` của discord.js (tích hợp Collection lưu trữ commands, bus).
+- [x] **0.2. Dynamic Loaders**
+  - [x] `src/core/loaders/command.loader.ts`: Quét đệ quy thư mục `src/features/` tìm các tệp `*.command.ts` (bỏ qua `*.sub.ts`).
+  - [x] `src/core/loaders/event.loader.ts`: Quét đệ quy tìm các tệp `*.event.ts` và đăng ký listener với Client (bọc Error Boundary).
 - [ ] **0.3. Gateway Handlers & Error Boundary**
   - [ ] `src/core/events/ready.ts`: Báo bot online, in tag bot và số lượng lệnh đã load.
   - [ ] `src/core/events/interactionCreate.ts`: Điều hướng Slash Commands, bọc Error Boundary toàn cục, xử lý trả lời Ephemeral Embed khi xảy ra lỗi.
