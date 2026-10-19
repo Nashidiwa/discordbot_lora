@@ -18,3 +18,40 @@ model GuildSetting {
 
   @@map("guild_settings")
 }
+
+// ==========================================
+// DOMAIN: PERKS MANAGEMENT - SERVER BOOSTER
+// ==========================================
+
+model BoosterPerkConfig {
+  guildId               String   @id
+  gracePeriodDays       Int      @default(7)
+  anchorRoleId          String?
+  notificationChannelId String?
+  auditLogChannelId     String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("booster_perk_configs")
+}
+
+model CustomRolePerk {
+  id                   String    @id @default(cuid())
+  guildId              String
+  userId               String
+  perkType             String    @default("SERVER_BOOSTER")
+  boostCount           Int       @default(1)
+  roleId               String?
+  roleName             String?
+  roleColor            String?
+  roleColor2           String?
+  status               String    @default("ACTIVE")
+  isEquipped           Boolean   @default(true)
+  gracePeriodExpiresAt DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@unique([guildId, userId, perkType])
+  @@index([guildId, status])
+  @@map("custom_role_perks")
+}

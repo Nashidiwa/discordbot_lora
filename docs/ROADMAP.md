@@ -1,114 +1,88 @@
-# PROJECT ROADMAP & PROGRESS TRACKER
+# PROJECT ROADMAP & WORKSTREAM TRACKER
 
-Tài liệu này theo dõi tiến độ phát triển của dự án theo từng giai đoạn (Milestones). 
-Mọi phiên làm việc (Session) mới bắt buộc phải đọc tệp này để xác định nhiệm vụ tiếp theo, không được làm tắt hoặc nhảy cóc qua giai đoạn khi các điều kiện tiên quyết (Prerequisites) chưa hoàn tất.
-
----
-
-## Trạng thái Quy ước:
-* `[ ]` Chưa thực hiện
-* `[/]` Đang tiến hành
-* `[x]` Đã hoàn thành và đã kiểm thử (Verified & Committed)
+Tài liệu này theo dõi lộ trình phát triển và điều phối tiến độ dự án theo mô hình **Workstream Tracks (Luồng công việc song song)**.
+Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dashboard**. Chi tiết kỹ thuật sâu của từng tính năng được phân tán về tệp tài liệu riêng của tính năng đó (`src/features/<feature>/README.md`) hoặc kho lưu trữ (`docs/history/`).
 
 ---
 
-## Phase 0: Project Skeleton & Core Loaders (Bộ khung bất biến)
-> **Mục tiêu:** Dựng xong toàn bộ hạ tầng `src/core/`, chạy được lệnh `/ping` thử nghiệm qua cơ chế Dynamic Loader mà không gặp lỗi.
+## 📊 Bảng Điều Phối Tổng Thể (Executive Status)
 
-- [x] **Phase 0.0: Architecture & Environment Patching (Đồng bộ hạ tầng & Vá lỗi thiết kế)**
-  - [x] Chuyển đổi `package.json` sang ESM (`"type": "module"`), cài đặt đầy đủ dependencies (`zod`, `pino`, `fastify`, `@fastify/cors`, `node-cron`, `@prisma/client`, `prisma`) và devDependencies (`pino-pretty`, `@types/node-cron`, `tsx`, `typescript`, `@types/node`).
-  - [x] Thiết lập scripts chuẩn trong `package.json`: `dev`, `build`, `deploy:dev`, `deploy:prod`, `deploy:clear:dev`, `deploy:clear:global`.
-  - [x] Tối ưu hóa `tsconfig.json`: Tắt `exactOptionalPropertyTypes`, loại bỏ cấu hình thừa `jsx`, cấu hình chuẩn Node.js ESM (`NodeNext`).
-  - [x] Đồng bộ `.env.example`: Đổi sang `DEV_GUILD_ID`, bổ sung `LOG_LEVEL=debug`, `NODE_ENV=development`, chuỗi kết nối SQLite tối ưu (`journal_mode=WAL`, `busy_timeout=5000`).
-  - [x] Cập nhật `docs/CONVENTIONS.md`: Nới lỏng quy tắc 2.5s, bổ sung ngoại lệ rõ ràng cho Autocomplete (`respond`), Modal (`showModal`), và Component update (`deferUpdate`).
-  - [x] Cập nhật `docs/ARCHITECTURE.md`: Đổi quy ước hậu tố subcommand thành `*.sub.ts`, thiết kế lại Event Bus thành `AsyncEventBus` (`Promise.allSettled`, `maxListeners: 50`), bổ sung Gateway Readiness Guard cho Fastify routes, bổ sung chuẩn cấu hình SQLite WAL.
-
-- [x] **0.1. Cấu hình Môi trường & Core Modules**
-  - [x] Khởi tạo `src/core/types/index.ts`: Khai báo `BotCommand`, `SubcommandExecutor`, `BotEvent`.
-  - [x] Khởi tạo `src/core/errors.ts`: Định nghĩa class `AppError`.
-  - [x] Khởi tạo `src/core/config.ts`: Validate `.env` bằng Zod (`DISCORD_TOKEN`, `CLIENT_ID`, `DEV_GUILD_ID`, `DATABASE_URL`, `PORT`, `NODE_ENV`, `LOG_LEVEL`).
-  - [x] Khởi tạo `src/core/logger.ts`: Logger chuẩn bằng Pino (`pino-pretty` khi dev).
-  - [x] Khởi tạo `src/core/bus.ts`: `AsyncEventBus` singleton kế thừa `EventEmitter` (`emitAsync`, `maxListeners: 50`).
-  - [x] Khởi tạo `src/core/client.ts`: `ExtendedClient` kế thừa `Client` của discord.js (tích hợp Collection lưu trữ commands, bus).
-- [x] **0.2. Dynamic Loaders**
-  - [x] `src/core/loaders/command.loader.ts`: Quét đệ quy thư mục `src/features/` tìm các tệp `*.command.ts` (bỏ qua `*.sub.ts`).
-  - [x] `src/core/loaders/event.loader.ts`: Quét đệ quy tìm các tệp `*.event.ts` và đăng ký listener với Client (bọc Error Boundary).
-- [x] **0.3. Gateway Handlers & Error Boundary**
-  - [x] `src/shared/constants/colors.ts`: Bảng mã màu Embed chuẩn (`EmbedColor`).
-  - [x] `src/core/events/ready.ts`: Báo bot online, in tag bot và số lượng lệnh đã load.
-  - [x] `src/core/events/interactionCreate.ts`: Điều hướng Slash Commands, bọc Error Boundary toàn cục, xử lý trả lời Ephemeral Embed khi xảy ra lỗi.
-- [x] **0.4. Slash Command Deployment Script**
-  - [x] `src/core/scripts/deploy.ts`: CLI script độc lập hỗ trợ các cờ:
-    - `--dev`: Push lệnh vào Server Test (`DEV_GUILD_ID`).
-    - `--prod`: Push lệnh lên Global.
-    - `--clear-dev` / `--clear-global`: Xóa sạch lệnh rác.
-- [x] **0.5. Feature Mẫu (Verification Slice)**
-  - [x] Tạo `src/features/ping/`:
-    - `ping.command.ts`: Lệnh `/ping`.
-    - `ping.service.ts`: Xử lý tính toán roundtrip latency và websocket ping.
-  - [x] Triển khai bootstrapper `src/index.ts` kết nối loaders, safety nets và gateway login.
-  - [x] Kiểm thử tự động nhận diện Slash Command `/ping` và các Gateway Events thành công.
+* **Phiên bản hiện tại:** `v0.2.8`
+* **Tiêu điểm đang triển khai:** `FEAT-02: Perks Management - Donator`
+* **Quy ước trạng thái:**
+  * `[ ]` Chưa thực hiện (Backlog)
+  * `[/]` Đang tiến hành (In Progress)
+  * `[x]` Đã hoàn thành và đã kiểm thử (Completed & Verified)
 
 ---
 
-## Phase 1: Shared Kernel & Database Infrastructure
-> **Mục tiêu:** Thiết lập kết nối cơ sở dữ liệu và các tiện ích dùng chung sẵn sàng cho các feature nghiệp vụ.
+## 🎯 Track F: Bot Features (Tính Năng Discord Bot)
 
-- [x] **1.1. Tầng Cơ sở dữ liệu (Database Layer)**
-  - [x] Khởi tạo Prisma với SQLite tại `src/shared/db/schema.prisma` (`GuildSetting` model, WAL mode, busy timeout).
-  - [x] Tạo singleton client tại `src/shared/db/client.ts`.
-  - [x] Thiết lập migration script ban đầu (`npx prisma migrate dev`).
-- [x] **1.2. Shared Utilities & Constants**
-  - [x] `src/shared/constants/colors.ts`: Bảng mã màu Embed chuẩn (`PRIMARY`, `SUCCESS`, `ERROR`, `WARNING`, `MUTED`).
-  - [x] `src/shared/utils/embed.util.ts`: Helper tạo Embed chuẩn hóa (tự gắn màu, footer, timestamp).
-  - [x] `src/shared/utils/i18n.util.ts`: Helper phân giải ngôn ngữ (`getUserLocale`) dựa trên DB / Discord locale / fallback `vi`.
+> Mỗi tính năng được phát triển độc lập theo mô hình Vertical Slice. Khi hoàn thành, tài liệu chi tiết được lưu trữ tại `README.md` nội bộ của chính tính năng đó.
 
----
+- [x] **FEAT-01: Perks Management - Server Booster** `(v0.2.8)`
+  > 📖 *Tài liệu đặc tả kiến trúc, cẩm nang vận hành và nhật ký phát triển chi tiết:* [`src/features/perks/booster/README.md`](../src/features/perks/booster/README.md)
+  - Tự động hóa Custom Role đơn sắc và Gradient 2 màu qua Discord API `EnhancedRoleColors`.
+  - Nhận diện Booster hợp nhất (`member.premiumSince` + `boostCount > 0`).
+  - Vòng đời ân hạn 7 ngày (Grace Period) và Cron Job tự động thu hồi role hết hạn.
+  - Bộ lệnh Slash `/perk list`, `/perk status`, `/perk server_booster *`.
+  - Quy trình quản trị unboost tương tác (Interactive Unboost Workflow) với 2 nút bấm xác nhận.
 
-## Phase 2: Asynchronous Runners & Web Infrastructure
-> **Mục tiêu:** Hoàn thiện 2 loader còn lại: Background Scheduler và Fastify Web Server.
+- [ ] **FEAT-02: Perks Management - Donator (Tiers & Gia Hạn Thời Hạn)**
+  > 📖 *Kế hoạch chi tiết sẽ được tạo tại `src/features/perks/donator/README.md` khi bắt đầu triển khai.*
+  - Mở rộng Schema Prisma: Quản lý Donator Tiers và thời hạn cố định (`expiresAt`).
+  - `services/donator-perk.service.ts`: Cấp quyền theo thời hạn, cộng dồn khi gia hạn, xử lý nâng/hạ tier.
+  - `jobs/donator-cleanup.job.ts`: Cron Job định kỳ quét thu hồi đặc quyền khi hết hạn.
+  - `subcommands/`: Tích hợp các lệnh quản trị (`donator-give`, `donator-revoke`, `donator-check`) vào Root Command `/perk`.
 
-- [x] **2.1. Background Jobs Engine**
-  - [x] `src/core/loaders/job.loader.ts`: Quét các tệp `*.job.ts`, khởi tạo lịch với `node-cron`, tích hợp cờ chống chạy đè (concurrency guard).
-- [x] **2.2. Fastify Web Server**
-  - [x] `src/core/server/server.ts`: Khởi tạo Fastify instance, mở cổng `PORT`, tích hợp CORS và `requireDiscordReady`.
-  - [x] `src/core/loaders/route.loader.ts`: Quét các tệp `*.route.ts`, inject context `{ client, db }` vào từng route plugin.
-- [x] **2.3. Vòng đời tắt an toàn (Graceful Shutdown)**
-  - [x] `src/core/lifecycle.ts`: Bắt `SIGINT`/`SIGTERM`, tuần tự dừng Jobs $\rightarrow$ đóng Server HTTP $\rightarrow$ ngắt kết nối DB $\rightarrow$ ngắt kết nối Gateway.
+- [ ] **FEAT-03: Wordchain (Trò Chơi Nối Từ)**
+  - Quản lý trạng thái ván chơi: In-memory live session + Snapshot lưu DB.
+  - Service thuật toán kiểm tra từ điển tiếng Việt, lượt đi, tính điểm thưởng.
+  - Lệnh Slash `/wordchain start`, `/wordchain stop` và Gateway Event bắt tin nhắn trong kênh chơi.
 
----
+- [ ] **FEAT-04: Voice Keeper 24/7 (Treo Kênh Thoại & Tự Phục Hồi)**
+  - Cấu hình danh sách kênh thoại cần giữ kết nối vào DB.
+  - Quản lý voice connection, cơ chế tự động tái kết nối (auto-reconnect) khi rớt Gateway.
+  - Lắng nghe sự kiện `voiceStateUpdate` để phát hiện ngắt kết nối bất thường.
 
-## Phase 3: Vertical Slices - Nghiệp vụ Tính năng
-> **Nguyên tắc:** Mỗi tính năng được phát triển độc lập trong `src/features/<feature-name>/`, hoàn thiện trọn vẹn và test xong mới chuyển sang tính năng kế tiếp.
+- [ ] **FEAT-05: Linked Roles & Connection Metadata**
+  - Quản lý Custom Connection Metadata cho Discord Linked Roles.
+  - Script tự động đăng ký Connection Metadata Schema lên Discord REST API.
+  - Cập nhật và đồng bộ metadata người dùng qua OAuth2 callback.
 
-- [ ] **Feature: Perks Management (Booster & Donator Role Policies)**
-  - [ ] Bổ sung Schema tables cho Perk & Grace Period vào `schema.prisma`.
-  - [ ] `perks.service.ts`: Logic cấp perk, tính ngày hết hạn, gia hạn, thu hồi.
-  - [ ] `perks.event.ts`: Bắt event booster rời server hoặc unboost để kích hoạt grace period đếm ngược.
-  - [ ] `perks.job.ts`: Cronjob định kỳ quét DB kiểm tra perk hết hạn để thu hồi role tự động.
-  - [ ] `commands/`: Cấu trúc bóc tách các lệnh con (`/perk claim`, `/perk check`, `/perk manage`).
-- [ ] **Feature: Wordchain (Trò chơi nối từ)**
-  - [ ] State management: Lưu ván chơi live trên RAM, snapshot checkpoint vào DB.
-  - [ ] `wordchain.service.ts`: Thuật toán kiểm tra từ điển tiếng Việt, lượt đi, tính điểm.
-  - [ ] `wordchain.command.ts`: `/wordchain start`, `/wordchain stop`.
-  - [ ] `wordchain.event.ts`: Lắng nghe tin nhắn trong kênh chơi game.
-- [ ] **Feature: Voice Keeper 24/7 (Giữ Voice Channel)**
-  - [ ] Cấu hình lưu kênh cần treo vào DB.
-  - [ ] `voice-keeper.service.ts`: Quản lý voice connection, cơ chế tự động kết nối lại (auto-reconnect) khi rớt Gateway.
-  - [ ] `voice-keeper.event.ts`: Lắng nghe `voiceStateUpdate` để phát hiện bị disconnect.
-- [ ] **Feature: Linked Roles (Custom Connection Metadata)**
-  - [ ] `linked-roles.route.ts`: Endpoint `/auth/discord` và callback OAuth2.
-  - [ ] `linked-roles.service.ts`: Đẩy metadata user lên Discord API.
-  - [ ] Script đăng ký Connection Metadata Schema với Discord.
-- [ ] **Feature: Server Moderation (Tùy chọn bổ sung)**
-  - [ ] Các công cụ quản trị cơ bản (`/ban`, `/kick`, `/warn`, `/purge`).
+- [ ] **FEAT-06: Server Moderation (Quản Trị Mở Rộng - Tùy Chọn)**
+  - Các công cụ quản trị mở rộng: `/ban`, `/kick`, `/warn`, `/purge`.
 
 ---
 
-## Phase 4: Web Dashboard (Tách biệt hoàn toàn)
-> **Mục tiêu:** Dựng giao diện quản lý trên thư mục `dashboard/` (Vite + React/Vue).
+## 🌐 Track W: Web & Management Dashboard (Phát Triển Song Song)
 
-- [ ] `dashboard-api.route.ts`: Cung cấp REST API cho Dashboard lấy dữ liệu bot, perks, server config.
-- [ ] Khởi tạo thư mục `dashboard/` với Vite SPA.
-- [ ] Tích hợp Discord OAuth2 login cho Dashboard.
-- [ ] Xây dựng các trang cấu hình (Perk dashboard, Wordchain stats, Voice control).
+> Phân hệ Dashboard được xây dựng độc lập trên thư mục `dashboard/` và kết nối với Backend qua Fastify REST API.
+
+- [ ] **WEB-01: Fastify REST API Core Routes**
+  - Cung cấp REST endpoints cho Dashboard truy xuất dữ liệu trạng thái bot, perks và server config.
+  - Xác thực bảo mật qua API Tokens / Session Cookies.
+- [ ] **WEB-02: Vite + React Dashboard UI**
+  - Khởi tạo Single Page Application (SPA) độc lập trong thư mục `dashboard/`.
+  - Xây dựng giao diện trực quan: Bảng điều khiển Perks, thống kê Wordchain, điều khiển Voice Keeper.
+- [ ] **WEB-03: Discord OAuth2 & State Management**
+  - Tích hợp đăng nhập Discord OAuth2 cho Quản trị viên server.
+  - Đồng bộ quyền hạn quản trị Discord với giao diện Web Dashboard.
+
+---
+
+## ⚙️ Track C: Core Platform & Infrastructure (Hạ Tầng Cốt Lõi)
+
+> Hạ tầng bất biến. Chỉ can thiệp hoặc mở rộng khi bảo trì hoặc nâng cấp hệ thống nền tảng.
+
+- [x] **CORE-01: System Bootstrap & Dynamic Loaders** `(v0.1.0)`
+  > 📖 *Hồ sơ nghiệm thu kỹ thuật chi tiết đã đóng băng:* [`docs/history/01-foundation-core.md`](./history/01-foundation-core.md)
+  - Khởi tạo kiến trúc Vertical Slice, TypeScript ESM Strict, Pino Logger, Zod Config.
+  - Singleton `AsyncEventBus` (Error Boundary cô lập, `maxListeners: 50`).
+  - Hệ thống nạp tự động (Dynamic Loaders): Command, Event, Job, Route.
+  - Cơ sở dữ liệu Prisma (SQLite WAL Mode) và Fastify Web Server chạy song song.
+  - Vòng đời tắt an toàn (Graceful Shutdown) bắt `SIGINT`/`SIGTERM`.
+
+- [ ] **CORE-02: Telemetry, Sharding & Multi-Guild Optimization (Tương Lai)**
+  - Tích hợp OpenTelemetry / Prometheus metrics đo lường hiệu năng.
+  - Hỗ trợ Discord Sharding khi số lượng máy chủ vượt ngưỡng 2,500 guilds.

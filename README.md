@@ -45,8 +45,10 @@ discordbot_lora/
     ├── core/                     # Hạ tầng hệ thống (Loaders, Client, Logger, Bus, Scripts)
     ├── shared/                   # Dữ liệu & Tiện ích dùng chung (Prisma DB, Colors, Utils)
     └── features/                 # Các lát cắt tính năng độc lập
-        └── ping/                 # Feature mẫu xác thực hệ thống
-
+        ├── ping/                 # Feature mẫu xác thực hệ thống
+        └── perks/                # Quản lý đặc quyền thành viên (Perks Management)
+            ├── common/           # Lệnh tổng quát (/perk status) & shared types/locales
+            └── booster/          # Quản lý Custom Role & đặc quyền Server Booster
 ```
 
 ---

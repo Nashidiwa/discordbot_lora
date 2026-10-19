@@ -42,18 +42,20 @@ Discord Gateway sẽ hủy bỏ interaction nếu không nhận được phản 
 * **Phản hồi tức thì (< 10ms):** Chỉ những lệnh thuần tính toán bộ nhớ (đọc cache in-memory, text tĩnh) mới được phép dùng trực tiếp `await interaction.reply(...)`.
 * **Ngoại lệ bắt buộc 1 - Autocomplete (`AutocompleteInteraction`):** CẤM TIỆT gọi `deferReply()`. Discord API không hỗ trợ hoãn autocomplete. Bắt buộc phải trả kết quả gợi ý trực tiếp qua `await interaction.respond(...)` trong vòng 3 giây.
 * **Ngoại lệ bắt buộc 2 - Mở Modal (`showModal`):** Theo Discord API, Modal CHỈ CÓ THỂ hiển thị khi interaction chưa được acknowledge. CẤM gọi `deferReply()` trước khi mở Modal; bắt buộc phải gọi trực tiếp `await interaction.showModal(...)`.
-* **Ngoại lệ bắt buộc 3 - Cập nhật Component (`ButtonInteraction`, `SelectMenuInteraction`):** Ưu tiên sử dụng `await interaction.deferUpdate()` nếu mục đích chỉ là cập nhật nội dung/trạng thái trên chính message hiện tại. Chỉ dùng `deferReply({ ephemeral: true })` khi cần sinh ra một phản hồi mới độc lập cho người click.
+* **Ngoại lệ bắt buộc 3 - Cập nhật Component (`ButtonInteraction`, `SelectMenuInteraction`):** Ưu tiên sử dụng `await interaction.deferUpdate()` nếu mục đích chỉ là cập nhật nội dung/trạng thái trên chính message hiện tại. Chỉ dùng `deferReply({ flags: MessageFlags.Ephemeral })` khi cần sinh ra một phản hồi mới độc lập cho người click.
 
 ### 2.2. Chính sách Hiển thị Thông tin (Ephemeral vs Public)
 
-* **Bắt buộc `ephemeral: true`:**
-* Toàn bộ thông báo lỗi, cảnh báo, hướng dẫn nhập liệu.
-* Các tác vụ quản trị, moderation, cấu hình hệ thống.
-* Các thông tin nhạy cảm mang tính cá nhân (trạng thái quyền lợi, liên kết tài khoản).
+> [!NOTE]
+> Kể từ Discord.js v14+, thuộc tính `ephemeral: true` đã bị gắn nhãn `@deprecated`. Bắt buộc chuẩn hóa sử dụng `flags: MessageFlags.Ephemeral` (import từ `discord.js`).
 
+* **Bắt buộc hiển thị riêng tư (`flags: MessageFlags.Ephemeral`):**
+  * Toàn bộ thông báo lỗi, cảnh báo, hướng dẫn nhập liệu.
+  * Các tác vụ quản trị, moderation, cấu hình hệ thống.
+  * Các thông tin nhạy cảm mang tính cá nhân (trạng thái quyền lợi, liên kết tài khoản).
 
-* **Công khai (`ephemeral: false`):**
-* Các tương tác mang tính tập thể, trò chơi cộng đồng, trạng thái kênh thoại hoặc phát nhạc.
+* **Công khai (Mặc định không truyền cờ flags):**
+  * Các tương tác mang tính tập thể, trò chơi cộng đồng, trạng thái kênh thoại hoặc phát nhạc.
 
 
 

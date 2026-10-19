@@ -93,11 +93,11 @@ Hệ thống Core sử dụng cơ chế **File Convention Discovery** để tự
 
 ### Quy chuẩn Subcommands (Lệnh con)
 
-Đối với các tính năng có cấu trúc Slash Command phức tạp gồm nhiều lệnh con:
+Đối với các tính năng có cấu trúc Slash Command phức tạp gồm nhiều lệnh con hoặc phân chia theo Subcommand Group:
 
-* **Tên file & Thư mục:** Bắt buộc bóc tách từng subcommand thành các file mang hậu tố `*.sub.ts` nằm trong thư mục `src/features/<feature-name>/commands/` (ví dụ: `claim.sub.ts`, `check.sub.ts`).
+* **Tên file & Thư mục:** Bắt buộc bóc tách từng subcommand thành các file mang hậu tố `*.sub.ts` nằm trong thư mục `subcommands/` (hoặc `commands/`) của feature (ví dụ: `src/features/<feature>/subcommands/check.sub.ts`). Với các feature phân nhánh thành nhiều sub-slice/domain (như `perks/common/subcommands/`, `perks/booster/subcommands/`), các file `*.sub.ts` được đặt trực tiếp trong thư mục con tương ứng.
 * **Tránh xung đột Loader:** Việc sử dụng hậu tố `*.sub.ts` đảm bảo Dynamic Command Loader (chỉ tìm `*.command.ts`) không đăng ký nhầm subcommand thành một Slash Command cấp cao nhất trên Discord REST API.
-* **Router điều phối:** File `<feature-name>.command.ts` tại root của feature sẽ tập hợp toàn bộ metadata (`SlashCommandBuilder.addSubcommand(...)`) và điều hướng tương tác đến từng executor tương ứng.
+* **Router điều phối:** File `<feature-name>.command.ts` tại root của feature sẽ tập hợp toàn bộ metadata (`SlashCommandBuilder.addSubcommand(...)`, `addSubcommandGroup(...)`) và điều hướng tương tác đến từng executor tương ứng.
 
 ---
 

@@ -9,7 +9,7 @@ Trước khi phân tích yêu cầu của người dùng hoặc chỉnh sửa b�
 
 1. `docs/ARCHITECTURE.md`: Bản vẽ kiến trúc Vertical Slice, luật phân tầng, cơ chế Dynamic Loader và ranh giới hệ thống.
 2. `docs/CONVENTIONS.md`: Bộ quy chuẩn kỹ thuật, chính sách Zero `any`, quy chuẩn Discord interaction, xử lý lỗi với `AppError`, bảng mã màu và logging.
-3. `docs/ROADMAP.md`: Bản đồ tiến độ hiện tại. Agent phải tra cứu xem nhiệm vụ được giao thuộc Phase nào và các điều kiện tiên quyết đã hoàn thành hay chưa.
+3. `docs/ROADMAP.md`: Bản đồ tiến độ hiện tại theo các Workstream Tracks (`FEAT`, `WEB`, `CORE`). Agent phải tra cứu xem nhiệm vụ được giao thuộc Track nào và Feature nào, các điều kiện tiên quyết đã hoàn thành hay chưa. Nếu cần bảo trì/nâng cấp hạ tầng Core, tham khảo thêm `docs/history/01-foundation-core.md`.
 
 ---
 
@@ -27,7 +27,10 @@ Trước khi phân tích yêu cầu của người dùng hoặc chỉnh sửa b�
 * **LOGGING & BẮT LỖI:**
   * Cấm tiệt `console.log`. Sử dụng duy nhất instance `logger` từ `src/core/logger.ts`.
   * Cấm các khối `catch (e) {}` rỗng hoặc nuốt lỗi. Mọi lỗi nghiệp vụ phải ném qua `AppError`.
-* **CẬP NHẬT TIẾN ĐỘ:** Khi hoàn thành xuất sắc một task và đã xác nhận hoạt động, Agent có trách nhiệm tự động cập nhật đánh dấu `[x]` vào tệp `docs/ROADMAP.md`.
+* **CẬP NHẬT TIẾN ĐỘ & PHIÊN BẢN:** Khi hoàn thành một task, bản vá hoặc tính năng và đã xác nhận hoạt động:
+  * (1) Cập nhật trạng thái `[x]` vào `docs/ROADMAP.md` (giữ nội dung súc tích, dạng Executive Dashboard).
+  * (2) Nếu tính năng có tài liệu riêng (`src/features/<feature>/README.md`), bắt buộc cập nhật đầy đủ chi tiết kỹ thuật và changelog vào tệp đó.
+  * (3) Ghi nhận phiên bản cập nhật vào `CHANGELOG.md` theo chuẩn SemVer và đồng bộ `version` trong `package.json` khi phát hành bản mới.
 
 ---
 
@@ -45,7 +48,7 @@ Khi nhận yêu cầu viết tính năng mới, Agent phải thực thi tuần t
    * Đảm bảo tính module hóa cao, code có type rõ ràng, sạch sẽ.
 3. **Bước 3 - Bàn giao & Nhắc nhở (Verification & Handoff):**
    * Nếu có tạo hoặc sửa đổi Slash Command mới: Nhắc người dùng chạy lệnh `npm run deploy:dev`.
-   * Cập nhật checklist trong `docs/ROADMAP.md`.
+   * Cập nhật trạng thái trong `docs/ROADMAP.md` (ngắn gọn), cập nhật `README.md` riêng của feature (chi tiết) và ghi nhận phiên bản vào `CHANGELOG.md`.
 
 ---
 
