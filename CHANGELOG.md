@@ -6,6 +6,38 @@ Tất cả các thay đổi đáng chú ý của dự án **Lora** (`discordbot_
 
 ---
 
+## [0.4.0] - 2026-10-22 [FEAT-03: Swarm Linked Roles & Connection Metadata Engine]
+
+### Đã thêm (Added)
+- **Kiến trúc & Động cơ Metadata (Connection Metadata Engine):**
+  - Xây dựng lát cắt độc lập hoàn toàn `src/features/swarm-linked-roles/` tuân thủ kiến trúc Vertical Slice.
+  - Tầng Service `SwarmMetadataService` (`swarm-metadata.service.ts`) quản lý giao tiếp trực tiếp với Discord REST API (`PUT /users/@me/applications/{id}/role-connection`) và đăng ký schema metadata ở cấp độ Application.
+  - Tầng Service `SwarmAuthService` (`swarm-auth.service.ts`) xử lý toàn bộ luồng OAuth2 (`identify`, `role_connections.write`), đổi authorization code lấy token, bảo vệ chống CSRF bằng chữ ký HMAC-SHA256, và cơ chế tự động refresh access token trước khi hết hạn.
+  - Tầng Service `SwarmOperatorService` (`swarm-operator.service.ts`) thực thi mô hình phân quyền 2 tầng: Bot Owner (Super Admin) và Delegated Operator.
+  - Tầng Service `SwarmNotificationService` (`swarm-notification.service.ts`) quản lý kênh thông báo per-guild, phát Embed thăng cấp và thu hồi role trang trọng.
+- **Tích hợp Web Server Kép (Fastify BotRoute):**
+  - Triển khai `swarm.route.ts` với prefix `/auth`, tự động nạp qua `route.loader.ts`.
+  - Endpoint `GET /auth/discord/login` điều hướng sang Discord consent screen.
+  - Endpoint `GET /auth/discord/callback` xác thực state, trao đổi mã token, cập nhật metadata tức thì và trả về trang HTML thông báo thành công với giao diện dark mode hiện đại.
+- **Bộ Lệnh Slash Command (`/swarm`):**
+  - Triển khai Root Command `/swarm` với 6 subcommands độc lập:
+    - `/swarm set <user> <level>`: Operator gán cấp độ từ 1 đến 8 và đẩy dữ liệu lên Discord.
+    - `/swarm remove <user>`: Operator thu hồi cấp độ về 0 để Discord gỡ role.
+    - `/swarm status [user]`: Tra cứu hồ sơ cấp độ, trạng thái OAuth2 và người cập nhật.
+    - `/swarm link`: Nhận liên kết xác thực Discord OAuth2 an toàn.
+    - `/swarm delegate add|remove|list`: Bot Owner ủy quyền hoặc gỡ quyền Operator.
+    - `/swarm channel set|remove`: Operator cấu hình kênh nhận thông báo thăng cấp/thu hồi.
+- **Công cụ CLI & Script Triển khai:**
+  - Script CLI `register-metadata.ts` và lệnh `npm run deploy:metadata` để đăng ký schema `swarm_level` (Integer Equal) lên Discord Developer Portal.
+- **Cơ sở Dữ liệu & Prisma Schema:**
+  - Bổ sung 4 model Prisma mới: `SwarmMemberMetadata`, `SwarmOAuthToken`, `SwarmOperator`, `SwarmGuildConfig`.
+  - Thực thi migration `20261021174647_add_swarm_linked_roles`.
+- **Bản địa hóa & Tài liệu:**
+  - Từ điển song ngữ `vi`/`en` chuẩn Zero `any` tại `swarm.locale.ts`.
+  - Bản đặc tả yêu cầu `FRD.md` và cẩm nang vận hành `README.md`.
+
+---
+
 ## [0.3.0] - 2026-10-21 [FEAT-02: Perks Management - Donator (Time-Bank & Hybrid Retention)]
 
 ### Đã thêm (Added)

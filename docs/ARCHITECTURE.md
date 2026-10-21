@@ -68,7 +68,7 @@ discordbot_lora/
     │   └── constants/            # ID cố định, Discord Permissions, Enums toàn cục
     │
     └── features/                 # VÙNG NGHIỆP VỤ (Mỗi folder là một lát cắt tính năng độc lập)
-        └── <feature-name>/       # Đóng gói hoàn chỉnh từng domain (ping, perks/booster, perks/donator...)
+        └── <feature-name>/       # Đóng gói hoàn chỉnh từng domain (ping, swarm-linked-roles, perks/booster, perks/donator...)
 ```
 
 ---
@@ -274,6 +274,48 @@ model DonatorTransaction {
 
   @@index([guildId, userId])
   @@map("donator_transactions")
+}
+
+// ==========================================
+// DOMAIN: SWARM LINKED ROLES & METADATA
+// ==========================================
+model SwarmMemberMetadata {
+  userId      String   @id @map("user_id")
+  swarmLevel  Int      @default(0) @map("swarm_level")
+  updatedBy   String   @map("updated_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("swarm_member_metadata")
+}
+
+model SwarmOAuthToken {
+  userId        String   @id @map("user_id")
+  accessToken   String   @map("access_token")
+  refreshToken  String   @map("refresh_token")
+  expiresAt     DateTime @map("expires_at")
+  scope         String   @map("scope")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("swarm_oauth_tokens")
+}
+
+model SwarmOperator {
+  userId      String   @id @map("user_id")
+  addedBy     String   @map("added_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("swarm_operators")
+}
+
+model SwarmGuildConfig {
+  guildId               String   @id @map("guild_id")
+  notificationChannelId String?  @map("notification_channel_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@map("swarm_guild_configs")
 }
 ```
 

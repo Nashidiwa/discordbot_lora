@@ -7,8 +7,8 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
 
 ## 📊 Bảng Điều Phối Tổng Thể (Executive Status)
 
-* **Phiên bản hiện tại:** `v0.3.0`
-* **Tiêu điểm đang triển khai:** `FEAT-03: Wordchain (Trò Chơi Nối Từ)`
+* **Phiên bản hiện tại:** `v0.4.0`
+* **Tiêu điểm đang triển khai:** `FEAT-04: Voice Keeper 24/7 (Treo Kênh Thoại & Tự Phục Hồi)`
 * **Quy ước trạng thái:**
   * `[ ]` Chưa thực hiện (Backlog)
   * `[/]` Đang tiến hành (In Progress)
@@ -37,20 +37,25 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
   - Phân quyền quản trị nghiêm ngặt `Administrator` tuyệt đối cho các thao tác nạp tiền, điều chỉnh và cấu hình.
   - Bộ lệnh Slash `/perk donator *` tích hợp với hệ thống `/perk list` và `/perk status` chung.
 
-- [ ] **FEAT-03: Wordchain (Trò Chơi Nối Từ)**
-  - Quản lý trạng thái ván chơi: In-memory live session + Snapshot lưu DB.
-  - Service thuật toán kiểm tra từ điển tiếng Việt, lượt đi, tính điểm thưởng.
-  - Lệnh Slash `/wordchain start`, `/wordchain stop` và Gateway Event bắt tin nhắn trong kênh chơi.
+- [x] **FEAT-03: Swarm Linked Roles & Connection Metadata** `(v0.4.0)`
+  > 📖 *Tài liệu đặc tả kiến trúc & cẩm nang vận hành:* [`src/features/swarm-linked-roles/README.md`](../src/features/swarm-linked-roles/README.md) | *Đặc tả yêu cầu (FRD):* [`src/features/swarm-linked-roles/FRD.md`](../src/features/swarm-linked-roles/FRD.md)
+  - Quản lý Application Connection Metadata cho 8 Linked Roles (`The Swarm I` đến `VIII`).
+  - Phân quyền RBAC 2 tầng: Bot Owner (toàn quyền & ủy quyền) và Delegated Operator.
+  - Script CLI `register-metadata.ts` tự động đăng ký schema `swarm_level` lên Discord REST API.
+  - Tích hợp Fastify Web Server xử lý OAuth2 handshake an toàn với chữ ký HMAC CSRF state.
+  - Tự động phát thông báo thăng cấp và thu hồi qua kênh per-guild được cấu hình.
+
+
 
 - [ ] **FEAT-04: Voice Keeper 24/7 (Treo Kênh Thoại & Tự Phục Hồi)**
   - Cấu hình danh sách kênh thoại cần giữ kết nối vào DB.
   - Quản lý voice connection, cơ chế tự động tái kết nối (auto-reconnect) khi rớt Gateway.
   - Lắng nghe sự kiện `voiceStateUpdate` để phát hiện ngắt kết nối bất thường.
 
-- [ ] **FEAT-05: Linked Roles & Connection Metadata**
-  - Quản lý Custom Connection Metadata cho Discord Linked Roles.
-  - Script tự động đăng ký Connection Metadata Schema lên Discord REST API.
-  - Cập nhật và đồng bộ metadata người dùng qua OAuth2 callback.
+- [ ] **FEAT-05: Wordchain (Trò Chơi Nối Từ)**
+  - Quản lý trạng thái ván chơi: In-memory live session + Snapshot lưu DB.
+  - Service thuật toán kiểm tra từ điển tiếng Việt, lượt đi, tính điểm thưởng.
+  - Lệnh Slash `/wordchain start`, `/wordchain stop` và Gateway Event bắt tin nhắn trong kênh chơi.
 
 - [ ] **FEAT-06: Server Moderation (Quản Trị Mở Rộng - Tùy Chọn)**
   - Các công cụ quản trị mở rộng: `/ban`, `/kick`, `/warn`, `/purge`.

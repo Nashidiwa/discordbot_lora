@@ -58,4 +58,5 @@ Khi nhận yêu cầu viết tính năng mới, Agent phải thực thi tuần t
 * `npm run deploy:dev`: Đẩy Slash Commands mới vào Server Test (`DEV_GUILD_ID`).
 * `npm run deploy:prod`: Đẩy Slash Commands lên phạm vi Global.
 * `npm run deploy:clear:dev`: Xóa toàn bộ Slash Commands trên Server Test.
+* `npm run deploy:metadata`: Đăng ký Metadata Schema (The Swarm) lên Discord REST API.
 * `npx prisma migrate dev`: Chạy migration cập nhật cơ sở dữ liệu.

@@ -1,6 +1,6 @@
 # 🤖 Lora - Discord Bot Core (Modular Re-architecture)
 
-> Hệ thống bot **Lora** (`discordbot_lora`) thế hệ mới được xây dựng theo kiến trúc **Vertical Slice Architecture**, tối ưu hóa 100% cho quy trình phát triển bằng AI Coding Agents (Vibecoding). Không spaghetti code, module hóa tuyệt đối, chịu tải cao và sẵn sàng mở rộng lâu dài.
+> Bot **Lora** (`discordbot_lora`) được xây dựng theo kiến trúc **Vertical Slice Architecture**. Không spaghetti code, module hóa tuyệt đối, chịu tải cao và sẵn sàng mở rộng lâu dài.
 
 ---
 
@@ -13,6 +13,7 @@
 * **Hệ thống Quản lý Đặc quyền (Perks Management):**
   * **Server Booster (FEAT-01):** Tự động hóa Custom Role đơn sắc và Gradient 2 màu theo chuẩn Discord `EnhancedRoleColors`, nhận diện booster hợp nhất, cơ chế ân hạn 7 ngày và quy trình unboost tương tác.
   * **Donator Perks (FEAT-02):** Cơ chế Quỹ Thời Gian (Time-Bank) tự chủ với tốc độ tiêu hao $1.0x$ (đeo role) và $0.2x$ (cất kho tiết kiệm); đòn bẩy thưởng kép (Volume Bonus $10\% - 35\%$ và Weekly Streak Bonus $+5\% - +20\%$ neo múi giờ UTC+7); bảo vệ quyền lợi đóng băng $0.0x$ khi bảo trì và tự động cất kho ($0.2x$) khi thành viên rời server (`donator-leave.event.ts`).
+  * **The Swarm Linked Roles (FEAT-03):** Quản lý vai trò liên kết Discord Linked Roles cho 8 bậc danh hiệu (`The Swarm I` $\rightarrow$ `VIII`), RBAC 2 tầng (Bot Owner & Delegated Operator), đồng bộ metadata thời gian thực, kênh thông báo thăng cấp/thu hồi per-guild và Fastify OAuth2 endpoint xác thực bảo mật HMAC.
 * **Tích hợp Web Server Kép:** Chạy song song HTTP Web Server (Fastify) phục vụ Discord OAuth2 Linked Roles và REST API cho Web Dashboard trong tương lai.
 * **Bền bỉ & An toàn (Resilience):** Cơ sở dữ liệu Prisma (SQLite WAL Mode / PostgreSQL), mạng lưới bắt lỗi tập trung (Error Boundaries) và quy trình ngắt kết nối an toàn (Graceful Shutdown).
 
@@ -49,6 +50,7 @@ discordbot_lora/
     ├── shared/                   # Dữ liệu & Tiện ích dùng chung (Prisma DB, Colors, Utils)
     └── features/                 # Các lát cắt tính năng độc lập
         ├── ping/                 # Feature mẫu xác thực hệ thống
+        ├── swarm-linked-roles/   # Quản lý vai trò liên kết The Swarm (FEAT-03)
         └── perks/                # Quản lý đặc quyền thành viên (Perks Management)
             ├── perks.command.ts  # Root Slash Command (/perk)
             ├── common/           # Lệnh tổng quát (/perk list, /perk status) & shared types/locales
@@ -126,6 +128,7 @@ npm run dev
 | `npm run deploy:prod` | Đăng ký Slash Commands lên phạm vi Toàn cầu (Global) |
 | `npm run deploy:clear:dev` | Xóa sạch toàn bộ Slash Commands rác trên Server Test |
 | `npm run deploy:clear:global` | Xóa sạch toàn bộ Slash Commands trên Global |
+| `npm run deploy:metadata` | Đăng ký Metadata Schema (The Swarm) lên Discord REST API |
 
 ---
 
