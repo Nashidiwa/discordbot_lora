@@ -10,6 +10,9 @@
 * **Cơ chế Nạp Động (Dynamic Loaders):** Hệ thống tự động quét và đăng ký tài nguyên runtime theo quy ước tệp tin (`*.command.ts`, `*.event.ts`, `*.job.ts`, `*.route.ts`).
 * **Zero Cross-Feature Dependencies:** Các module độc lập hoàn toàn, giao tiếp phi tập trung qua Discord Gateway hoặc Internal Async Event Bus.
 * **Tách biệt Triển khai Lệnh (Decoupled Deployment):** Đăng ký Slash Command được quản lý độc lập qua CLI script, triệt tiêu nguy cơ dính Discord API Rate Limit khi reboot bot.
+* **Hệ thống Quản lý Đặc quyền (Perks Management):**
+  * **Server Booster (FEAT-01):** Tự động hóa Custom Role đơn sắc và Gradient 2 màu theo chuẩn Discord `EnhancedRoleColors`, nhận diện booster hợp nhất, cơ chế ân hạn 7 ngày và quy trình unboost tương tác.
+  * **Donator Perks (FEAT-02):** Cơ chế Quỹ Thời Gian (Time-Bank) tự chủ với tốc độ tiêu hao $1.0x$ (đeo role) và $0.2x$ (cất kho tiết kiệm); đòn bẩy thưởng kép (Volume Bonus $10\% - 35\%$ và Weekly Streak Bonus $+5\% - +20\%$ neo múi giờ UTC+7); bảo vệ quyền lợi đóng băng $0.0x$ khi bảo trì và tự động cất kho ($0.2x$) khi thành viên rời server (`donator-leave.event.ts`).
 * **Tích hợp Web Server Kép:** Chạy song song HTTP Web Server (Fastify) phục vụ Discord OAuth2 Linked Roles và REST API cho Web Dashboard trong tương lai.
 * **Bền bỉ & An toàn (Resilience):** Cơ sở dữ liệu Prisma (SQLite WAL Mode / PostgreSQL), mạng lưới bắt lỗi tập trung (Error Boundaries) và quy trình ngắt kết nối an toàn (Graceful Shutdown).
 
@@ -47,8 +50,10 @@ discordbot_lora/
     └── features/                 # Các lát cắt tính năng độc lập
         ├── ping/                 # Feature mẫu xác thực hệ thống
         └── perks/                # Quản lý đặc quyền thành viên (Perks Management)
-            ├── common/           # Lệnh tổng quát (/perk status) & shared types/locales
-            └── booster/          # Quản lý Custom Role & đặc quyền Server Booster
+            ├── perks.command.ts  # Root Slash Command (/perk)
+            ├── common/           # Lệnh tổng quát (/perk list, /perk status) & shared types/locales
+            ├── booster/          # Quản lý Custom Role & đặc quyền Server Booster (FEAT-01)
+            └── donator/          # Quản lý Quỹ Thời Gian & Thưởng Kép Donator (FEAT-02)
 ```
 
 ---

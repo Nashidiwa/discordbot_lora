@@ -3,7 +3,6 @@ import {
   ButtonBuilder,
   ButtonStyle,
   type ChatInputCommandInteraction,
-  type GuildMember,
   PermissionFlagsBits,
 } from 'discord.js';
 import { logger } from '../../../../core/logger.js';
@@ -20,9 +19,7 @@ import { boosterPerkService } from '../services/booster-perk.service.js';
 export const execute: SubcommandExecutor = async (
   interaction: ChatInputCommandInteraction,
 ): Promise<void> => {
-  const member = interaction.member as GuildMember;
-
-  if (!member.permissions.has(PermissionFlagsBits.Administrator)) {
+  if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
     const errEmbed = createErrorEmbed(perksLocale.vi.ADMIN_ONLY);
     await interaction.editReply({ embeds: [errEmbed] });
     return;

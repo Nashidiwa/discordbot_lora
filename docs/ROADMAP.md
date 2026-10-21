@@ -7,8 +7,8 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
 
 ## 📊 Bảng Điều Phối Tổng Thể (Executive Status)
 
-* **Phiên bản hiện tại:** `v0.2.8`
-* **Tiêu điểm đang triển khai:** `FEAT-02: Perks Management - Donator`
+* **Phiên bản hiện tại:** `v0.3.0`
+* **Tiêu điểm đang triển khai:** `FEAT-03: Wordchain (Trò Chơi Nối Từ)`
 * **Quy ước trạng thái:**
   * `[ ]` Chưa thực hiện (Backlog)
   * `[/]` Đang tiến hành (In Progress)
@@ -28,11 +28,12 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
   - Bộ lệnh Slash `/perk list`, `/perk status`, `/perk server_booster *`.
   - Quy trình quản trị unboost tương tác (Interactive Unboost Workflow) với 2 nút bấm xác nhận.
 
-- [ ] **FEAT-02: Perks Management - Donator (Time-Bank & Hybrid Retention)**
+- [x] **FEAT-02: Perks Management - Donator (Time-Bank & Hybrid Retention)** `(v0.3.0)`
   > 📖 *Tài liệu đặc tả kiến trúc & cẩm nang vận hành:* [`src/features/perks/donator/README.md`](../src/features/perks/donator/README.md) | *Đặc tả yêu cầu (FRD):* [`src/features/perks/donator/FRD.md`](../src/features/perks/donator/FRD.md)
   - Mô hình Quỹ Thời Gian (Time-Bank) tự chủ với tốc độ tiêu hao $1.0x$ (đeo role) và $0.2x$ (cất kho).
   - Đòn bẩy thưởng kép: Thưởng giá trị đóng góp (Volume Bonus) và Thưởng chuỗi tuần (Weekly Streak Bonus) neo múi giờ UTC+7.
   - Cơ chế suy giảm mềm (Soft Decay) chuỗi tuần và bảo vệ quyền lợi đóng băng thời gian ($0.0x$) khi tắt tính năng.
+  - Tự động cất role vào kho ($0.2x$) bảo lưu quyền lợi khi thành viên rời server (`donator-leave.event.ts`).
   - Phân quyền quản trị nghiêm ngặt `Administrator` tuyệt đối cho các thao tác nạp tiền, điều chỉnh và cấu hình.
   - Bộ lệnh Slash `/perk donator *` tích hợp với hệ thống `/perk list` và `/perk status` chung.
 

@@ -1,15 +1,25 @@
-import type {
-  ChatInputCommandInteraction,
+import {
+  type ChatInputCommandInteraction,
   GuildMember,
+  MessageFlags,
 } from 'discord.js';
 import type { SubcommandExecutor } from '../../../../core/types/index.js';
 import { createBaseEmbed } from '../../../../shared/utils/embed.util.js';
 import { boosterPerkService } from '../../booster/services/booster-perk.service.js';
+import { formatDurationVietnamese } from '../../donator/donator.utils.js';
+import { donatorPerkService } from '../../donator/services/donator-perk.service.js';
 
 export const execute: SubcommandExecutor = async (
   interaction: ChatInputCommandInteraction,
 ): Promise<void> => {
-  const member = interaction.member as GuildMember;
+  if (!interaction.deferred && !interaction.replied) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+  }
+
+  const member =
+    interaction.member instanceof GuildMember
+      ? interaction.member
+      : await interaction.guild!.members.fetch(interaction.user.id);
   const perk = await boosterPerkService.getPerk(
     interaction.guildId!,
     member.id,
@@ -59,6 +69,42 @@ export const execute: SubcommandExecutor = async (
     name: '🚀 1. Server Booster',
     value: boosterLines.join('\n'),
   });
+
+  // Kiểm tra quyền lợi Donator nếu người dùng có credit
+  const donatorStatus = await donatorPerkService.getAccountStatus(
+    interaction.guildId!,
+    member.id,
+  );
+
+  if (donatorStatus && donatorStatus.creditSeconds > 0) {
+    let donatorStatusText = 'Cất trong kho (0.2x)';
+    if (!donatorStatus.isEnabled) {
+      donatorStatusText = 'Đang đóng băng (0.0x)';
+    } else if (donatorStatus.isEquipped) {
+      donatorStatusText = 'Đang trang bị (1.0x)';
+    }
+
+    const donatorLines = [
+      `• Trạng thái: **${donatorStatusText}**`,
+      `• Quỹ thời gian: **${formatDurationVietnamese(donatorStatus.creditSeconds)}**`,
+      `• Chuỗi Streak: **${donatorStatus.streak} tuần**`,
+    ];
+
+    if (donatorStatus.isEnabled && donatorStatus.estimatedDepletionDate) {
+      donatorLines.push(
+        `• Dự kiến cạn quỹ: <t:${Math.floor(donatorStatus.estimatedDepletionDate.getTime() / 1000)}:R>`,
+      );
+    }
+
+    donatorLines.push(
+      '*💡 Dùng `/perk donator status` để xem chi tiết hoặc `/perk donator equip`/`unequip` để quản lý.*',
+    );
+
+    embed.addFields({
+      name: '💎 2. Donator Status',
+      value: donatorLines.join('\n'),
+    });
+  }
 
   await interaction.editReply({ embeds: [embed] });
 };

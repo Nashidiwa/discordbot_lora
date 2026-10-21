@@ -10,9 +10,7 @@ Dự án áp dụng mô hình **Vertical Slice Architecture** (Feature-based Mod
 
 Thay vì chia mã nguồn theo tầng kỹ thuật ngang truyền thống (tất cả controller một nơi, tất cả model một nơi), hệ thống đóng gói toàn bộ logic của một tính năng vào một thư mục nghiệp vụ duy nhất.
 
-
 ```
-
 Request / Gateway Event
 ↓
 ┌────────────────────────────────────────────────────────┐
@@ -20,7 +18,7 @@ Request / Gateway Event
 └────────────────────────────────────────────────────────┘
 ↓ (Dispatch)
 ┌────────────────────────────────────────────────────────┐
-│  src/features//                          │
+│  src/features/<feature-name>/                          │
 │  ├── *.command.ts  (Nhận input & validate)             │
 │  ├── *.event.ts    (Lắng nghe Discord Gateway)         │
 │  ├── *.route.ts    (Fastify HTTP Endpoints)            │
@@ -32,7 +30,6 @@ Request / Gateway Event
 ┌────────────────────────────────────────────────────────┐
 │  src/shared/ (Prisma DB Client, Helpers, Embed Utils)  │
 └────────────────────────────────────────────────────────┘
-
 ```
 
 ---
@@ -71,8 +68,7 @@ discordbot_lora/
     │   └── constants/            # ID cố định, Discord Permissions, Enums toàn cục
     │
     └── features/                 # VÙNG NGHIỆP VỤ (Mỗi folder là một lát cắt tính năng độc lập)
-        └── <feature-name>/
-
+        └── <feature-name>/       # Đóng gói hoàn chỉnh từng domain (ping, perks/booster, perks/donator...)
 ```
 
 ---
@@ -95,7 +91,7 @@ Hệ thống Core sử dụng cơ chế **File Convention Discovery** để tự
 
 Đối với các tính năng có cấu trúc Slash Command phức tạp gồm nhiều lệnh con hoặc phân chia theo Subcommand Group:
 
-* **Tên file & Thư mục:** Bắt buộc bóc tách từng subcommand thành các file mang hậu tố `*.sub.ts` nằm trong thư mục `subcommands/` (hoặc `commands/`) của feature (ví dụ: `src/features/<feature>/subcommands/check.sub.ts`). Với các feature phân nhánh thành nhiều sub-slice/domain (như `perks/common/subcommands/`, `perks/booster/subcommands/`), các file `*.sub.ts` được đặt trực tiếp trong thư mục con tương ứng.
+* **Tên file & Thư mục:** Bắt buộc bóc tách từng subcommand thành các file mang hậu tố `*.sub.ts` nằm trong thư mục `subcommands/` (hoặc `commands/`) của feature (ví dụ: `src/features/<feature>/subcommands/check.sub.ts`). Với các feature phân nhánh thành nhiều sub-slice/domain (như `perks/common/subcommands/`, `perks/booster/subcommands/`, `perks/donator/subcommands/`), các file `*.sub.ts` được đặt trực tiếp trong thư mục con tương ứng.
 * **Tránh xung đột Loader:** Việc sử dụng hậu tố `*.sub.ts` đảm bảo Dynamic Command Loader (chỉ tìm `*.command.ts`) không đăng ký nhầm subcommand thành một Slash Command cấp cao nhất trên Discord REST API.
 * **Router điều phối:** File `<feature-name>.command.ts` tại root của feature sẽ tập hợp toàn bộ metadata (`SlashCommandBuilder.addSubcommand(...)`, `addSubcommandGroup(...)`) và điều hướng tương tác đến từng executor tương ứng.
 
@@ -112,8 +108,6 @@ Nhằm đảm bảo dự án có thể mở rộng lâu dài và không bao gi�
 * Chính thư mục nội bộ của nó (`src/features/<feature-name>/*`).
 * Tầng dùng chung (`src/shared/*`).
 * Tầng hạ tầng (`src/core/*` - chỉ import types, logger, bus, không import loaders).
-
-
 
 ### 4.2. Luật Giao tiếp Giữa các Feature
 
@@ -139,7 +133,6 @@ Interaction / Route
     Service Layer (Pure Business Logic)
        ↓ (3. Read / Write)
 Shared Database Client (Prisma)
-
 ```
 
 * **Cấm:** Viết logic nghiệp vụ, thuật toán phức tạp hoặc truy vấn DB trực tiếp bên trong file Command/Route. Command chỉ làm nhiệm vụ: Parse input $\rightarrow$ Gọi Service $\rightarrow$ Trả kết quả UI.
@@ -156,33 +149,20 @@ Tuyệt đối **KHÔNG** tích hợp logic đăng ký Slash Command (REST API c
 * Lệnh dev chỉ triển khai cho Server Test thông qua REST Guild endpoint (cập nhật tức thì):
 ```bash
 npm run deploy:dev
-
 ```
-
-
-
 
 * **Production Deployment:**
 * Khi release phiên bản mới lên VPS, chạy lệnh deploy Global:
 ```bash
 npm run deploy:prod
-
 ```
-
-
-
 
 * **Dọn dẹp đồng bộ (Clean-up):**
 * Xóa command rác/trùng lặp bằng cách gửi mảng rỗng `[]` lên REST API tương ứng:
 ```bash
 npm run deploy:clear:dev    # Xóa sạch Guild commands trên server test
 npm run deploy:clear:global # Xóa sạch Global commands
-
 ```
-
-
-
-
 
 ---
 
@@ -191,15 +171,109 @@ npm run deploy:clear:global # Xóa sạch Global commands
 ### 6.1. Nguyên tắc Schema Tập trung
 
 * Toàn bộ cấu trúc bảng và quan hệ cơ sở dữ liệu phải nằm tập trung tại duy nhất một file: `src/shared/db/schema.prisma`.
-* Các bảng thuộc phạm vi của từng feature phải được nhóm lại kèm comment phân cách rõ ràng:
+* Các bảng thuộc phạm vi của từng feature phải được nhóm lại kèm comment phân cách rõ ràng theo từng Domain:
+
 ```prisma
 // ==========================================
-// DOMAIN: <FEATURE_NAME>
+// DOMAIN: CORE & GUILD SETTINGS
 // ==========================================
-model FeatureTable {
-  id        String   @id @default(cuid())
+model GuildSetting {
+  guildId   String   @id
+  locale    String   @default("vi")
   createdAt DateTime @default(now())
-  // ...
+  updatedAt DateTime @updatedAt
+
+  @@map("guild_settings")
+}
+
+// ==========================================
+// DOMAIN: PERKS MANAGEMENT - SERVER BOOSTER
+// ==========================================
+model BoosterPerkConfig {
+  guildId               String   @id
+  gracePeriodDays       Int      @default(7)
+  anchorRoleId          String?
+  notificationChannelId String?
+  auditLogChannelId     String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("booster_perk_configs")
+}
+
+model CustomRolePerk {
+  id                   String    @id @default(cuid())
+  guildId              String
+  userId               String
+  perkType             String    @default("SERVER_BOOSTER")
+  boostCount           Int       @default(1)
+  roleId               String?
+  roleName             String?
+  roleColor            String?
+  roleColor2           String?
+  status               String    @default("ACTIVE")
+  isEquipped           Boolean   @default(true)
+  gracePeriodExpiresAt DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@unique([guildId, userId, perkType])
+  @@index([guildId, status])
+  @@map("custom_role_perks")
+}
+
+// ==========================================
+// DOMAIN: PERKS MANAGEMENT - DONATOR
+// ==========================================
+model DonatorPerkConfig {
+  guildId               String   @id
+  isEnabled             Boolean  @default(false)
+  donatorRoleId         String?
+  notificationChannelId String?
+  baseBenchmarkVnd      Int      @default(200000)
+  baseBenchmarkDays     Int      @default(30)
+  weeklyMinVnd          Int      @default(50000)
+  idleBurnRate          Float    @default(0.2)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("donator_perk_configs")
+}
+
+model DonatorAccount {
+  id                  String    @id @default(cuid())
+  guildId             String
+  userId              String
+  creditSeconds       Float     @default(0)
+  isEquipped          Boolean   @default(true)
+  streak              Int       @default(0)
+  currentWeekTotalVnd Int       @default(0)
+  totalDonated        BigInt    @default(0)
+  lastDeductedAt      DateTime  @default(now())
+  lastActiveWeekStart DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@unique([guildId, userId])
+  @@index([guildId, isEquipped])
+  @@map("donator_accounts")
+}
+
+model DonatorTransaction {
+  id                 String   @id @default(cuid())
+  guildId            String
+  userId             String
+  amountVnd          Int
+  bonusVolumePercent Float    @default(0)
+  bonusStreakPercent Float    @default(0)
+  creditSecondsAdded Float
+  actionType         String
+  note               String?
+  createdBy          String
+  createdAt          DateTime @default(now())
+
+  @@index([guildId, userId])
+  @@map("donator_transactions")
 }
 ```
 
@@ -210,19 +284,14 @@ model FeatureTable {
     - **Busy Timeout:** `busy_timeout=5000` (chờ tối đa 5 giây khi có transaction ghi khác đang thực thi).
     - Ví dụ chuỗi kết nối: `file:./dev.db?connection_limit=1&busy_timeout=5000`.
 
-
-
 ### 6.2. Phân loại Trạng thái (State Classification)
 
 1. **Persistent State (Dữ liệu vĩnh viễn / Trách nhiệm cao):**
 * Cấu hình server, thời hạn perks, quyền hạn, transaction logs... $\rightarrow$ **Bắt buộc lưu vào Database qua Prisma.**
 
-
 2. **Ephemeral / Live State (Trạng thái thời gian thực):**
 * Voice connections, ván game đang diễn ra, session cache tạm... $\rightarrow$ Lưu trên Memory (Map/Set) của Service tương ứng.
 * *Quy tắc Hybrid:* Nếu trạng thái live có giá trị khôi phục sau sự cố, Service phải có cơ chế đồng bộ snapshot định kỳ hoặc lưu checkpoint vào Database để hàm khởi tạo (`init()`) có thể phục hồi dữ liệu khi bot restart.
-
-
 
 ---
 
@@ -270,15 +339,12 @@ Cấm route tự ý import hoặc tạo mới instance Client/Prisma.
 
 * **Tầng Interaction:** Toàn bộ lệnh người dùng được bọc trong khối an toàn tại `core/events/interactionCreate.ts`.
 * Nếu Service hoặc Command ném lỗi (`throw new Error` hoặc `AppError`), interaction handler tự động ghi log lỗi chi tiết qua `core/logger.ts`.
-* Phản hồi cho người dùng bằng một Discord Embed màu đỏ đồng nhất ở chế độ ẩn danh (`ephemeral: true`).
+* Phản hồi cho người dùng bằng một Discord Embed màu đỏ đồng nhất ở chế độ ẩn danh (`flags: MessageFlags.Ephemeral`).
 * Tự động nhận diện trạng thái interaction (`deferred` $\rightarrow$ `editReply()`, chưa acknowledged $\rightarrow$ `reply()`).
-
 
 * **Tầng Process (Safety Net):**
 * `unhandledRejection`: Bắt các Promise chưa bắt lỗi, ghi log mức `ERROR`, giữ tiến trình tiếp tục chạy.
 * `uncaughtException`: Bắt các lỗi chí mạng, ghi log mức `FATAL`, kích hoạt quy trình tắt bot an toàn.
-
-
 
 ### 8.2. Quy trình Tắt Bot An toàn (Graceful Shutdown)
 
@@ -294,5 +360,4 @@ Khi nhận tín hiệu dừng tiến trình (`SIGINT`, `SIGTERM`), hệ thống 
 [4. Ngắt kết nối Database (Prisma.$disconnect)] 
          ↓
 [5. Hủy Discord Gateway Client & process.exit(0)]
-
 ```

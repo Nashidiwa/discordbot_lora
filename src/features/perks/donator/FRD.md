@@ -45,13 +45,14 @@ $$\text{Credit (giây)} = (\text{Số tiền} \times R_{base}) \times (1 + \text
   * Chuỗi 1 tuần: $+0\%$
   * Chuỗi 2 tuần: $+5\%$
   * Chuỗi 3 tuần: $+10\%$
-  * Chuỗi $\ge 4$ tuần: $+20\%$ *(Mức trần thưởng)*
+  * Chuỗi $\ge 4$ tuần: $+20\%$ *(Mức trần thưởng kinh tế `MAX_BONUS_STREAK_TIER = 4`)*
+  *(Lưu ý: Bộ đếm vinh danh tích lũy tối đa `WeeklyStreakRule.MAX_STREAK = 100` tuần, trong khi trần thưởng kinh tế neo cố định tại mốc $+20\%$ cho các tuần từ 4 đến 100).*
 
 #### 3.3. Chu Kỳ Tuần & Quy Tắc Streak (Theo Giờ Việt Nam UTC+7)
 * **Múi giờ chuẩn**: Ép cố định theo múi giờ `Asia/Ho_Chi_Minh` (UTC+7), bảo đảm hoạt động chuẩn xác kể cả khi host bot trên VPS Singapore, Châu Âu hay Mỹ.
 * **Chu kỳ tuần dương lịch**: Bắt đầu từ `00:00:00 Thứ Hai` đến `23:59:59 Chủ Nhật` (UTC+7).
 * **Điều kiện tăng/duy trì chuỗi**: Tổng số tiền ủng hộ tích lũy trong tuần dương lịch đó phải đạt tối thiểu **$\ge 50.000\text{ VNĐ}$**.
-  * Lần donate đầu tiên trong tuần đạt mốc $\ge 50k$: $\text{Streak} = \text{Streak} + 1$.
+  * Lần donate đầu tiên trong tuần đạt mốc $\ge 50k$: $\text{Streak} = \min(\text{Streak} + 1, \text{MAX\_STREAK})$ (tối đa 100 tuần).
   * Các lần donate tiếp theo trong cùng tuần: Không tăng thêm bậc streak, nhưng vẫn được hưởng tỷ lệ thưởng của bậc streak hiện tại và thưởng số tiền của từng lần nạp.
 * **Quy tắc Suy Giảm Mềm (Soft Decay)**:
   * Vào `00:00:00 Thứ Hai` hàng tuần (Cron Job), nếu trong tuần liền trước user không đạt mốc đóng góp $50.000\text{đ}$:
@@ -67,6 +68,7 @@ $$\text{Credit (giây)} = (\text{Số tiền} \times R_{base}) \times (1 + \text
   $$\text{RemainingCredit} = \max(0, \text{RemainingCredit} - \text{ConsumedSeconds})$$
   $$\text{lastDeductedAt} = \text{now}$$
   *(Loại bỏ nhu cầu chạy cron job trừ credit theo từng giây, tiết kiệm tài nguyên CPU/DB và bảo đảm độ chính xác tuyệt đối).*
+* **An toàn bộ nhớ (In-Memory Safe Read-Only)**: Hàm tra cứu trạng thái `getAccountStatus()` thực hiện đánh giá lười hoàn toàn trong bộ nhớ với `commit = false`, không ghi/cập nhật Database nhằm tránh nghẽn I/O và tranh chấp khóa SQLite. Việc chốt nợ và cập nhật Database (`commit = true`) chỉ diễn ra khi có hành vi thay đổi trạng thái thực sự.
 
 ---
 
@@ -85,12 +87,10 @@ $$\text{Credit (giây)} = (\text{Số tiền} \times R_{base}) \times (1 + \text
     │
     ├── add <user> <amount> [note]  (Admin: Ghi nhận ủng hộ, cộng credit & auto-equip)
     ├── adjust <user> <seconds> [reason] (Admin: Điều chỉnh tăng/giảm thời gian credit)
-    ├── set_streak <user> <streak>  (Admin: Điều chỉnh bậc streak của thành viên)
+    ├── set_streak <user> <streak:0-100> (Admin: Điều chỉnh bậc streak vinh danh của thành viên)
     │
-    ├── config view                 (Admin: Xem toàn bộ thông số cấu hình server hiện tại)
-    ├── config set_role <role>      (Admin: Gán role Donator - Tự kiểm tra Role Hierarchy)
-    ├── config set_channel [channel](Admin: Gán hoặc xóa kênh thông báo công khai)
-    └── toggle <state:on/off>       (Admin: Bật hoặc tắt tính năng Donator Perk)
+    ├── config action:<view|set_role|set_channel> [role] [channel] (Admin: Cấu hình Donator Perk)
+    └── toggle <state:true/false>   (Admin: Bật hoặc tắt tính năng Donator Perk)
 ```
 
 ---
@@ -108,7 +108,7 @@ $$\text{Credit (giây)} = (\text{Số tiền} \times R_{base}) \times (1 + \text
     * Hệ thống áp dụng công thức tính thưởng Volume và Streak tuần hiện tại.
     * Tự động gán Role Donator trên Discord cho user (nếu chưa có).
     * Thiết lập `isEquipped = true` và bắt đầu chu kỳ tiêu thụ $1.0x$.
-    * Kiểm tra nếu số tiền tích lũy trong tuần $\ge 50.000\text{đ}$ thì tăng/duy trì Streak tuần.
+    * Kiểm tra nếu số tiền tích lũy trong tuần $\ge 50.000\text{đ}$ thì tăng/duy trì Streak tuần (tối đa 100).
     * Lưu 1 bản ghi giao dịch vào bảng `DonatorTransaction`.
     * Phản hồi Embed cho Admin: Số tiền, % Thưởng, Số ngày/giờ được cộng thêm, Trạng thái role.
     * Gửi 1 tin nhắn DM cảm ơn thành viên kèm thông tin chi tiết quyền lợi vừa nhận.
@@ -146,10 +146,10 @@ $$\text{Credit (giây)} = (\text{Số tiền} \times R_{base}) \times (1 + \text
 * **I want to** bật hoặc tắt toàn bộ tính năng Donator Perk
 * **So that** quản lý vòng đời hệ thống linh hoạt khi cần bảo trì.
 * **Acceptance Criteria**:
-  * **When** Administrator chọn `/perk donator toggle state:on`:
-    * Nếu server chưa cấu hình Role Donator: Chặn lệnh và hiển thị lỗi: *"Vui lòng cấu hình Role Donator bằng lệnh `/perk donator config set_role` trước khi bật tính năng."*
+  * **When** Administrator chọn `/perk donator toggle state:true`:
+    * Nếu server chưa cấu hình Role Donator: Chặn lệnh và hiển thị lỗi: *"Vui lòng cấu hình Role Donator bằng lệnh `/perk donator config action:set_role` trước khi bật tính năng."*
     * Nếu đã có role: Kích hoạt `isEnabled = true`. Phục hồi role cho các user có `isEquipped = true` và bắt đầu tính thời gian từ mốc hiện tại (`lastDeductedAt = now`).
-  * **When** Administrator chọn `/perk donator toggle state:off`:
+  * **When** Administrator chọn `/perk donator toggle state:false`:
     * Chuyển `isEnabled = false`.
     * Trừ dứt điểm toàn bộ thời gian đã tiêu thụ đến thời điểm hiện tại.
     * Thu hồi tạm thời Role Donator của tất cả thành viên đang đeo.
@@ -174,10 +174,10 @@ $$\text{Credit (giây)} = (\text{Số tiền} \times R_{base}) \times (1 + \text
 1. **Lệch Múi Giờ Hosting (Server Timezone Drift)**:
    * *Giải pháp*: Toàn bộ thuật toán xác định tuần dương lịch (Start of Week / End of Week) được ép cố định theo IANA timezone `Asia/Ho_Chi_Minh` (UTC+7). Bất kể VPS đặt tại Singapore hay US, mốc reset tuần luôn là 00:00 Thứ Hai giờ VN.
 2. **Kẹt Quyền Phân Cấp Discord (Role Hierarchy Error 50013)**:
-   * *Giải pháp*: Lệnh `/perk donator config set_role` tự động so sánh `highestRole.position` của bot với role được chọn. Nếu bot thấp hơn, bot từ chối lưu cấu hình và yêu cầu Admin kéo role của Bot lên cao hơn trong Server Settings.
+   * *Giải pháp*: Lệnh `/perk donator config action:set_role` tự động so sánh `highestRole.position` của bot với role được chọn. Nếu bot thấp hơn, bot từ chối lưu cấu hình và yêu cầu Admin kéo role của Bot lên cao hơn trong Server Settings.
 3. **Thành viên khóa DM hoặc chặn Bot**:
    * *Giải pháp*: Mọi hàm gửi DM đều được bọc trong khối `try/catch`. Khi gặp lỗi `50007 (Cannot send messages to this user)`, bot ghi warning log và gửi thông báo thay thế vào `notificationChannelId` (nếu đã cấu hình).
 4. **Thành viên rời server khi vẫn còn hạn Donator**:
-   * *Giải pháp*: Lắng nghe sự kiện `guildMemberRemove`. Nếu Donator rời server, hệ thống tự động chuyển `isEquipped = false` để kích hoạt chế độ cất kho ($0.2x$) nhằm bảo lưu tối đa thời gian cho họ nếu họ quay lại sau này.
+   * *Giải pháp*: Lắng nghe sự kiện Gateway `Events.GuildMemberRemove` qua `donator-leave.event.ts`. Nếu Donator rời server, hệ thống chốt nợ credit ở tốc độ $1.0x$ và tự động chuyển `isEquipped = false` để kích hoạt chế độ cất kho ($0.2x$) nhằm bảo lưu tối đa thời gian cho họ nếu họ quay lại sau này.
 5. **Nạp tiền nhiều lần trong cùng một tuần**:
-   * *Giải pháp*: Lần nạp đầu tiên đạt $\ge 50k$ sẽ kích hoạt tăng chuỗi tuần ($+1$ streak). Các lần nạp tiếp theo trong cùng tuần vẫn được hưởng trọn vẹn Bonus của mức Streak đó và Volume Bonus của từng lần nạp, nhưng `streakCount` không bị cộng dồn nhiều lần trong 1 tuần.
+   * *Giải pháp*: Lần nạp đầu tiên đạt $\ge 50k$ sẽ kích hoạt tăng chuỗi tuần ($+1$ streak, tối đa 100). Các lần nạp tiếp theo trong cùng tuần vẫn được hưởng trọn vẹn Bonus của mức Streak đó và Volume Bonus của từng lần nạp, nhưng `streakCount` không bị cộng dồn nhiều lần trong 1 tuần.

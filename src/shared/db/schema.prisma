@@ -55,3 +55,59 @@ model CustomRolePerk {
   @@index([guildId, status])
   @@map("custom_role_perks")
 }
+
+// ==========================================
+// DOMAIN: PERKS MANAGEMENT - DONATOR
+// ==========================================
+
+model DonatorPerkConfig {
+  guildId               String   @id
+  isEnabled             Boolean  @default(false)
+  donatorRoleId         String?
+  notificationChannelId String?
+  baseBenchmarkVnd      Int      @default(200000)
+  baseBenchmarkDays     Int      @default(30)
+  weeklyMinVnd          Int      @default(50000)
+  idleBurnRate          Float    @default(0.2)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("donator_perk_configs")
+}
+
+model DonatorAccount {
+  id                  String    @id @default(cuid())
+  guildId             String
+  userId              String
+  creditSeconds       Float     @default(0)
+  isEquipped          Boolean   @default(true)
+  streak              Int       @default(0)
+  currentWeekTotalVnd Int       @default(0)
+  totalDonated        BigInt    @default(0)
+  lastDeductedAt      DateTime  @default(now())
+  lastActiveWeekStart DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@unique([guildId, userId])
+  @@index([guildId, isEquipped])
+  @@map("donator_accounts")
+}
+
+model DonatorTransaction {
+  id                 String   @id @default(cuid())
+  guildId            String
+  userId             String
+  amountVnd          Int
+  bonusVolumePercent Float    @default(0)
+  bonusStreakPercent Float    @default(0)
+  creditSecondsAdded Float
+  actionType         String
+  note               String?
+  createdBy          String
+  createdAt          DateTime @default(now())
+
+  @@index([guildId, userId])
+  @@map("donator_transactions")
+}
+

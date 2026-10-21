@@ -6,6 +6,43 @@ Tất cả các thay đổi đáng chú ý của dự án **Lora** (`discordbot_
 
 ---
 
+## [0.3.0] - 2026-10-21 [FEAT-02: Perks Management - Donator (Time-Bank & Hybrid Retention)]
+
+### Đã thêm (Added)
+- **Nghiệp vụ Cốt lõi & Động cơ Quỹ Thời Gian (Time-Bank Engine):**
+  - Xây dựng tầng Service trung tâm `DonatorPerkService` (`donator-perk.service.ts`) quản lý toàn diện vòng đời tài khoản Donator.
+  - Cơ chế **Lazy Evaluation Engine**: Tính toán tiêu hao credit chính xác theo $\Delta t$ và burn rate ($1.0x$ khi trang bị, $0.2x$ khi cất kho, $0.0x$ khi đóng băng tắt tính năng).
+  - Tối ưu an toàn bộ nhớ: Hàm `getAccountStatus()` thực hiện tính toán thuần túy in-memory (`commit = false`), tuyệt đối không ghi/cập nhật DB, loại bỏ nguy cơ khóa ghi SQLite.
+  - Đòn bẩy Thưởng Kép (Hybrid Multiplier): Thưởng giá trị nạp (Volume Bonus $10\% - 35\%$) và Thưởng chuỗi tuần (Weekly Streak Bonus $+5\% - +20\%$) neo cứng múi giờ UTC+7 (`Asia/Ho_Chi_Minh`).
+  - Hỗ trợ trần tích lũy chuỗi vinh danh `WeeklyStreakRule.MAX_STREAK = 100` tuần, trong khi trần thưởng kinh tế neo cố định tại mốc $\ge 4$ tuần (`MAX_BONUS_STREAK_TIER = 4`).
+- **Gateway Events & Scheduled Background Jobs:**
+  - `donator-leave.event.ts`: Lắng nghe sự kiện `Events.GuildMemberRemove` để tự động chốt nợ credit ở tốc độ $1.0x$ và chuyển sang trạng thái cất kho ($0.2x$) nhằm bảo lưu tối đa thời gian cho thành viên khi rời server.
+  - `donator-cleanup.job.ts`: Cron job định kỳ mỗi 10 phút (`*/10 * * * *`) tự động quét và thu hồi role của các tài khoản cạn quỹ credit (`creditSeconds <= 0`), hỗ trợ xử lý an toàn lỗi Discord API 50007 (khi user chặn DM) và fallback thông báo sang kênh đã cấu hình.
+  - `donator-decay.job.ts`: Cron job chạy lúc 00:00 Thứ Hai hàng tuần (UTC+7) thực hiện suy giảm mềm (-1 streak) cho các user không đạt hạn mức tuần trước.
+- **Cơ sở Dữ liệu & Prisma Schema:**
+  - Bổ sung 3 model Prisma mới: `DonatorPerkConfig`, `DonatorAccount`, `DonatorTransaction` với khóa ngoại, unique constraints và index tối ưu.
+  - Thực thi migration `20261021002237_add_donator_perk_models`.
+- **Giao diện & Bộ Lệnh Slash Command (`/perk donator`):**
+  - Xây dựng từ điển bản địa hóa song ngữ `vi`/`en` chuẩn Zero `any` tại `src/features/perks/donator/donator.locale.ts`.
+  - Triển khai 9 Subcommand Executors độc lập trong `src/features/perks/donator/subcommands/`:
+    - `donator-info.sub.ts`: Bảng quy đổi cơ sở (200k = 30 ngày), bảng thưởng Volume (10% - 35%), thưởng Streak (5% - 20%), cơ chế cất kho (0.2x) và đóng băng bảo lưu (0.0x).
+    - `donator-status.sub.ts`: Tra cứu chi tiết số dư credit, trạng thái trang bị/cất kho, chuỗi streak tuần này và ngày dự kiến cạn quỹ (bảo vệ quyền riêng tư, chỉ Administrator được xem người khác).
+    - `donator-equip.sub.ts`: Thành viên tự chủ động đeo role và kích hoạt tốc độ tiêu hao 1.0x.
+    - `donator-unequip.sub.ts`: Thành viên tự chủ cất role vào kho tiết kiệm, giảm tốc độ tiêu hao 5 lần (0.2x).
+    - `donator-add.sub.ts`: Administrator ghi nhận khoản ủng hộ, tự động áp dụng công thức thưởng kép, cộng credit và cấp role tức thì.
+    - `donator-adjust.sub.ts`: Administrator điều chỉnh tăng/giảm quỹ thời gian credit có ghi nhận lý do.
+    - `donator-setstreak.sub.ts`: Administrator can thiệp thủ công bậc streak cho thành viên (0 đến 100).
+    - `donator-config.sub.ts`: Cấu hình hệ thống Donator Perk (xem cấu hình `view`, gán role `set_role` có kiểm tra Bot Role Hierarchy, cài đặt kênh thông báo `set_channel`).
+    - `donator-toggle.sub.ts`: Administrator Bật/Tắt tính năng Donator Perk (kèm cơ chế đóng băng thời gian 0.0x khi tắt).
+  - Tích hợp Subcommand Group `donator` vào Root Command `/perk` (`perks.command.ts`).
+
+### Đã thay đổi (Changed)
+- Cập nhật `/perk list` (`list.sub.ts`): Bổ sung phần giới thiệu chi tiết quyền lợi Donator (Gói ủng hộ tự chủ & Thưởng kép).
+- Cập nhật `/perk status` (`status.sub.ts`): Bổ sung section "Donator Status" hiển thị hài hòa bên dưới "Booster Status" khi thành viên có credit.
+- Nâng cấp phiên bản toàn hệ thống lên `v0.3.0`.
+
+---
+
 ## [0.2.8] - 2026-10-19 [FEAT-01: Perks - Booster Housekeeping]
 
 ### Đã thêm (Added)
