@@ -1,0 +1,9 @@
+export const VoiceKeeperConstants = {
+  DEFAULT_SELF_DEAF: true,
+  DEFAULT_SELF_MUTE: true,
+  DEFAULT_AUTO_RECONNECT: true,
+  MAX_RECONNECT_ATTEMPTS: 5,
+  RECONNECT_DELAYS_MS: [5_000, 15_000, 45_000, 90_000, 180_000] as const,
+  DISCONNECT_GRACE_TIMEOUT_MS: 5_000,
+  HEALTH_CHECK_CRON: '*/10 * * * *',
+} as const;

@@ -6,6 +6,37 @@ Tất cả các thay đổi đáng chú ý của dự án **Lora** (`discordbot_
 
 ---
 
+## [0.5.0] - 2026-10-22 [FEAT-04: Voice Keeper 24/7 (Treo Kênh Thoại & Tự Phục Hồi)]
+
+### Đã thêm (Added)
+- **Kiến trúc & Động cơ Quản lý Kênh Thoại 24/7 (Voice Keeper Engine):**
+  - Xây dựng lát cắt độc lập `src/features/voice-keeper/` tuân thủ nghiêm ngặt mô hình Vertical Slice và Zero Cross-Feature Import.
+  - Tầng Service `VoiceKeeperService` (`voice-keeper.service.ts`) quản lý VoiceConnection Pool per-guild, tự động tham gia (`joinVoiceChannel`), ngắt kết nối an toàn và theo dõi độ trễ ping WebSocket.
+  - Cơ chế tự phục hồi 3 tầng (Three-Tier Self-Healing):
+    - **Tầng Khởi động (`voice-ready.event.ts`):** Quét toàn bộ máy chủ kích hoạt `isEnabled = true` trong Database khi bot khởi động (`ClientReady`) để thiết lập lại kết nối tự động.
+    - **Tầng Gateway Reactive (`voice-state-update.event.ts`):** Lắng nghe sự kiện `voiceStateUpdate` để phát hiện ngay khi bot bị disconnect/kick ngoài ý muốn hoặc bị di chuyển sang kênh khác, tự động khôi phục về kênh cấu hình.
+    - **Tầng Watchdog Chủ động (`voice-health.job.ts`):** Chạy ngầm định kỳ mỗi 10 phút (`*/10 * * * *`) kiểm tra tình trạng kết nối ngầm và tái kích hoạt các kênh bị rớt mà không phát sự kiện.
+  - Hệ thống bảo vệ Gateway:
+    - **Exponential Backoff:** Giãn cách thời gian thử lại (`5s, 15s, 45s, 90s, 180s`) khi gặp sự cố mạng hoặc lỗi kết nối.
+    - **Circuit Breaker:** Ngắt kết nối và chuyển sang trạng thái `SUSPENDED` sau 5 lần thử lại thất bại liên tiếp để chống spam Discord API rate limits.
+  - Tối ưu băng thông mạng và quyền riêng tư: Mặc định bật `selfDeaf: true` và `selfMute: true`.
+- **Bộ Lệnh Slash Command (`/voice_keeper`):**
+  - Triển khai Root Command `/voice_keeper` với 4 subcommands:
+    - `/voice_keeper set <channel> [self_deaf] [self_mute] [auto_reconnect]`: Thiết lập và kết nối kênh thoại 24/7 (yêu cầu quyền `ManageChannels` hoặc `Administrator`).
+    - `/voice_keeper status`: Xem trạng thái kết nối, trạng thái cờ mic/deaf, ping, thời gian kết nối và số lần retry.
+    - `/voice_keeper reconnect`: Ép kết nối lại ngay lập tức và reset bộ đếm retry.
+    - `/voice_keeper stop`: Ngắt kết nối và tắt chế độ 24/7 trên máy chủ.
+- **Xử lý An toàn Khi Kênh Bị Xóa (`voice-channel-delete.event.ts`):**
+  - Tự động phát hiện khi kênh thoại đang treo bị xóa khỏi Discord để tắt cấu hình trong DB và ngắt kết nối an toàn, tránh rơi vào vòng lặp lỗi.
+- **Cơ sở Dữ liệu & Prisma Schema:**
+  - Bổ sung model Prisma `VoiceKeeperConfig` tại `src/shared/db/schema.prisma`.
+  - Thực thi migration `20261022012405_add_voice_keeper_config`.
+- **Bản địa hóa & Tài liệu:**
+  - Từ điển song ngữ `vi` / `en` chuẩn Zero `any` tại `voice-keeper.locale.ts`.
+  - Đặc tả yêu cầu chi tiết tại `FRD.md` và cẩm nang vận hành tại `README.md`.
+
+---
+
 ## [0.4.0] - 2026-10-22 [FEAT-03: Swarm Linked Roles & Connection Metadata Engine]
 
 ### Đã thêm (Added)

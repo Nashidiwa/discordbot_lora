@@ -7,8 +7,8 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
 
 ## 📊 Bảng Điều Phối Tổng Thể (Executive Status)
 
-* **Phiên bản hiện tại:** `v0.4.0`
-* **Tiêu điểm đang triển khai:** `FEAT-04: Voice Keeper 24/7 (Treo Kênh Thoại & Tự Phục Hồi)`
+* **Phiên bản hiện tại:** `v0.5.0`
+* **Tiêu điểm đang triển khai:** `FEAT-05: Wordchain (Trò Chơi Nối Từ)`
 * **Quy ước trạng thái:**
   * `[ ]` Chưa thực hiện (Backlog)
   * `[/]` Đang tiến hành (In Progress)
@@ -47,10 +47,13 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
 
 
 
-- [ ] **FEAT-04: Voice Keeper 24/7 (Treo Kênh Thoại & Tự Phục Hồi)**
-  - Cấu hình danh sách kênh thoại cần giữ kết nối vào DB.
-  - Quản lý voice connection, cơ chế tự động tái kết nối (auto-reconnect) khi rớt Gateway.
-  - Lắng nghe sự kiện `voiceStateUpdate` để phát hiện ngắt kết nối bất thường.
+- [x] **FEAT-04: Voice Keeper 24/7 (Treo Kênh Thoại & Tự Phục Hồi)** `(v0.5.0)`
+  > 📖 *Tài liệu đặc tả kiến trúc & cẩm nang vận hành:* [`src/features/voice-keeper/README.md`](../src/features/voice-keeper/README.md) | *Đặc tả yêu cầu (FRD):* [`src/features/voice-keeper/FRD.md`](../src/features/voice-keeper/FRD.md)
+  - Quản lý kết nối Voice Connection per-guild và cấu hình kênh thoại 24/7 vào DB.
+  - Cơ chế tự phục hồi 3 tầng: Khởi động (`ClientReady`), Reactive Gateway (`voiceStateUpdate`), và Watchdog Cron Job định kỳ 10 phút.
+  - Cơ chế chống spam: Exponential Backoff và Circuit Breaker ngắt sau 5 lần retry thất bại liên tiếp.
+  - Tối ưu tài nguyên mạng với chế độ mặc định `selfDeaf: true` và `selfMute: true`.
+  - Bộ lệnh Slash `/voice_keeper set`, `/voice_keeper status`, `/voice_keeper reconnect`, `/voice_keeper stop`.
 
 - [ ] **FEAT-05: Wordchain (Trò Chơi Nối Từ)**
   - Quản lý trạng thái ván chơi: In-memory live session + Snapshot lưu DB.

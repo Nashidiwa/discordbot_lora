@@ -155,3 +155,23 @@ model SwarmGuildConfig {
 
   @@map("swarm_guild_configs")
 }
+
+
+// ==========================================
+// DOMAIN: VOICE KEEPER 24/7 (FEAT-04)
+// ==========================================
+
+model VoiceKeeperConfig {
+  guildId         String    @id @map("guild_id")
+  channelId       String    @map("channel_id")
+  isEnabled       Boolean   @default(true) @map("is_enabled")
+  selfDeaf        Boolean   @default(true) @map("self_deaf")
+  selfMute        Boolean   @default(true) @map("self_mute")
+  autoReconnect   Boolean   @default(true) @map("auto_reconnect")
+  lastConnectedAt DateTime? @map("last_connected_at")
+  updatedBy       String?   @map("updated_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("voice_keeper_configs")
+}
