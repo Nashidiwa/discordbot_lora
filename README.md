@@ -1,4 +1,4 @@
-# 🤖 Lora - Discord Bot Core (Modular Re-architecture)
+# Lora - Discord Bot Core (Modular Re-architecture)
 
 > Bot **Lora** (`discordbot_lora`) được xây dựng theo kiến trúc **Vertical Slice Architecture**.
 > Không spaghetti code, module hóa tuyệt đối, chịu tải cao và sẵn sàng mở rộng lâu dài.
@@ -139,7 +139,7 @@ npm run dev
 
 ## 📖 Tài Liệu Phát Triển
 
-Để đóng góp hoặc bổ sung tính năng mới cho dự án, bắt buộc phải tham khảo các tài liệu quy chuẩn trong thư mục `docs/`:
+Để đóng góp, sửa đổi hoặc bổ sung tính năng mới cho dự án, bắt buộc phải tham khảo các tài liệu quy chuẩn trong thư mục `docs/`:
 
 1. [Bản vẽ kiến trúc kỹ thuật](./docs/ARCHITECTURE.md)
 2. [Quy chuẩn lập trình & Discord Interaction](./docs/CONVENTIONS.md)
