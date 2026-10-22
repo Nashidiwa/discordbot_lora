@@ -111,38 +111,36 @@ model DonatorTransaction {
   @@map("donator_transactions")
 }
 
-
-
 // ==========================================
 // DOMAIN: SWARM LINKED ROLES & METADATA
 // ==========================================
 
 model SwarmMemberMetadata {
-  userId      String   @id @map("user_id")
-  swarmLevel  Int      @default(0) @map("swarm_level")
-  updatedBy   String   @map("updated_by")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  userId     String   @id @map("user_id")
+  swarmLevel Int      @default(0) @map("swarm_level")
+  updatedBy  String   @map("updated_by")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map("swarm_member_metadata")
 }
 
 model SwarmOAuthToken {
-  userId        String   @id @map("user_id")
-  accessToken   String   @map("access_token")
-  refreshToken  String   @map("refresh_token")
-  expiresAt     DateTime @map("expires_at")
-  scope         String   @map("scope")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  userId       String   @id @map("user_id")
+  accessToken  String   @map("access_token")
+  refreshToken String   @map("refresh_token")
+  expiresAt    DateTime @map("expires_at")
+  scope        String   @map("scope")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   @@map("swarm_oauth_tokens")
 }
 
 model SwarmOperator {
-  userId      String   @id @map("user_id")
-  addedBy     String   @map("added_by")
-  createdAt   DateTime @default(now()) @map("created_at")
+  userId    String   @id @map("user_id")
+  addedBy   String   @map("added_by")
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("swarm_operators")
 }
@@ -155,7 +153,6 @@ model SwarmGuildConfig {
 
   @@map("swarm_guild_configs")
 }
-
 
 // ==========================================
 // DOMAIN: VOICE KEEPER 24/7 (FEAT-04)
@@ -174,4 +171,107 @@ model VoiceKeeperConfig {
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
   @@map("voice_keeper_configs")
+}
+
+// ==========================================
+// DOMAIN: WORD CHAIN GAME ENGINE
+// ==========================================
+
+model WordChainConfig {
+  guildId                     String    @id @map("guild_id")
+  normalModeChannelId         String?   @map("normal_mode_channel_id")
+  hardModeChannelId           String?   @map("hard_mode_channel_id")
+  reliableRoleId              String?   @map("reliable_role_id")
+  failedRoleId                String?   @map("failed_role_id")
+  failedMemberId              String?   @map("failed_member_id")
+  correctInputsByFailedMember Int       @default(0) @map("correct_inputs_by_failed_member")
+  languages                   String    @default("en") @map("languages")
+  isBanned                    Boolean   @default(false) @map("is_banned")
+  leftAt                      DateTime? @map("left_at") // DEC-006: 7-day retention grace period
+
+  // Normal Mode State
+  currentWordNormal  String? @map("current_word_normal")
+  currentCountNormal Int     @default(0) @map("current_count_normal")
+  highScoreNormal    Int     @default(0) @map("high_score_normal")
+  lastMemberIdNormal String? @map("last_member_id_normal")
+
+  // Hard Mode State
+  currentWordHard  String? @map("current_word_hard")
+  currentCountHard Int     @default(0) @map("current_count_hard")
+  highScoreHard    Int     @default(0) @map("high_score_hard")
+  lastMemberIdHard String? @map("last_member_id_hard")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([leftAt])
+  @@map("word_chain_configs")
+}
+
+model WordChainMember {
+  id            String   @id @default(cuid())
+  guildId       String   @map("guild_id")
+  userId        String   @map("user_id")
+  score         Int      @default(0)
+  correctInputs Int      @default(0) @map("correct_inputs")
+  wrongInputs   Int      @default(0) @map("wrong_inputs")
+  karma         Float    @default(0.0)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([guildId, userId])
+  @@index([guildId, score])
+  @@index([guildId, karma])
+  @@map("word_chain_members")
+}
+
+model WordChainUsedWord {
+  id        String   @id @default(cuid())
+  guildId   String   @map("guild_id")
+  gameMode  Int      @map("game_mode") // 1: Normal, 2: Hard
+  word      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([guildId, gameMode, word])
+  @@index([guildId, gameMode])
+  @@map("word_chain_used_words")
+}
+
+model WordChainBlacklist {
+  id        String   @id @default(cuid())
+  guildId   String   @map("guild_id")
+  word      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([guildId, word])
+  @@map("word_chain_blacklists")
+}
+
+model WordChainWhitelist {
+  id        String   @id @default(cuid())
+  guildId   String   @map("guild_id")
+  word      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([guildId, word])
+  @@map("word_chain_whitelists")
+}
+
+model WordChainWordCache {
+  word       String
+  language   String    @default("en")
+  isNegative Boolean   @default(false) @map("is_negative") // DEC-003: Negative cache flag
+  expiresAt  DateTime? @map("expires_at") // DEC-003: 24-hour TTL for negative cache
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@id([language, word])
+  @@index([expiresAt])
+  @@map("word_chain_word_cache")
+}
+
+model WordChainBannedMember {
+  userId    String   @id @map("user_id") // Discord user snowflake globally banned from bot
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("word_chain_banned_members")
 }

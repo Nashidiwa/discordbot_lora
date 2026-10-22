@@ -6,6 +6,46 @@ Tất cả các thay đổi đáng chú ý của dự án **Lora** (`discordbot_
 
 ---
 
+## [0.6.0] - 2026-10-22 [FEAT-05: Wordchain (Trò Chơi Nối Từ Đa Tầng & Hệ Thống Karma)]
+
+### Đã thêm (Added)
+- **Kiến trúc & Động cơ Nối Từ (Word Chain Engine):**
+  - Xây dựng lát cắt độc lập `src/features/wordchain/` theo mô hình Vertical Slice Architecture và Zero Cross-Feature Import.
+  - Tầng Service `WordChainGameService` (`wordchain-game.service.ts`) điều phối toàn bộ trạng thái ván chơi:
+    - Mutex lock tuần tự hóa FIFO per-guild per-mode chống race condition.
+    - Giao dịch database atomic bảo đảm tính toàn vẹn trạng thái khi xảy ra lỗi.
+    - Bộ nhớ lịch sử biến động 5 từ gần nhất (`serverHistories`) lưu trữ trong RAM, phân rã an toàn khi khởi động lại (`DEC-007`).
+    - Hỗ trợ cả 2 chế độ chơi Normal Mode (1 chữ cái) và Hard Mode (2 chữ cái).
+  - Kiến trúc từ điển 3 tầng (`WordChainDictionaryService`, `DEC-003`):
+    - **Tầng 1 (Local RAM Lexicon):** Nạp danh sách từ vựng thông dụng từ `dictionary_en_common.json` phản hồi siêu tốc.
+    - **Tầng 2 (Database Cache):** Bảng `WordChainWordCache` với khóa chính phức hợp `[language, word]`. Positive cache lưu vĩnh viễn; Negative cache lưu 24 giờ.
+    - **Tầng 3 (Wiktionary Fallback):** Truy vấn Action API của Wikimedia với timeout 5 giây, exponential backoff cho HTTP 429 và kỹ thuật gộp truy vấn đang bay SingleFlight.
+  - Động cơ điểm số Karma hợp tác (`WordChainKarmaService`, `DEC-002`, `DEC-007`):
+    - Tần suất ký tự chuẩn hóa từ kho ngữ liệu Leipzig Wortschatz (`scores_en.json`) với giá trị kỳ vọng 1.0 và fallback an toàn 1.0.
+    - Cơ chế phân rã lặp hậu tố hàm mũ phạt các chuỗi spam từ cùng đuôi.
+  - Tầng Service `WordChainRoleService` (`DEC-008`):
+    - Đánh giá vai trò Reliable Role (Karma > 25.0 & Accuracy > 97.5%) và Failed Role (chuỗi phạt cần 30 từ hợp lệ để chuộc lỗi).
+- **Bộ 7 Sự Kiện Gateway Discord (`src/features/wordchain/events/`):**
+  - `wordchain-message.event.ts`: Bắt từ trong kênh chơi đã đăng ký, phản ứng emoji chính xác và cập nhật chuỗi.
+  - `wordchain-edit.event.ts` & `wordchain-delete.event.ts`: Phát hiện hành vi sửa hoặc xóa tin nhắn đã được bot chấp nhận để cảnh báo trong kênh (anti-cheat).
+  - `wordchain-guild-join.event.ts` & `wordchain-guild-leave.event.ts`: Quản lý chu kỳ sống và thời gian ân hạn 7 ngày (`DEC-006`).
+  - `wordchain-ready.event.ts`: Quét kiểm tra trạng thái kênh khi bot khởi động; triệt tiêu lời chào phục hồi nếu tin nhắn cuối khớp với từ hiện tại.
+  - `wordchain-interaction.event.ts`: Điều hướng Dropdown Select Menu cho `/wordchain help` và Autocomplete động cho whitelist, blacklist, language_code.
+- **Tác vụ Ngầm Định Kỳ (`wordchain-cleanup.job.ts`):**
+  - Watchdog cron `0 0 * * *` tự động dọn dẹp dữ liệu của các máy chủ đã rời quá 7 ngày (`DEC-006`).
+- **Bộ Lệnh Slash Commands Đầy Đủ (DEC-008):**
+  - Root command `/wordchain`: 6 subcommands (`check`, `definition`, `leaderboard`, `stats`, `languages`, `help`).
+  - Root command `/wordchain-manage`: 7 subcommands/groups (`channel`, `role`, `language`, `blacklist`, `whitelist`, `reset-stats`, `admin`).
+  - Quyền quản trị GDPR: `/wordchain-manage admin purge-user` (xóa dữ liệu người dùng toàn cục theo điều 17 GDPR), `purge-server`, `ban-member`, `ban-server`.
+- **Cơ sở Dữ liệu & Prisma Schema:**
+  - 8 Prisma models: `WordChainConfig`, `WordChainMember`, `WordChainUsedWord`, `WordChainBlacklist`, `WordChainWhitelist`, `WordChainWordCache`, `WordChainBannedMember`, `WordChainBannedGuild`.
+  - Migration đồng bộ với khóa chính phức hợp `language_word`.
+- **Bản địa hóa & Kiểm thử:**
+  - Từ điển song ngữ `vi` / `en` chuẩn Zero `any` tại `wordchain.locale.ts`.
+  - Bộ 40 automated test cases phủ toàn bộ domain, service, game engine và discord events.
+
+---
+
 ## [0.5.0] - 2026-10-22 [FEAT-04: Voice Keeper 24/7 (Treo Kênh Thoại & Tự Phục Hồi)]
 
 ### Đã thêm (Added)

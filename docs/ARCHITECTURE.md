@@ -317,6 +317,41 @@ model SwarmGuildConfig {
 
   @@map("swarm_guild_configs")
 }
+
+// ==========================================
+// DOMAIN: WORD CHAIN ENGINE
+// ==========================================
+model WordChainConfig {
+  guildId          String    @id @map("guild_id")
+  channelId        String?   @map("channel_id")
+  gameMode         Int       @default(1) @map("game_mode")
+  languages        String    @default("en")
+  reliableRoleId   String?   @map("reliable_role_id")
+  failedRoleId     String?   @map("failed_role_id")
+  currentWord      String?   @map("current_word")
+  currentCount     Int       @default(0) @map("current_count")
+  highScore        Int       @default(0) @map("high_score")
+  lastMemberId     String?   @map("last_member_id")
+  failedMemberId   String?   @map("failed_member_id")
+  qualifyingCount  Int       @default(0) @map("qualifying_count")
+  leftAt           DateTime? @map("left_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@map("word_chain_configs")
+}
+
+model WordChainWordCache {
+  language   String    @default("en")
+  word       String
+  isNegative Boolean   @default(false) @map("is_negative")
+  expiresAt  DateTime? @map("expires_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@id([language, word])
+  @@index([expiresAt])
+  @@map("word_chain_word_caches")
+}
 ```
 
 * **Quy chuẩn Cơ sở Dữ liệu Môi trường Dev (SQLite Optimization):**

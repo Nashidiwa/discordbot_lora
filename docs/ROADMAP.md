@@ -7,8 +7,8 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
 
 ## 📊 Bảng Điều Phối Tổng Thể (Executive Status)
 
-* **Phiên bản hiện tại:** `v0.5.0`
-* **Tiêu điểm đang triển khai:** `FEAT-05: Wordchain (Trò Chơi Nối Từ)`
+* **Phiên bản hiện tại:** `v0.6.0`
+* **Tiêu điểm đang triển khai:** `WEB-01: Fastify REST API Core Routes`
 * **Quy ước trạng thái:**
   * `[ ]` Chưa thực hiện (Backlog)
   * `[/]` Đang tiến hành (In Progress)
@@ -55,10 +55,13 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
   - Tối ưu tài nguyên mạng với chế độ mặc định `selfDeaf: true` và `selfMute: true`.
   - Bộ lệnh Slash `/voice_keeper set`, `/voice_keeper status`, `/voice_keeper reconnect`, `/voice_keeper stop`.
 
-- [ ] **FEAT-05: Wordchain (Trò Chơi Nối Từ)**
-  - Quản lý trạng thái ván chơi: In-memory live session + Snapshot lưu DB.
-  - Service thuật toán kiểm tra từ điển tiếng Việt, lượt đi, tính điểm thưởng.
-  - Lệnh Slash `/wordchain start`, `/wordchain stop` và Gateway Event bắt tin nhắn trong kênh chơi.
+- [x] **FEAT-05: Wordchain (Trò Chơi Nối Từ Đa Tầng & Hệ Thống Karma)** `(v0.6.0)`
+  > 📖 *Tài liệu đặc tả kiến trúc & cẩm nang vận hành:* [`src/features/wordchain/README.md`](../src/features/wordchain/README.md)
+  - Kiến trúc từ điển 3 tầng: Local SCOWL RAM Lexicon (79.9K từ), SQLite Cache khóa phức hợp `[language, word]`, MediaWiki Action API Fallback + SingleFlight coalescing (`DEC-003`).
+  - Hệ thống điểm Karma hợp tác với phân rã lặp hậu tố hàm mũ (`DEC-007`) và tự động hóa vai trò Reliable / Failed Role (`DEC-002`).
+  - Khóa tuần tự hóa FIFO per-guild per-mode và giao dịch database atomic bảo vệ tính toàn vẹn trạng thái ván chơi.
+  - Vòng đời ân hạn 7 ngày khi bot rời guild (`DEC-006`) và Cron Job dọn dẹp hàng ngày lúc 00:00.
+  - Bộ 2 Slash Command chính: `/wordchain` (6 user subcommands) và `/wordchain-manage` (7 admin subcommands kèm quyền quản trị GDPR, `DEC-004`, `DEC-008`).
 
 - [ ] **FEAT-06: Server Moderation (Quản Trị Mở Rộng - Tùy Chọn)**
   - Các công cụ quản trị mở rộng: `/ban`, `/kick`, `/warn`, `/purge`.

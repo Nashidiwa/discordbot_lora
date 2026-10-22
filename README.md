@@ -14,6 +14,8 @@
   * **Server Booster (FEAT-01):** Tự động hóa Custom Role đơn sắc và Gradient 2 màu theo chuẩn Discord `EnhancedRoleColors`, nhận diện booster hợp nhất, cơ chế ân hạn 7 ngày và quy trình unboost tương tác.
   * **Donator Perks (FEAT-02):** Cơ chế Quỹ Thời Gian (Time-Bank) tự chủ với tốc độ tiêu hao $1.0x$ (đeo role) và $0.2x$ (cất kho tiết kiệm); đòn bẩy thưởng kép (Volume Bonus $10\% - 35\%$ và Weekly Streak Bonus $+5\% - +20\%$ neo múi giờ UTC+7); bảo vệ quyền lợi đóng băng $0.0x$ khi bảo trì và tự động cất kho ($0.2x$) khi thành viên rời server (`donator-leave.event.ts`).
   * **The Swarm Linked Roles (FEAT-03):** Quản lý vai trò liên kết Discord Linked Roles cho 8 bậc danh hiệu (`The Swarm I` $\rightarrow$ `VIII`), RBAC 2 tầng (Bot Owner & Delegated Operator), đồng bộ metadata thời gian thực, kênh thông báo thăng cấp/thu hồi per-guild và Fastify OAuth2 endpoint xác thực bảo mật HMAC.
+* **Treo Kênh Thoại 24/7 (Voice Keeper - FEAT-04):** Quản lý kết nối thoại liên tục per-guild, cơ chế tự phục hồi 3 tầng khi rớt mạng (`ClientReady`, `voiceStateUpdate`, Watchdog Cron Job), chống spam Circuit Breaker sau 5 lần thử và tối ưu hóa tài nguyên mạng (`selfDeaf`/`selfMute`).
+* **Trò Chơi Nối Từ Đa Tầng (Wordchain Engine - FEAT-05):** Động cơ nối từ thông minh với kiến trúc từ điển 3 tầng (SCOWL RAM Lexicon 79.9K từ, SQLite Cache khóa phức hợp `language_word`, Wiktionary API Fallback kèm SingleFlight), hệ thống điểm Karma hợp tác với phân rã lặp hậu tố hàm mũ, tự động hóa vai trò Reliable/Failed Role, khóa FIFO per-guild chống race condition, thời gian ân hạn 7 ngày và bộ lệnh quản trị bảo mật GDPR.
 * **Tích hợp Web Server Kép:** Chạy song song HTTP Web Server (Fastify) phục vụ Discord OAuth2 Linked Roles và REST API cho Web Dashboard trong tương lai.
 * **Bền bỉ & An toàn (Resilience):** Cơ sở dữ liệu Prisma (SQLite WAL Mode / PostgreSQL), mạng lưới bắt lỗi tập trung (Error Boundaries) và quy trình ngắt kết nối an toàn (Graceful Shutdown).
 
@@ -51,6 +53,8 @@ discordbot_lora/
     └── features/                 # Các lát cắt tính năng độc lập
         ├── ping/                 # Feature mẫu xác thực hệ thống
         ├── swarm-linked-roles/   # Quản lý vai trò liên kết The Swarm (FEAT-03)
+        ├── voice-keeper/         # Treo kênh thoại 24/7 & tự phục hồi kết nối (FEAT-04)
+        ├── wordchain/            # Trò chơi nối từ đa tầng & hệ thống Karma (FEAT-05)
         └── perks/                # Quản lý đặc quyền thành viên (Perks Management)
             ├── perks.command.ts  # Root Slash Command (/perk)
             ├── common/           # Lệnh tổng quát (/perk list, /perk status) & shared types/locales

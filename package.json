@@ -1,6 +1,6 @@
 {
   "name": "discordbot_lora",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Modular Discord Bot with Vertical Slice Architecture",
   "main": "dist/index.js",
   "type": "module",
