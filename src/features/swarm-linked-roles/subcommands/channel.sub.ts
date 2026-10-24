@@ -40,7 +40,7 @@ export const execute: SubcommandExecutor = async (
 
   if (!interaction.guildId) {
     const errorEmbed = createErrorEmbed(
-      'Lệnh này chỉ có thể thực thi bên trong một máy chủ Discord.',
+      'Yêu cầu này chỉ có thể thực thi trong một server.',
     );
     await interaction.editReply({ embeds: [errorEmbed] });
     return;

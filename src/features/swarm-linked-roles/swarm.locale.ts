@@ -6,98 +6,98 @@
 export const swarmLocale = {
   vi: {
     // Permissions & Access Control
-    OWNER_ONLY: 'Yêu cầu bị từ chối: Lệnh này chỉ dành riêng cho Bot Owner (Super Admin).',
-    OPERATOR_ONLY: 'Yêu cầu bị từ chối: Bạn không có quyền Operator để thực thi lệnh này.',
-    INVALID_LEVEL: 'Cấp độ Swarm không hợp lệ! Vui lòng chọn số nguyên từ 1 đến 8.',
-    TARGET_REQUIRED: 'Vui lòng chỉ định thành viên mục tiêu.',
+    OWNER_ONLY: 'Yêu cầu bị từ chối: Bạn muốn nhận nuôi mình sao.',
+    OPERATOR_ONLY: 'Yêu cầu bị từ chối: Bạn đang cố gắng trở thành Operator.',
+    INVALID_LEVEL: 'Yêu cầu bị từ chối: Phân cấp The Swarm không hợp lệ.',
+    TARGET_REQUIRED: 'Yêu cầu bị từ chối: Có vẻ bạn đang cố gắng ghi lại một bản ghi vô danh, vui lòng để lại member mục tiêu.',
     FEATURE_CONFIG_MISSING:
-      'Cấu hình Client Secret hoặc Redirect URI chưa được thiết lập trên bot.',
+      'Lỗi nội bộ: Dường như cấu hình Client Secret hoặc Redirect URI chưa được thiết lập.',
 
     // /swarm set
-    SET_SUCCESS_TITLE: '✅ Cập Nhật Cấp Độ Swarm Thành Công',
+    SET_SUCCESS_TITLE: '✅ Hoàn Tất Cập Nhật',
     SET_SUCCESS_DESC:
-      'Đã cập nhật cấp độ **The Swarm** cho {user}.\n\n• **Cấp độ mới**: **Level {level}** ({roleName})\n• **Đồng bộ Discord**: {syncStatus}',
-    SYNC_SUCCESS: 'Đã đẩy dữ liệu trực tiếp sang Discord API.',
-    SYNC_PENDING_LINK: 'Chưa liên kết Discord. Cần xác thực qua `/swarm link` để kích hoạt Role.',
+      'Đã ghi lại đặc quyền linked role **The Swarm** cho {user}.\n\n• **Phân cấp mới**: **Level {level}** ({roleName})\n• **Cập nhật Metadata**: {syncStatus}',
+    SYNC_SUCCESS: 'Hoàn tất đẩy dữ liệu Metadata lên Discord API.',
+    SYNC_PENDING_LINK: 'Chưa ủy quyền OAuth2. Cần ủy quyền qua `/swarm link` để được update app metadata.',
 
     // /swarm remove
-    REMOVE_SUCCESS_TITLE: '🔻 Thu Hồi Danh Hiệu Swarm Thành Công',
+    REMOVE_SUCCESS_TITLE: '🔻 Hoàn Tất Thu Hồi',
     REMOVE_SUCCESS_DESC:
-      'Đã thu hồi danh hiệu The Swarm của {user}.\n\n• **Trạng thái**: Đã reset về Level 0 (Unranked)\n• **Đồng bộ Discord**: {syncStatus}',
-    REMOVE_SYNC_SUCCESS: 'Discord đã tự động gỡ bỏ vai trò Linked Role.',
+      'Đã thu hồi đặc quyền linked role The Swarm của {user}.\n\n• **Trạng thái**: Đã reset về 0 \n• **Cập nhật Metadata**: {syncStatus}',
+    REMOVE_SYNC_SUCCESS: 'Theo mặc định, metadata sẽ được tự động cập nhật.',
 
     // /swarm status
-    STATUS_TITLE: '🌌 Trạng Thái Danh Hiệu: The Swarm',
-    STATUS_FIELD_LEVEL: '🎖️ Cấp Độ Swarm',
-    STATUS_FIELD_ROLE: '🏷️ Tên Vai Trò',
-    STATUS_FIELD_OAUTH: '🔗 Liên Kết Discord OAuth2',
+    STATUS_TITLE: '🌌 Trạng Thái Đặc Quyền Linked Role: The Swarm',
+    STATUS_FIELD_LEVEL: '🎖️ Phân Cấp',
+    STATUS_FIELD_ROLE: '🏷️ Tên Role',
+    STATUS_FIELD_OAUTH: '🔗 Ủy Quyền OAuth2',
     STATUS_FIELD_EXPIRES: '⏳ Thời Hạn Token',
     STATUS_FIELD_UPDATED_AT: '🕒 Cập Nhật Cuối',
     STATUS_FIELD_UPDATED_BY: '👤 Người Cập Nhật',
-    STATUS_LINKED: 'Đã liên kết (Sẵn sàng nhận Role)',
-    STATUS_NOT_LINKED: 'Chưa liên kết (Gõ `/swarm link` để kết nối)',
-    STATUS_NO_ROLE: 'Chưa có cấp độ (Unranked)',
+    STATUS_LINKED: 'Đã liên kết',
+    STATUS_NOT_LINKED: 'Chưa liên kết (sử dụng `/swarm link` để thực hiện ủy quyền)',
+    STATUS_NO_ROLE: 'Chưa có',
 
     // /swarm delegate
-    DELEGATE_ADD_SUCCESS: '✅ Đã thêm {user} vào danh sách Operator được ủy quyền.',
-    DELEGATE_REMOVE_SUCCESS: '🗑️ Đã xóa {user} khỏi danh sách Operator.',
-    DELEGATE_ALREADY_EXISTS: 'Thành viên {user} đã là Operator từ trước.',
-    DELEGATE_NOT_FOUND: 'Thành viên {user} không nằm trong danh sách Operator.',
-    DELEGATE_LIST_TITLE: '🛡️ Danh Sách Swarm Operators Được Ủy Quyền',
-    DELEGATE_LIST_EMPTY: 'Hiện chưa có Operator nào được ủy quyền trong hệ thống.',
+    DELEGATE_ADD_SUCCESS: '✅ {user} đã được ủy quyền Operator.',
+    DELEGATE_REMOVE_SUCCESS: '🗑️ {user} đã bị thu hồi quyền hạn Operator.',
+    DELEGATE_ALREADY_EXISTS: '{user} đã và đang là Operator.',
+    DELEGATE_NOT_FOUND: '{user} không được ủy quyền Operator.',
+    DELEGATE_LIST_TITLE: '🛡️ Danh Sách Operators Được Ủy Quyền',
+    DELEGATE_LIST_EMPTY: 'Không tìm thấy bất kỳ bản ghi Operator được ủy quyền nào.',
 
     // /swarm channel
-    CHANNEL_SET_SUCCESS: '✅ Đã cấu hình kênh thông báo Swarm cho máy chủ: {channel}',
-    CHANNEL_REMOVE_SUCCESS: '🗑️ Đã hủy kênh thông báo Swarm của máy chủ này. Bot sẽ giữ im lặng.',
-    CHANNEL_NOT_FOUND: 'Vui lòng chọn kênh văn bản hợp lệ trong máy chủ.',
+    CHANNEL_SET_SUCCESS: '✅ Đã thiết lập channel thông báo cập nhật bản ghi đặc quyền linked role The Swarm mới: {channel}',
+    CHANNEL_REMOVE_SUCCESS: '🗑️ Đã hủy bỏ channel thông báo cập nhật bản ghi đặc quyền linked role The Swarm mới của server',
+    CHANNEL_NOT_FOUND: 'Channel không hợp lệ. Vui lòng thử lại.',
 
     // /swarm link
     LINK_BUTTON_LABEL: '🔗 Kết Nối Tài Khoản Discord',
     LINK_EMBED_TITLE: '🔗 Xác Thực Liên Kết The Swarm',
     LINK_EMBED_DESC:
-      'Nhấp vào nút bên dưới để cấp quyền kết nối `role_connections.write` cho bot Lora.\n\nSau khi liên kết, Discord sẽ tự động trao cho bạn vai trò **The Swarm** tương ứng với cấp độ đã đạt được!\n\n*(Liên kết có hiệu lực trong 10 phút)*',
+      'Nhấp vào button dưới đây để ủy quyền `role_connections.write` cho Lora.\n\nSau khi ủy quyền, metadata sẽ được cập nhật tương ứng với bản ghi xác nhận đặc quyền của bạn.\n\n*(Liên kết có hiệu lực trong 10 phút)*',
 
     // Guild Notifications
-    ANNOUNCE_UPGRADE_TITLE: '🌌 ANNOUNCEMENT: THE SWARM',
+    ANNOUNCE_UPGRADE_TITLE: '🌌 ANNOUNCEMENT: Linked role perk: The Swarm',
     ANNOUNCE_UPGRADE_DESC:
-      'Chúc mừng {user} đã được cập nhật cấp bậc danh hiệu: **{roleName}**!\n\n⚠️ **Lưu ý để nhận Role mới:**\nDo cơ chế đồng bộ của Discord, vai trò cũ đã được thu hồi. Hãy thực hiện 1 trong 2 cách sau để nhận role mới:\n1. Vào **Server Settings $\\rightarrow$ Linked Roles** và nhấp chọn role **{roleName}**.\n2. Hoặc nhấp vào nút **[🔗 Receive Role]** dưới đây.',
-    ANNOUNCE_REVOKE_TITLE: '🔻 REVOCATION: THE SWARM',
+      'Đặc quyền linked role The Swarm của {user} đã được cập nhật: **{roleName}**.\n\n⚠️ **Lưu ý:**\nDo cơ chế đồng bộ metadata, vai trò cũ đã tự động thu hồi.\nĐể nhận role mới hãy vào **Server Settings $\\rightarrow$ Linked Roles** và nhấp chọn role **{roleName}** và làm theo hướng dẫn (nếu được yêu cầu).\nHoặc bạn có thể mở link dưới đây để cập nhật metadata rồi vào Server Settings $\\rightarrow$ Linked Roles để nhận role.',
+    ANNOUNCE_REVOKE_TITLE: '🔻 REVOCATION: Linked role perk: The Swarm',
     ANNOUNCE_REVOKE_DESC:
-      'Danh hiệu **The Swarm** của {user} đã bị thu hồi bởi Ban Quản Trị.\n\nℹ️ **Trạng thái:**\n• Cấp độ Swarm: Đã chuyển về **0** (Unranked / Đã thu hồi).\n• Quyền hạn: Discord sẽ tự động thu hồi vai trò Linked Role tương ứng khỏi hồ sơ thành viên.',
+      'Đặc quyền linked role The Swarm của {user} đã bị thu hồi.\n\nℹ️ **Trạng thái:**\n Đã chuyển về **0**.\nĐã đẩy Metadata, thực tế cập nhật sẽ tùy thuộc vào trạng thái ủy quyền.',
   },
   en: {
     // Permissions & Access Control
-    OWNER_ONLY: 'Access Denied: This command is restricted to the Bot Owner (Super Admin).',
-    OPERATOR_ONLY: 'Access Denied: You require Operator privileges to execute this command.',
-    INVALID_LEVEL: 'Invalid Swarm level! Please choose an integer between 1 and 8.',
-    TARGET_REQUIRED: 'Please specify a target member.',
+    OWNER_ONLY: 'Request denied: Are you trying to adopt me?',
+    OPERATOR_ONLY: 'Request denied: You are attempting to become an Operator.',
+    INVALID_LEVEL: 'Request denied: hierarchy level is invalid.',
+    TARGET_REQUIRED: 'Request denied: It seems you are trying to create a record without a target; please specify a member.',
     FEATURE_CONFIG_MISSING:
-      'Client Secret or Redirect URI is missing from bot configuration.',
+      'Internal error: Client Secret or Redirect URI is missing from bot configuration.',
 
     // /swarm set
     SET_SUCCESS_TITLE: '✅ Swarm Level Updated Successfully',
     SET_SUCCESS_DESC:
-      'Updated **The Swarm** rank for {user}.\n\n• **New Rank**: **Level {level}** ({roleName})\n• **Discord Sync**: {syncStatus}',
-    SYNC_SUCCESS: 'Metadata pushed directly to Discord API.',
-    SYNC_PENDING_LINK: 'Not yet linked via OAuth2. Run `/swarm link` to claim your role.',
+      'Linked role **The Swarm** privilege have been recorded for {user}.\n\n• **New Hierarchy Level**: **Level {level}** ({roleName})\n• **Metadata Update**: {syncStatus}',
+    SYNC_SUCCESS: 'Metadata successfully pushed to Discord API.',
+    SYNC_PENDING_LINK: 'OAuth2 authorization is pending. Authorization via `/swarm link` is required to update app metadata.',
 
     // /swarm remove
     REMOVE_SUCCESS_TITLE: '🔻 Swarm Rank Revoked Successfully',
     REMOVE_SUCCESS_DESC:
-      'Revoked The Swarm rank from {user}.\n\n• **Status**: Reset to Level 0 (Unranked)\n• **Discord Sync**: {syncStatus}',
-    REMOVE_SYNC_SUCCESS: 'Discord has automatically removed the Linked Role.',
+      'Linked role **The Swarm** privilege for {user} have been revoked.\n\n• **Status**: Reset to 0 \n• **Metadata Update**: {syncStatus}',
+    REMOVE_SYNC_SUCCESS: 'By default, metadata will be updated automatically.',
 
     // /swarm status
-    STATUS_TITLE: '🌌 Title Status: The Swarm',
-    STATUS_FIELD_LEVEL: '🎖️ Swarm Level',
+    STATUS_TITLE: '🌌 Linked Role The Swarm Status',
+    STATUS_FIELD_LEVEL: '🎖️ Tier',
     STATUS_FIELD_ROLE: '🏷️ Role Title',
-    STATUS_FIELD_OAUTH: '🔗 Discord OAuth2 Link',
+    STATUS_FIELD_OAUTH: '🔗 OAuth2 Authorization',
     STATUS_FIELD_EXPIRES: '⏳ Token Expiration',
     STATUS_FIELD_UPDATED_AT: '🕒 Last Updated',
     STATUS_FIELD_UPDATED_BY: '👤 Updated By',
-    STATUS_LINKED: 'Linked (Ready to receive roles)',
-    STATUS_NOT_LINKED: 'Unlinked (Use `/swarm link` to connect)',
-    STATUS_NO_ROLE: 'No rank assigned (Unranked)',
+    STATUS_LINKED: 'Linked (Ready)',
+    STATUS_NOT_LINKED: 'Unlinked (Use `/swarm link` to authorize)',
+    STATUS_NO_ROLE: 'None',
 
     // /swarm delegate
     DELEGATE_ADD_SUCCESS: '✅ Successfully added {user} to Delegated Operators.',
@@ -108,23 +108,22 @@ export const swarmLocale = {
     DELEGATE_LIST_EMPTY: 'No operators have been authorized yet.',
 
     // /swarm channel
-    CHANNEL_SET_SUCCESS: '✅ Swarm notification channel configured: {channel}',
-    CHANNEL_REMOVE_SUCCESS:
-      '🗑️ Swarm notification channel removed. The bot will remain silent in this guild.',
-    CHANNEL_NOT_FOUND: 'Please specify a valid text channel in this guild.',
+    CHANNEL_SET_SUCCESS: '✅ Configured notification channel receive linked role The Swarm new record updates: {channel}',
+    CHANNEL_REMOVE_SUCCESS: '🗑️ Notification channel receive linked role The Swarm new record updates removed.',
+    CHANNEL_NOT_FOUND: 'Invalid channel. Please try again.',
 
     // /swarm link
     LINK_BUTTON_LABEL: '🔗 Connect Discord Account',
-    LINK_EMBED_TITLE: '🔗 The Swarm Account Verification',
+    LINK_EMBED_TITLE: '🔗 Linked Role The Swarm Authentication',
     LINK_EMBED_DESC:
-      'Click the button below to authorize `role_connections.write` for Lora Bot.\n\nOnce authorized, Discord will automatically grant you the **The Swarm** Linked Role matching your tier!\n\n*(Link expires in 10 minutes)*',
+      'Click the button below to authorize `role_connections.write` for Lora.\n\nOnce authorized, your metadata will be automatically updated to reflect your linked role perk status.\n\n*(Link expires in 10 minutes)*',
 
     // Guild Notifications
-    ANNOUNCE_UPGRADE_TITLE: '🌌 ANNOUNCEMENT: THE SWARM',
+    ANNOUNCE_UPGRADE_TITLE: '🌌 ANNOUNCEMENT: Linked role perk: The Swarm',
     ANNOUNCE_UPGRADE_DESC:
-      'Congratulations to {user} on receiving the title: **{roleName}**!\n\n⚠️ **Action Required to Claim New Role:**\nDue to Discord synchronization rules, the old role has been revoked. Claim your new role using either method:\n1. Navigate to **Server Settings $\\rightarrow$ Linked Roles** and select **{roleName}**.\n2. Or click the **[🔗 Receive Role]** button below.',
-    ANNOUNCE_REVOKE_TITLE: '🔻 REVOCATION: THE SWARM',
+      'Linked role The Swarm perk of {user} has been updated: **{roleName}**!\n\n⚠️ **Notice:**\nDue to metadata synchronization mechanism, the old role has been automatically revoked.\nTo claim your new role, go to **Server Settings $\\rightarrow$ Linked Roles** and select **{roleName}** and follow the instructions (if any).\nAlternatively, you can use the link below to manually update your metadata, then go to Server Settings $\\rightarrow$ Linked Roles to claim your role.',
+    ANNOUNCE_REVOKE_TITLE: '🔻 REVOCATION: Linked role perk: The Swarm',
     ANNOUNCE_REVOKE_DESC:
-      'The title **The Swarm** held by {user} has been revoked by Administrators.\n\nℹ️ **Status:**\n• Swarm Level: Reset to **0** (Unranked).\n• Roles: Discord will automatically remove the corresponding Linked Role from your profile.',
+      'Linked role The Swarm perk of {user} has been revoked.\n\nℹ️ **Status:**\nReset to **0**\nMetadata has been pushed; the actual update will depend on your current authorization status.',
   },
 } as const;

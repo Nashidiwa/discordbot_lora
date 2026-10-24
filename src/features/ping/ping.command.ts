@@ -9,7 +9,7 @@ import { pingService } from './ping.service.js';
 
 const data = new SlashCommandBuilder()
   .setName('ping')
-  .setDescription('Kiểm tra độ trễ của hệ thống và kết nối Discord.');
+  .setDescription('Kiểm tra độ trễ giữa App và các server.');
 
 export const command: BotCommand = {
   data,

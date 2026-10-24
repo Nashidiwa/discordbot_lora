@@ -33,7 +33,7 @@ export const execute: SubcommandExecutor = async (
   })
     .setThumbnail(targetUser.displayAvatarURL())
     .setDescription(
-      `Hồ sơ danh hiệu The Swarm của thành viên <@${targetUser.id}>:`,
+      `Hồ sơ đặc quyền linked role The Swarm của <@${targetUser.id}>:`,
     )
     .addFields(
       {

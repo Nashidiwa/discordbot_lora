@@ -13,17 +13,17 @@ import stopSub from './subcommands/stop.sub.js';
 const data = new SlashCommandBuilder()
   .setName('voice_keeper')
   .setDescription(
-    'Hệ thống duy trì kết nối kênh thoại 24/7 và tự phục hồi (Voice Keeper)',
+    'Tính năng duy trì và tự phục hồi kết nối voice channel 24/7.',
   )
   .setDMPermission(false)
   .addSubcommand((sub) =>
     sub
       .setName('set')
-      .setDescription('Thiết lập và kích hoạt giữ kênh thoại 24/7 cho máy chủ')
+      .setDescription('Thiết lập và cấu hình giữ kênh thoại 24/7 cho một voice channel xác định trong server.')
       .addChannelOption((opt) =>
         opt
           .setName('channel')
-          .setDescription('Kênh thoại cần giữ kết nối 24/7')
+          .setDescription('Voice channel mục tiêu (cần giữ kết nối 24/7).')
           .addChannelTypes(
             ChannelType.GuildVoice,
             ChannelType.GuildStageVoice,
@@ -34,7 +34,7 @@ const data = new SlashCommandBuilder()
         opt
           .setName('self_deaf')
           .setDescription(
-            'Tự động điếc bot để tiết kiệm băng thông (Mặc định: Bật)',
+            'Tắt nghe của bot để đảm bảo riêng tư và tiết kiệm băng thông (Mặc định: BẬT).',
           )
           .setRequired(false),
       )
@@ -42,7 +42,7 @@ const data = new SlashCommandBuilder()
         opt
           .setName('self_mute')
           .setDescription(
-            'Tự động tắt mic bot để tránh phát âm thanh (Mặc định: Bật)',
+            'Tắt mic của bot để đảm bảo riêng tư và tiết kiệm băng thông (Mặc định: BẬT).',
           )
           .setRequired(false),
       )
@@ -50,7 +50,7 @@ const data = new SlashCommandBuilder()
         opt
           .setName('auto_reconnect')
           .setDescription(
-            'Tự động kết nối lại khi bị kick hoặc rớt mạng (Mặc định: Bật)',
+            'Tự động kết nối lại khi bị kick ngoài ý muốn hoặc kết nối không ổn định (Mặc định: BẬT).',
           )
           .setRequired(false),
       ),
@@ -58,19 +58,19 @@ const data = new SlashCommandBuilder()
   .addSubcommand((sub) =>
     sub
       .setName('status')
-      .setDescription('Xem trạng thái kết nối Voice Keeper 24/7 của máy chủ'),
+      .setDescription('Xem trạng thái voice keeper của server.'),
   )
   .addSubcommand((sub) =>
     sub
       .setName('reconnect')
       .setDescription(
-        'Ép kết nối lại kênh thoại Voice Keeper 24/7 ngay lập tức',
+        'Gửi yêu cầu buộc thiết lập lại kết nối.',
       ),
   )
   .addSubcommand((sub) =>
     sub
       .setName('stop')
-      .setDescription('Dừng giữ kênh thoại 24/7 và ngắt kết nối bot'),
+      .setDescription('Dừng cấu hình voice keeper và đóng kết nối ngay lập tức.'),
   );
 
 export const command: BotCommand = {
@@ -93,7 +93,7 @@ export const command: BotCommand = {
         break;
       default:
         await interaction.reply({
-          content: 'Lệnh không hợp lệ.',
+          content: 'Yêu cầu không hợp lệ.',
           flags: MessageFlags.Ephemeral,
         });
         break;

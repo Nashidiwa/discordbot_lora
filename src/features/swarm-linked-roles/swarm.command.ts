@@ -14,23 +14,23 @@ import statusSub from './subcommands/status.sub.js';
 
 const data = new SlashCommandBuilder()
   .setName('swarm')
-  .setDescription('Hệ thống quản lý vai trò liên kết Discord Linked Roles (The Swarm)')
+  .setDescription('Tính năng quản lý Linked Roles: The Swarm')
   .setDMPermission(true)
   // 1. Top-level Subcommands
   .addSubcommand((sub) =>
     sub
       .setName('set')
-      .setDescription('Gán cấp độ The Swarm (1 - 8) cho thành viên (Operator Only)')
+      .setDescription('Cấp đặc quyền đeo linked role The Swarm cho member (Operator Only)')
       .addUserOption((opt) =>
         opt
           .setName('user')
-          .setDescription('Thành viên cần gán cấp độ')
+          .setDescription('Member mục tiêu')
           .setRequired(true),
       )
       .addIntegerOption((opt) =>
         opt
           .setName('level')
-          .setDescription('Cấp độ Swarm từ 1 đến 8')
+          .setDescription('Phân cấp mục tiêu')
           .setRequired(true)
           .setMinValue(1)
           .setMaxValue(8),
@@ -39,76 +39,76 @@ const data = new SlashCommandBuilder()
   .addSubcommand((sub) =>
     sub
       .setName('remove')
-      .setDescription('Thu hồi cấp độ The Swarm của thành viên (Operator Only)')
+      .setDescription('Thu hồi đặc quyền đeo linked role The Swarm cho member (Operator Only)')
       .addUserOption((opt) =>
         opt
           .setName('user')
-          .setDescription('Thành viên cần thu hồi cấp độ')
+          .setDescription('Member mục tiêu')
           .setRequired(true),
       ),
   )
   .addSubcommand((sub) =>
     sub
       .setName('status')
-      .setDescription('Tra cứu trạng thái cấp độ Swarm và tình trạng kết nối Discord')
+      .setDescription('Kiểm tra đặc quyền linked role The Swarm và trạng thái liên kết Discord')
       .addUserOption((opt) =>
         opt
           .setName('user')
-          .setDescription('Thành viên cần tra cứu (để trống để xem bản thân)')
+          .setDescription('Member mục tiêu')
           .setRequired(false),
       ),
   )
   .addSubcommand((sub) =>
     sub
       .setName('link')
-      .setDescription('Nhận liên kết xác thực Discord OAuth2 để kích hoạt Linked Role'),
+      .setDescription('Nhận liên kết ủy quyền OAuth2 để được cập nhật metadata'),
   )
   // 2. Subcommand Group: delegate (Bot Owner Only)
   .addSubcommandGroup((group) =>
     group
       .setName('delegate')
-      .setDescription('Quản lý danh sách Delegated Operators (Bot Owner Only)')
+      .setDescription('Quản lý Delegated Operators (Owner)')
       .addSubcommand((sub) =>
         sub
           .setName('add')
-          .setDescription('Ủy quyền quyền hạn Operator cho một thành viên')
+          .setDescription('Ủy quyền quyền hạn Operator cho member')
           .addUserOption((opt) =>
             opt
               .setName('user')
-              .setDescription('Thành viên cần ủy quyền')
+              .setDescription('Member mục tiêu được ủy quyền')
               .setRequired(true),
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('remove')
-          .setDescription('Hủy quyền Operator của một thành viên')
+          .setDescription('Thu hồi quyền hạn Operator của member')
           .addUserOption((opt) =>
             opt
               .setName('user')
-              .setDescription('Thành viên cần hủy quyền')
+              .setDescription('Member mục tiêu cần thu hồi quyền hạn')
               .setRequired(true),
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('list')
-          .setDescription('Xem danh sách tất cả các Operator đang được ủy quyền'),
+          .setDescription('Xem danh sách tất cả Operator đang được ủy quyền'),
       ),
   )
   // 3. Subcommand Group: channel (Operator Only)
   .addSubcommandGroup((group) =>
     group
       .setName('channel')
-      .setDescription('Cấu hình kênh thông báo thăng cấp/thu hồi Swarm (Operator Only)')
+      .setDescription('Cấu hình kênh thông báo nâng bậc/thu hồi linked role The Swarm (Operator Only)')
       .addSubcommand((sub) =>
         sub
           .setName('set')
-          .setDescription('Chỉ định kênh nhận thông báo thăng cấp/thu hồi Swarm')
+          .setDescription('Chỉ định channel mục tiêu nhận thông báo nâng bậc/thu hồi linked role The Swarm')
           .addChannelOption((opt) =>
             opt
               .setName('channel')
-              .setDescription('Kênh văn bản nhận thông báo')
+              .setDescription('Channel mục tiêu')
               .addChannelTypes(
                 ChannelType.GuildText,
                 ChannelType.GuildAnnouncement,
@@ -119,7 +119,7 @@ const data = new SlashCommandBuilder()
       .addSubcommand((sub) =>
         sub
           .setName('remove')
-          .setDescription('Hủy kênh thông báo Swarm của máy chủ hiện tại'),
+          .setDescription('Hủy channel nhận thông báo của server này'),
       ),
   );
 
@@ -154,7 +154,7 @@ export const command: BotCommand = {
         break;
       default:
         await interaction.reply({
-          content: 'Lệnh không hợp lệ.',
+          content: 'Yêu cầu không hợp lệ.',
           flags: MessageFlags.Ephemeral,
         });
         break;
