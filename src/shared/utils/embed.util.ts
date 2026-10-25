@@ -8,7 +8,7 @@ export function createBaseEmbed(options?: {
 }): EmbedBuilder {
   const embed = new EmbedBuilder()
     .setColor(options?.color ?? EmbedColor.PRIMARY)
-    .setFooter({ text: 'Lora System' })
+    .setFooter({ text: 'Lora' })
     .setTimestamp();
 
   if (options?.title) {
