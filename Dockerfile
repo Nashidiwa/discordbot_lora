@@ -5,6 +5,11 @@ FROM node:20-bookworm-slim AS builder
 
 WORKDIR /app
 
+# Install openssl for correct Prisma engine detection during build
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openssl && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy dependency specifications
 COPY package*.json ./
 
