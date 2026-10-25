@@ -25,7 +25,7 @@ model GuildSetting {
 
 model BoosterPerkConfig {
   guildId               String   @id
-  gracePeriodDays       Int      @default(7)
+  gracePeriodDays       Int      @default(21)
   anchorRoleId          String?
   notificationChannelId String?
   auditLogChannelId     String?

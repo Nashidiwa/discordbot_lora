@@ -3,37 +3,37 @@ import { type SupportedLocale, t } from '../../shared/utils/i18n.util.js';
 export const wordChainLocale = {
   vi: {
     // Lỗi hệ thống & phân quyền
-    ERR_GUILD_ONLY: 'Lệnh này chỉ có thể sử dụng bên trong một máy chủ Discord.',
+    ERR_GUILD_ONLY: 'Yêu cầu bị từ chối: Không thể thực hiện yêu cầu này ngoài một server.',
     ERR_PERMISSION_MANAGE_GUILD:
-      'Bạn cần có quyền `Manage Server` hoặc `Administrator` để thực hiện thao tác này.',
+      'Yêu cầu bị từ chối: Bạn đang cố gắng trở thành Channel Manager hoặc Administrator.',
     ERR_PERMISSION_ADMIN:
-      'Bạn cần có quyền Quản trị viên hệ thống (Bot Owner / Operator) để thực hiện lệnh quản trị cấp cao này.',
+      'Yêu cầu bị từ chối: Bạn đang cố gắng trở thành Authorized Operator.',
     ERR_INVALID_WORD:
-      'Từ nhập vào không hợp lệ. Từ phải chứa ít nhất 2 ký tự và chỉ gồm các chữ cái từ a đến z.',
+      'Yêu cầu bị từ chối: Từ không hợp lệ (từ phải chứa ít nhất 2 ký tự và chỉ gồm các chữ cái từ a-z).',
     ERR_CHANNEL_ALREADY_USED:
-      'Kênh này đã được gán cho chế độ chơi khác trong máy chủ.',
+      'Yêu cầu bị từ chối: Kênh này đã được gán cho chế độ chơi khác trong server.',
     ERR_ROLE_HIERARCHY:
-      'Vai trò được chọn cao hơn hoặc ngang bằng vai trò cao nhất của bot. Bot không thể quản lý vai trò này.',
+      'Yêu cầu bị từ chối: Role được chọn cao hơn hoặc ngang bằng role cao nhất của bot. Bot không thể quản lý role này.',
     ERR_LANGUAGE_MAX:
-      'Mỗi máy chủ chỉ có thể kích hoạt tối đa 2 ngôn ngữ cùng lúc.',
+      'Yêu cầu bị từ chối: Server đã đạt giới hạn số lượng ngôn ngữ tối đa cùng lúc (2).',
     ERR_LANGUAGE_MIN:
       'Máy chủ phải duy trì ít nhất 1 ngôn ngữ hoạt động.',
     ERR_LANGUAGE_NOT_SUPPORTED:
-      'Hiện tại hệ thống chỉ hỗ trợ tiếng Anh (`en`). Các ngôn ngữ khác sẽ ra mắt trong phiên bản sau.',
+      'Yêu cầu bị từ chối: Ngôn ngữ không hỗ trợ. Hiện tại chỉ hỗ trợ tiếng Anh (`en`), các ngôn ngữ khác sẽ được cập nhật trong các phiên bản tiếp theo.',
     ERR_BLACKLIST_DUPLICATE:
-      'Từ này đã có sẵn trong danh sách đen (blacklist) của máy chủ.',
+      'Yêu cầu bị từ chối: Có vẻ từ này đã có sẵn trong blacklist của server.',
     ERR_BLACKLIST_NOT_FOUND:
-      'Không tìm thấy từ này trong danh sách đen (blacklist) của máy chủ.',
+      'Yêu cầu bị từ chối: Không tìm thấy từ này trong blacklist của server.',
     ERR_WHITELIST_DUPLICATE:
-      'Từ này đã có sẵn trong danh sách trắng (whitelist) của máy chủ.',
+      'Yêu cầu bị từ chối: Có vẻ từ này đã có sẵn trong whitelist của server.',
     ERR_WHITELIST_NOT_FOUND:
-      'Không tìm thấy từ này trong danh sách trắng (whitelist) của máy chủ.',
+      'Yêu cầu bị từ chối: Không tìm thấy từ này trong whitelist của server.',
     ERR_CONFIG_NOT_FOUND:
-      'Máy chủ chưa được cấu hình Word Chain. Dùng `/wordchain-manage channel set` để bắt đầu.',
+      'Server chưa được cấu hình Word Chain. Dùng `/wordchain-manage channel set` để bắt đầu.',
     ERR_USER_NOT_FOUND:
-      'Không tìm thấy thông tin thành viên này trong hệ thống.',
+      'Không tìm thấy thông tin user này trên hệ thống.',
     ERR_ONLY_INVOKER_CAN_INTERACT:
-      'Chỉ người dùng thực hiện lệnh mới có thể tương tác với menu trợ giúp này.',
+      'Yêu cầu bị từ chối: Bạn đang cố gắng đoán mong muốn của người khác.',
 
     // Lệnh kiểm tra từ & tra nghĩa
     CHECK_VALID_TITLE: 'Từ Hợp Lệ',
@@ -44,19 +44,19 @@ export const wordChainLocale = {
       'Từ **{word}** không hợp lệ. Lý do: **{reason}**.',
     DEF_TITLE: 'Định Nghĩa Từ: {word}',
     DEF_NOT_FOUND:
-      'Không tìm thấy định nghĩa cho từ **{word}** trên từ điển Wiktionary tiếng Anh.',
+      'Không tìm thấy định nghĩa cho từ **{word}** trên từ điển Wiktionary.',
     DEF_PART_OF_SPEECH: 'Từ loại',
     DEF_DEFINITIONS: 'Các định nghĩa tiêu biểu',
 
     // Bảng xếp hạng & Thống kê
-    LB_TITLE_USER_SERVER: 'Bảng Xếp Hạng Người Chơi (Máy Chủ - Theo {metric})',
+    LB_TITLE_USER_SERVER: 'Bảng Xếp Hạng Người Chơi Server (Theo {metric})',
     LB_TITLE_USER_GLOBAL: 'Bảng Xếp Hạng Người Chơi Toàn Cầu (Theo {metric})',
-    LB_TITLE_SERVER: 'Bảng Xếp Hạng Máy Chủ (Chế Độ {mode})',
-    LB_EMPTY: 'Chưa có dữ liệu thành viên nào được ghi nhận.',
+    LB_TITLE_SERVER: 'Bảng Xếp Hạng Server (Chế Độ {mode})',
+    LB_EMPTY: 'Chưa có dữ liệu user nào được ghi nhận.',
     LB_ROW: '**#{rank}** <@{userId}> • Điểm: **{score}** | Karma: **{karma}**',
-    LB_ROW_SERVER: '**#{rank}** Máy chủ: `{guildId}` • Chuỗi Kỷ Lục: **{highScore}** từ',
+    LB_ROW_SERVER: '**#{rank}** Server: `{guildId}` • Chuỗi Kỷ Lục: **{highScore}** từ',
 
-    STATS_SERVER_TITLE: 'Thống Kê Word Chain Máy Chủ',
+    STATS_SERVER_TITLE: 'Thống Kê Word Chain Server',
     STATS_USER_TITLE: 'Thống Kê Word Chain Cá Nhân',
     STATS_CURRENT_CHAIN: 'Độ Dài Chuỗi Hiện Tại',
     STATS_HIGH_SCORE: 'Kỷ Lục Cao Nhất (High Score)',
@@ -75,88 +75,88 @@ export const wordChainLocale = {
     NO: 'Không',
 
     // Ngôn ngữ
-    LANG_ACTIVE_TITLE: 'Ngôn Ngữ Đang Kích Hoạt Trong Máy Chủ',
+    LANG_ACTIVE_TITLE: 'Ngôn Ngữ Đang Được Đặt Trong Server',
     LANG_ACTIVE_DESC: 'Danh sách ngôn ngữ được phép nối từ:',
     LANG_SHOW_ALL_TITLE: 'Tất Cả Ngôn Ngữ Được Hỗ Trợ',
 
     // Trợ giúp
-    HELP_TITLE: 'Cẩm Nang & Hướng Dẫn Trò Chơi Nối Từ (Word Chain)',
+    HELP_TITLE: 'Hướng Dẫn Trò Chơi Word Chain (Nối Từ)',
     HELP_DESC:
-      'Vui lòng chọn một chuyên đề bên dưới để xem hướng dẫn luật chơi, cơ chế tính điểm Karma và lệnh quản trị.',
+      'Vui lòng chọn một chủ đề bên dưới để xem hướng dẫn luật chơi, cơ chế tính điểm Karma và lệnh quản trị.',
     HELP_TOPIC_HOW_TO_PLAY: 'Cách Chơi Cơ Bản',
     HELP_TOPIC_GAME_RULES: 'Luật Chơi & Các Chế Độ (Normal / Hard)',
-    HELP_TOPIC_SERVER_SETUP: 'Cài Đặt Máy Chủ Cho Quản Trị Viên',
+    HELP_TOPIC_SERVER_SETUP: 'Cài Đặt Server Cho Quản Trị Viên',
     HELP_TOPIC_KARMA_SYSTEM: 'Cơ Chế Điểm Karma & Hạn Chế Lặp Hậu Tố',
     HELP_TOPIC_LIST_COMMANDS: 'Danh Sách Lệnh Đầy Đủ',
     HELP_TOPIC_PRIVACY_POLICY: 'Chính Sách Bảo Mật & Lưu Trữ Dữ Liệu',
-    HELP_TOPIC_SUPPORT_SERVER: 'Máy Chủ Hỗ Trợ Kỹ Thuật',
+    HELP_TOPIC_SUPPORT_SERVER: 'Server Hỗ Trợ Kỹ Thuật',
     HELP_TOPIC_OTHER_INFO: 'Thông Tin Mã Nguồn & Dự Án Tham Chiếu',
-    HELP_TOPIC_VOTE: 'Bình Chọn Cho Bot',
+    HELP_TOPIC_VOTE: 'Vote Cho Bot',
     HELP_TOPIC_MULTI_LANGUAGE: 'Hệ Thống Đa Ngôn Ngữ',
 
     // Quản trị viên
     CHANNEL_SET_SUCCESS:
-      'Đã thiết lập kênh <#{channelId}> cho chế độ chơi **{mode} Mode** thành công.',
+      'Hoàn tất thiết lập channel <#{channelId}> cho chế độ chơi **{mode} Mode**.',
     CHANNEL_UNSET_SUCCESS:
-      'Đã hủy gán kênh cho chế độ **{mode} Mode** thành công.',
+      'Hoàn tất hủy gán channel cho chế độ **{mode} Mode**.',
     ROLE_SET_RELIABLE_SUCCESS:
-      'Đã thiết lập vai trò Reliable Role: <@&{roleId}> (Yêu cầu: Karma > 25.0 & Độ chính xác > 97.5%).',
+      'Hoàn tất thiết lập Reliable Role: <@&{roleId}> (Yêu cầu: Karma > 25.0 & Độ chính xác > 97.5%).',
     ROLE_SET_FAILED_SUCCESS:
-      'Đã thiết lập vai trò Failed Role: <@&{roleId}> (Tự động gán cho người phá hỏng chuỗi).',
+      'Hoàn tất thiết lập Failed Role: <@&{roleId}> (Tự động gán cho người phá hỏng chuỗi).',
     ROLE_UNSET_SUCCESS:
-      'Đã gỡ bỏ thiết lập vai trò **{type} Role** thành công.',
-    BLACKLIST_ADD_SUCCESS: 'Đã thêm từ **{word}** vào danh sách đen của máy chủ.',
-    BLACKLIST_REMOVE_SUCCESS: 'Đã gỡ từ **{word}** khỏi danh sách đen của máy chủ.',
-    BLACKLIST_SHOW_TITLE: 'Danh Sách Đen (Blacklist) Của Máy Chủ',
-    BLACKLIST_EMPTY: 'Danh sách đen hiện đang trống.',
-    WHITELIST_ADD_SUCCESS: 'Đã thêm từ **{word}** vào danh sách trắng của máy chủ.',
-    WHITELIST_REMOVE_SUCCESS: 'Đã gỡ từ **{word}** khỏi danh sách trắng của máy chủ.',
-    WHITELIST_SHOW_TITLE: 'Danh Sách Trắng (Whitelist) Của Máy Chủ',
-    WHITELIST_EMPTY: 'Danh sách trắng hiện đang trống.',
+      'Hoàn tất gỡ bỏ thiết lập role **{type} Role**.',
+    BLACKLIST_ADD_SUCCESS: 'Hoàn tất thêm **{word}** vào blacklist của server.',
+    BLACKLIST_REMOVE_SUCCESS: 'Hoàn tất gỡ **{word}** khỏi blacklist của server.',
+    BLACKLIST_SHOW_TITLE: 'Server Blacklist',
+    BLACKLIST_EMPTY: 'Blacklist hiện đang trống.',
+    WHITELIST_ADD_SUCCESS: 'Hoàn tất thêm **{word}** vào whitelist của server.',
+    WHITELIST_REMOVE_SUCCESS: 'Hoàn tất gỡ **{word}** khỏi whitelist của server.',
+    WHITELIST_SHOW_TITLE: 'Server Whitelist',
+    WHITELIST_EMPTY: 'Whitelist hiện đang trống.',
     RESET_STATS_SUCCESS:
-      'Đã đặt lại toàn bộ thống kê người chơi và chuỗi nối từ của máy chủ thành công.',
+      'Hoàn tất đặt lại toàn bộ thống kê user và chuỗi nối từ của server.',
     ADMIN_PURGE_USER_SUCCESS:
-      'Tuân thủ GDPR: Đã xóa toàn bộ bản ghi người chơi của User `{userId}` trên mọi máy chủ.',
+      'Tuân thủ GDPR: Hoàn tất xóa toàn bộ bản ghi của User `{userId}` trên toàn hệ thống.',
     ADMIN_PURGE_SERVER_SUCCESS:
-      'Đã xóa sạch toàn bộ dữ liệu Word Chain của máy chủ `{guildId}`.',
+      'Hoàn tất xóa sạch toàn bộ dữ liệu Word Chain của server `{guildId}`.',
     ADMIN_BAN_MEMBER_SUCCESS:
-      'Đã cập nhật trạng thái cấm chơi toàn cầu cho User `{userId}`: **{banned}**.',
+      'Hoàn tất cập nhật trạng thái cấm chơi toàn cầu cho User `{userId}`: **{banned}**.',
     ADMIN_BAN_SERVER_SUCCESS:
-      'Đã cập nhật trạng thái ẩn khỏi BXH máy chủ `{guildId}`: **{banned}**.',
+      'Hoàn tất cập nhật trạng thái ẩn khỏi leaderboard server `{guildId}`: **{banned}**.',
   },
   en: {
     // Errors & permissions
-    ERR_GUILD_ONLY: 'This command can only be used within a Discord server.',
+    ERR_GUILD_ONLY: 'Request denied: This request cannot be performed outside of a server.',
     ERR_PERMISSION_MANAGE_GUILD:
-      'You need `Manage Server` or `Administrator` permission to perform this action.',
+      'Request denied: You are attempting to become a Server Manager or Administrator.',
     ERR_PERMISSION_ADMIN:
-      'You need System Administrator (Bot Owner / Operator) permission to perform this administrative operation.',
+      'Request denied: You are attempting to become an Authorized Operator.',
     ERR_INVALID_WORD:
-      'Invalid word input. Words must be at least 2 characters long and contain only letters a to z.',
+      'Request denied: Invalid word input (words must be at least 2 characters long and contain only letters a-z).',
     ERR_CHANNEL_ALREADY_USED:
-      'This channel is already assigned to the other game mode in this server.',
+      'Request denied: This channel is already assigned to the other game mode in this server.',
     ERR_ROLE_HIERARCHY:
-      'The selected role is higher than or equal to the bot highest role. The bot cannot manage this role.',
+      'Request denied: The selected role is higher than or equal to the bot highest role, bot cannot manage this role.',
     ERR_LANGUAGE_MAX:
-      'A server can have at most 2 active languages enabled simultaneously.',
+      'Request denied: Server has reached the maximum limit for simultaneous languages (2).',
     ERR_LANGUAGE_MIN:
       'A server must have at least one active language enabled.',
     ERR_LANGUAGE_NOT_SUPPORTED:
-      'Only English (`en`) is supported in the current release. Additional languages will arrive in later phases.',
+      'Request denied: Language not supported. Currently, only English (`en`) is supported, other languages will be added in future updates.',
     ERR_BLACKLIST_DUPLICATE:
-      'This word already exists in the server blacklist.',
+      'Request denied: This word already exists in the server blacklist.',
     ERR_BLACKLIST_NOT_FOUND:
-      'This word was not found in the server blacklist.',
+      'Request denied: This word was not found in the server blacklist.',
     ERR_WHITELIST_DUPLICATE:
-      'This word already exists in the server whitelist.',
+      'Request denied: This word already exists in the server whitelist.',
     ERR_WHITELIST_NOT_FOUND:
-      'This word was not found in the server whitelist.',
+      'Request denied: This word was not found in the server whitelist.',
     ERR_CONFIG_NOT_FOUND:
       'Word Chain is not yet configured for this server. Use `/wordchain-manage channel set` to begin.',
     ERR_USER_NOT_FOUND:
       'No player records found for this member.',
     ERR_ONLY_INVOKER_CAN_INTERACT:
-      'Only the user who executed the original command can interact with this menu.',
+      'Request denied: You are attempting to make a move on behalf of another user.',
 
     // Word checking & definitions
     CHECK_VALID_TITLE: 'Word is Valid',
@@ -172,7 +172,7 @@ export const wordChainLocale = {
     DEF_DEFINITIONS: 'Definitions',
 
     // Leaderboards & Statistics
-    LB_TITLE_USER_SERVER: 'Player Leaderboard (Server - By {metric})',
+    LB_TITLE_USER_SERVER: 'Server Player Leaderboard (By {metric})',
     LB_TITLE_USER_GLOBAL: 'Global Player Leaderboard (By {metric})',
     LB_TITLE_SERVER: 'Server Leaderboard ({mode} Mode)',
     LB_EMPTY: 'No member records have been recorded yet.',

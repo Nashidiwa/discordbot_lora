@@ -449,7 +449,7 @@ export class DonatorPerkService {
     const config = await this.getOrCreateConfig(guildId);
     if (!config.isEnabled) {
       throw new AppError(
-        'Tính năng Donator hiện đang tắt trên máy chủ này.',
+        'Tính năng Donator hiện đang tắt trên server này.',
         DonatorErrorCode.FEATURE_DISABLED,
         true,
       );
@@ -457,7 +457,7 @@ export class DonatorPerkService {
 
     if (!config.donatorRoleId) {
       throw new AppError(
-        'Role Donator chưa được cấu hình trên máy chủ này.',
+        'Role Donator chưa được cấu hình trên server này.',
         DonatorErrorCode.ROLE_NOT_CONFIGURED,
         true,
       );
@@ -502,7 +502,7 @@ export class DonatorPerkService {
     const member = await guild.members.fetch(userId).catch(() => null);
     if (!member) {
       throw new AppError(
-        'Không tìm thấy thành viên trong máy chủ Discord.',
+        'Không tìm thấy thành viên trong server.',
         'MEMBER_NOT_FOUND',
         true,
       );
@@ -514,7 +514,7 @@ export class DonatorPerkService {
 
     if (!role) {
       throw new AppError(
-        'Không tìm thấy Role Donator trên máy chủ Discord.',
+        'Không tìm thấy Role Donator trên server.',
         DonatorErrorCode.ROLE_NOT_CONFIGURED,
         true,
       );
@@ -528,7 +528,7 @@ export class DonatorPerkService {
       role.comparePositionTo(me.roles.highest) >= 0
     ) {
       throw new AppError(
-        'Role của bot thấp hơn Role Donator, không thể gán role. Vui lòng báo Administrator.',
+        'Role của bot thấp hơn Role Donator, không thể gán role. Vui lòng liên hệ Server Administrator.',
         DonatorErrorCode.ROLE_HIERARCHY_ERROR,
         true,
       );
@@ -722,7 +722,7 @@ export class DonatorPerkService {
     if (isEnabled) {
       if (!config.donatorRoleId) {
         throw new AppError(
-          'Vui lòng cấu hình Role Donator bằng lệnh /perk donator config set_role trước khi bật tính năng.',
+          'Vui lòng cấu hình Role Donator bằng /perk donator config set_role trước khi bật tính năng.',
           DonatorErrorCode.ROLE_NOT_CONFIGURED,
           true,
         );
@@ -835,7 +835,7 @@ export class DonatorPerkService {
 
     if (!me || !me.permissions.has(PermissionFlagsBits.ManageRoles)) {
       throw new AppError(
-        'Bot không có quyền Quản Lý Role (Manage Roles) để thao tác role này.',
+        'Bot không có quyền Manage Roles để thao tác role này.',
         DonatorErrorCode.ROLE_HIERARCHY_ERROR,
         true,
       );
@@ -843,7 +843,7 @@ export class DonatorPerkService {
 
     if (role.managed) {
       throw new AppError(
-        'Không thể sử dụng role do hệ thống hoặc ứng dụng khác quản lý (Managed Role).',
+        'Không thể sử dụng role do Discord hoặc ứng dụng khác quản lý.',
         DonatorErrorCode.ROLE_NOT_CONFIGURED,
         true,
       );
@@ -851,7 +851,7 @@ export class DonatorPerkService {
 
     if (role.comparePositionTo(me.roles.highest) >= 0) {
       throw new AppError(
-        'Role của Bot phải cao hơn Role Donator. Vui lòng sắp xếp lại thứ tự Role trong Server Settings.',
+        'Role của Bot phải cao hơn Role Donator. Vui lòng kiểm tra lại Server Settings.',
         DonatorErrorCode.ROLE_HIERARCHY_ERROR,
         true,
       );
@@ -1102,7 +1102,7 @@ export class DonatorPerkService {
     account: DonatorAccount,
   ): Promise<void> {
     const embed = createSuccessEmbed(
-      `Cảm ơn bạn đã ủng hộ máy chủ **${guild.name}**!\nKhoản đóng góp của bạn đã được chuyển thành công vào Quỹ Thời Gian Donator.`,
+      `Cảm ơn bạn đã ủng hộ server **${guild.name}**!\nKhoản đóng góp của bạn đã được chuyển vào Donator Credit.`,
       '💖 Ghi nhận Ủng Hộ Thành Công',
     )
       .addFields(
@@ -1123,12 +1123,12 @@ export class DonatorPerkService {
         },
         {
           name: '🔥 Chuỗi ủng hộ tuần',
-          value: `**${account.streak} tuần liên tiếp** ${calculation.isStreakIncremented ? '*(+1 tuần mới!)*' : ''}`,
+          value: `**${account.streak} tuần liên tiếp** ${calculation.isStreakIncremented ? '*(+1 tuần mới.)*' : ''}`,
           inline: true,
         },
         {
           name: '🛡️ Trạng thái Role',
-          value: 'Đang trang bị *(Tốc độ tiêu hao 1.0x)*',
+          value: 'Đang trang bị *(Hệ số tiêu hao 1.0x)*',
           inline: true,
         },
         {
@@ -1138,7 +1138,7 @@ export class DonatorPerkService {
         },
       )
       .setFooter({
-        text: 'Mẹo: Bạn có thể dùng lệnh /perk donator unequip để cất role vào kho khi vắng mặt (tiêu hao chậm gấp 5 lần).',
+        text: 'Gợi ý: Bạn có thể dùng /perk donator unequip để tạm gỡ role khi vắng mặt (hệ số tiêu hao 0.2x).',
       });
 
     try {
@@ -1159,7 +1159,7 @@ export class DonatorPerkService {
           await this.sendFallbackChannelNotification(
             guild,
             config.notificationChannelId,
-            `💖 Cảm ơn <@${member.id}> đã ủng hộ **${formatCurrencyVnd(amountVnd)}**! Quyền lợi Donator đã được kích hoạt trên tài khoản của bạn. *(Do bạn tắt nhận tin nhắn riêng DM từ máy chủ nên bot thông báo tại đây)*`,
+            `💖 Cảm ơn <@${member.id}> đã ủng hộ **${formatCurrencyVnd(amountVnd)}**! Đặc quyền Donator đã được kích hoạt trên tài khoản của bạn. *(App không thể DM bạn nên thông báo được gửi đến đây thay thế)*`,
           );
         }
       } else {
@@ -1181,15 +1181,15 @@ export class DonatorPerkService {
     account: DonatorAccount,
   ): Promise<void> {
     const embed = createWarningEmbed(
-      `Quỹ thời gian Donator của bạn tại máy chủ **${guild.name}** đã cạn. Role Donator đã được tạm thời thu hồi.`,
+      `Donator Credit của bạn tại server **${guild.name}** đã hết. Cảm ơn bạn đã ủng hộ, role Donator tạm thời được thu hồi.`,
       '⏳ Quỹ Thời Gian Donator Đã Hết',
     )
       .addFields({
-        name: '🔥 Bảo lưu chuỗi Streak',
-        value: `Chuỗi hiện tại của bạn là **${account.streak} tuần**. Để bảo lưu chuỗi và tiếp tục nhận các mức thưởng cao nhất, bạn chỉ cần ủng hộ tối thiểu **${formatCurrencyVnd(config.weeklyMinVnd)}** trước 00:00 Thứ Hai tới!`,
+        name: '🔥 Bảo lưu Streak',
+        value: `Streak hiện tại của bạn là **${account.streak} tuần**. Để bảo lưu streak và tiếp tục nhận các mức bonus cao nhất, bạn chỉ cần ủng hộ tối thiểu **${formatCurrencyVnd(config.weeklyMinVnd)}** trước 00:00 Thứ Hai tới.`,
       })
       .setFooter({
-        text: 'Dùng /perk donator info để xem lại biểu phí quy đổi và hướng dẫn nạp quỹ.',
+        text: 'Dùng /perk donator info để thông tin chi tiết.',
       });
 
     try {
@@ -1210,7 +1210,7 @@ export class DonatorPerkService {
           await this.sendFallbackChannelNotification(
             guild,
             config.notificationChannelId,
-            `⏳ Quỹ thời gian Donator của <@${member.id}> đã hết. Role Donator đã được tạm thu hồi. Đừng quên ủng hộ trước Thứ Hai tới để giữ chuỗi streak nhé!`,
+            `⏳ Donator Credit của <@${member.id}> đã hết. Cảm ơn bạn đã ủng hộ, role Donator đã tạm thời được thu hồi.`,
           );
         }
       } else {

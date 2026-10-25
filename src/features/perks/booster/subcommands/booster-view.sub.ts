@@ -31,7 +31,7 @@ export const execute: SubcommandExecutor = async (
       .catch(() => null);
 
     if (!fetchedMember) {
-      const errEmbed = createErrorEmbed('Không tìm thấy thành viên trong server.');
+      const errEmbed = createErrorEmbed('Không tìm thấy member trong server.');
       await interaction.editReply({ embeds: [errEmbed] });
       return;
     }
@@ -48,7 +48,7 @@ export const execute: SubcommandExecutor = async (
   if (!perk) {
     const embed = createBaseEmbed({
       title: `🎨 Custom Role - ${targetMember.displayName}`,
-      description: 'Người dùng này chưa tạo Custom Role.',
+      description: 'User này chưa tạo Custom Role.',
     });
     await interaction.editReply({ embeds: [embed] });
     return;
@@ -95,12 +95,12 @@ export const execute: SubcommandExecutor = async (
   if (perk.status === 'GRACE_PERIOD' && perk.gracePeriodExpiresAt) {
     const isSelf = targetMember.id === interaction.user.id;
     const ownerWarning = isSelf
-      ? `Custom Role của bạn sẽ bị thu hồi vĩnh viễn vào <t:${Math.floor(perk.gracePeriodExpiresAt.getTime() / 1000)}:F> (<t:${Math.floor(perk.gracePeriodExpiresAt.getTime() / 1000)}:R>). Hãy boost lại máy chủ để tiếp tục duy trì role!`
+      ? `Custom Role của bạn sẽ bị thu hồi vĩnh viễn vào <t:${Math.floor(perk.gracePeriodExpiresAt.getTime() / 1000)}:F> (<t:${Math.floor(perk.gracePeriodExpiresAt.getTime() / 1000)}:R>). Hãy boost lại máy chủ để tiếp tục duy trì perk.`
       : `Custom Role của ${targetMember.displayName} sẽ bị thu hồi vĩnh viễn vào <t:${Math.floor(perk.gracePeriodExpiresAt.getTime() / 1000)}:F> (<t:${Math.floor(perk.gracePeriodExpiresAt.getTime() / 1000)}:R>).`;
 
     embed.setColor(EmbedColor.WARNING);
     embed.setDescription(
-      `⚠️ **CẢNH BÁO: Role đang trong thời gian ân hạn!**\n${ownerWarning}\n\nThông tin chi tiết về Custom Role của ${targetMember}:`,
+      `⚠️ **NHẮC NHỞ: Role đang trong thời gian ân hạn.**\n${ownerWarning}\n\nThông tin chi tiết về Custom Role của ${targetMember}:`,
     );
   }
 

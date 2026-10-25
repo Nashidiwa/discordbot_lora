@@ -37,7 +37,7 @@ export const execute: SubcommandExecutor = async (
     if (perk && perk.roleId && perk.status === PerkStatus.ACTIVE) {
       const confirmEmbed = createBaseEmbed({
         title: '⚠️ Xác Nhận Quy Trình Thu Hồi Custom Role',
-        description: `Bạn đang thực thi hành động đặc biệt: **Đặt số lượt boost về 0** cho thành viên <@${targetUser.id}>.\nPhát hiện thành viên đang sở hữu Custom Role <@&${perk.roleId}>.\n\nVui lòng xác nhận quy trình thu hồi perk:\n• **Tiêu chuẩn**: Perk sẽ được bảo lưu trong thời gian ân hạn (${config.gracePeriodDays} ngày), role sẽ tự động thu hồi sau khi hết hạn.\n• **Can thiệp**: Perk và Custom Role bị xóa thu hồi ngay lập tức (và vĩnh viễn).`,
+        description: `Phát hiện hành động bất thường: Bạn đang thực thi hành động đặc biệt: **Đặt số lượt boost về 0** cho member <@${targetUser.id}>.\nKiểm tra cho thấy member đang sở hữu Custom Role <@&${perk.roleId}>.\n\nVui lòng xác nhận quy trình thu hồi perk:\n• **Tiêu chuẩn**: Perk sẽ được bảo lưu trong thời gian ân hạn (${config.gracePeriodDays} ngày), role sẽ tự động thu hồi sau khi hết hạn.\n• **Can thiệp**: Perk và Custom Role bị xóa thu hồi ngay lập tức (và vĩnh viễn).`,
       });
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(

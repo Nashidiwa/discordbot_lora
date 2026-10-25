@@ -237,7 +237,7 @@ export class WordChainDictionaryService {
       const response = await this.fetchFn(url, {
         method: 'GET',
         headers: {
-          'User-Agent': 'WordChainBot/0.5.0 (https://github.com/discordbot_lora)',
+          'User-Agent': 'Lora-WordChainFeature/0.6.0 (https://github.com/Nashidiwa/discordbot_lora)',
           'Accept': 'application/json',
         },
         signal: AbortSignal.timeout(WordChainConstants.WIKTIONARY_TIMEOUT_MS),

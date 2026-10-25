@@ -64,7 +64,7 @@ export const execute: SubcommandExecutor = async (
 
   const embed = createBaseEmbed({
     title: `📊 Trạng Thái Quyền Lợi - ${member.displayName}`,
-    description: 'Tổng quan các gói quyền lợi của bạn tại máy chủ:',
+    description: 'Tổng quan các đặc quyền của bạn tại server:',
   }).addFields({
     name: '🚀 1. Server Booster',
     value: boosterLines.join('\n'),
@@ -77,7 +77,7 @@ export const execute: SubcommandExecutor = async (
   );
 
   if (donatorStatus && donatorStatus.creditSeconds > 0) {
-    let donatorStatusText = 'Cất trong kho (0.2x)';
+    let donatorStatusText = 'Tạm gỡ (0.2x)';
     if (!donatorStatus.isEnabled) {
       donatorStatusText = 'Đang đóng băng (0.0x)';
     } else if (donatorStatus.isEquipped) {

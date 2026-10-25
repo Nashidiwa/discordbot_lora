@@ -65,7 +65,7 @@ export const event: BotEvent<Events.InteractionCreate> = {
       );
 
       const embed = createSuccessEmbed(
-        `⏳ Đã áp dụng quy trình **Tiêu Chuẩn**: Đặt số lượt boost của <@${targetUserId}> về **0** và kích hoạt thời gian ân hạn (${config.gracePeriodDays} ngày).`,
+        `⏳ Đã áp dụng quy trình **Tiêu Chuẩn**: Đặt số lượt boost của <@${targetUserId}> về **0** và tiến hành thời gian ân hạn (${config.gracePeriodDays} ngày).`,
       );
 
       await interaction.editReply({
@@ -83,7 +83,7 @@ export const event: BotEvent<Events.InteractionCreate> = {
       );
 
       const embed = createWarningEmbed(
-        `🛑 Đã áp dụng quy trình **Can Thiệp**: Đặt số lượt boost của <@${targetUserId}> về **0** và đã xóa thu hồi vĩnh viễn Custom Role ngay lập tức.`,
+        `🛑 Đã áp dụng quy trình **Can Thiệp**: Đặt số lượt boost của <@${targetUserId}> về **0** và đã thu hồi vĩnh viễn Custom Role ngay.`,
       );
 
       await interaction.editReply({

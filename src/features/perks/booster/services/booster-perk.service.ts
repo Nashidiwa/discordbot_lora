@@ -33,7 +33,7 @@ export class BoosterPerkService {
       update: {},
       create: {
         guildId,
-        gracePeriodDays: 7,
+        gracePeriodDays: 21,
       },
     });
   }

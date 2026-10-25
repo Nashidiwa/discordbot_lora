@@ -53,51 +53,51 @@ export const HELP_TOPICS: Record<string, HelpTopic> = {
   list_commands: {
     title: 'Danh Sách Lệnh / List of Commands',
     descVi:
-      '• `/wordchain check <word>`: Kiểm tra tính hợp lệ của từ.\n• `/wordchain definition <word>`: Tra cứu định nghĩa từ điển.\n• `/wordchain leaderboard`: Xem bảng xếp hạng cá nhân hoặc máy chủ.\n• `/wordchain stats`: Xem thống kê chi tiết chuỗi và người chơi.\n• `/wordchain-manage`: Bộ lệnh cấu hình máy chủ.',
+      '• `/wordchain check <word>`: Kiểm tra tính hợp lệ của từ.\n• `/wordchain definition <word>`: Tra cứu định nghĩa từ điển.\n• `/wordchain leaderboard`: Xem bảng xếp hạng cá nhân hoặc server.\n• `/wordchain stats`: Xem thống kê chi tiết chuỗi và người chơi.\n• `/wordchain-manage`: Bộ lệnh cấu hình server.',
     descEn:
       '• `/wordchain check <word>`: Test word validity before submitting.\n• `/wordchain definition <word>`: Look up Wiktionary definition.\n• `/wordchain leaderboard`: View user or server leaderboards.\n• `/wordchain stats`: View active chain or player statistics.\n• `/wordchain-manage`: Server management command suite.',
   },
   privacy_policy: {
     title: 'Chính Sách Bảo Mật / Privacy Policy',
     descVi:
-      'Bot lưu trữ User ID, điểm số, và từ đã chơi để vận hành trò chơi. Tuân thủ GDPR: Quản trị viên bot có thể xóa sạch mọi dữ liệu của người dùng trên toàn hệ thống bằng lệnh `/wordchain-manage admin purge-user`.',
+      'Bot lưu trữ User ID, điểm số, và từ đã chơi để vận hành trò chơi. Tuân thủ GDPR: Quản trị viên có thể xóa sạch mọi dữ liệu của người dùng trên toàn hệ thống.',
     descEn:
-      'The bot stores User IDs, scores, and played words strictly for gameplay purposes. GDPR Compliant: System administrators can erase all member records across all guilds using `/wordchain-manage admin purge-user`.',
+      'The bot stores User IDs, scores, and played words strictly for gameplay purposes. GDPR Compliant: System administrators can erase all member records across all guilds.',
   },
   support_server: {
     title: 'Máy Chủ Hỗ Trợ / Support Server',
     descVi:
-      'Ghé thăm máy chủ hỗ trợ chính thức để báo cáo lỗi từ điển hoặc đề xuất tính năng mới: https://discord.gg/lora',
+      'Ghé thăm server hỗ trợ chính thức để báo cáo lỗi từ điển hoặc đề xuất tính năng mới: https://discord.gg/4r5Vp4XdeS',
     descEn:
-      'Visit our official support server for dictionary appeals, bug reports, and updates: https://discord.gg/lora',
+      'Visit our official support server for dictionary appeals, bug reports, and updates: https://discord.gg/4r5Vp4XdeS',
   },
   other_info: {
     title: 'Thông Tin Mã Nguồn / Project Credits',
     descVi:
-      'Word Chain được xây dựng dựa trên dự án mã nguồn mở của Indently, sử dụng từ điển Wiktionary của Wikimedia Foundation và dữ liệu tần số ngôn ngữ Leipzig Wortschatz.',
+      'Feature Word Chain được xây dựng dựa trên dự án mã nguồn mở của Indently (https://github.com/WrichikBasu/word_chain_bot_indently), sử dụng từ điển Wiktionary của Wikimedia Foundation và dữ liệu tần số ngôn ngữ Leipzig Wortschatz.',
     descEn:
-      'Word Chain is built upon the open-source architecture by Indently, powered by Wikimedia Wiktionary and Leipzig Wortschatz frequency datasets.',
+      'Feature Word Chain is built upon the open-source architecture by Indently (https://github.com/WrichikBasu/word_chain_bot_indently), powered by Wikimedia Wiktionary and Leipzig Wortschatz frequency datasets.',
   },
   vote: {
     title: 'Bình Chọn Cho Bot / Vote for the Bot',
     descVi:
-      'Hãy ủng hộ bot trên các nền tảng Top.gg và DiscordBotList để giúp cộng đồng ngày càng phát triển!',
+      'Ủng hộ bot trên Top.gg và DiscordBotList để giúp cộng đồng ngày càng phát triển! À mà tạm thời thì chưa cần ☆*: .｡. o(≧▽≦)o .｡.:*☆',
     descEn:
-      'Support the bot by voting on Top.gg and DiscordBotList to help grow the community!',
+      'Support the bot by voting on Top.gg and DiscordBotList to help grow the community! Ah currenty we dont need it ☆*: .｡. o(≧▽≦)o .｡.:*☆',
   },
   multi_language: {
-    title: 'Hệ Thống Đa Ngôn Ngữ / Multi-Language Support',
+    title: 'Hỗ Trợ Đa Ngôn Ngữ / Multi-Language Support',
     descVi:
-      'Phiên bản ban đầu hỗ trợ tiếng Anh (`en`). Kiến trúc hỗ trợ mở rộng thêm 21 ngôn ngữ Châu Âu trong các bản cập nhật tương lai.',
+      'Phiên bản ban đầu hỗ trợ tiếng Anh (`en`). Có thể hỗ trợ thêm nhiều ngôn ngữ khác trong các bản cập nhật tương lai.',
     descEn:
-      'Initial release exclusively supports English (`en`). The underlying architecture is extensible to support 21 additional European languages in future releases.',
+      'Initial release exclusively supports English (`en`). Additional languages will be supported in future updates.',
   },
 };
 
 export function buildHelpSelectMenu(invokerId: string, selectedValue = 'how_to_play') {
   const select = new StringSelectMenuBuilder()
     .setCustomId(`wordchain:help:${invokerId}`)
-    .setPlaceholder('Chọn một chuyên đề trợ giúp / Choose a help topic')
+    .setPlaceholder('Chọn một chủ đề trợ giúp / Choose a help topic')
     .addOptions(
       Object.entries(HELP_TOPICS).map(([key, topic]) =>
         new StringSelectMenuOptionBuilder()

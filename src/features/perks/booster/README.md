@@ -12,7 +12,7 @@ Lát cắt `booster/` nằm trong tính năng `src/features/perks/`, được th
 * **Đặc quyền màu sắc:**
   * **Single Booster (1 boost):** Tùy chỉnh Tên role và Màu đơn sắc (Solid Hex Color).
   * **Double Booster (2+ boosts):** Mở khóa đặc quyền phối màu **Gradient 2 màu** (`color1` chuyển sang `color2`) được áp dụng tự động 100% qua Discord API.
-* **Chính sách Ân hạn (Grace Period):** Khi người dùng hết hạn boost trên Discord (hoặc Admin hạ boost về 0), Custom Role được bảo lưu **7 ngày** trên server. Sau 7 ngày nếu không boost lại, hệ thống sẽ tự động thu hồi và xóa role vĩnh viễn.
+* **Chính sách Ân hạn (Grace Period):** Khi người dùng hết hạn boost trên Discord (hoặc Admin hạ boost về 0), Custom Role được bảo lưu trong thời gian ân hạn (mặc định **21 ngày / 3 tuần**) trên server. Sau khi hết thời gian ân hạn nếu không boost lại, hệ thống sẽ tự động thu hồi và xóa role vĩnh viễn.
 
 ---
 
@@ -92,4 +92,5 @@ Khi Administrator thực hiện `/perk server_booster set_boost user:<@User> cou
 | **`v0.2.6`** | Hợp nhất cơ chế nhận diện Server Booster (**Unified Booster Resolution**), cho phép claim role và hiển thị trạng thái chính xác cho cả booster tự nhiên lẫn tài khoản test được Admin gán thủ công. |
 | **`v0.2.7`** | Bổ sung quy trình unboost tương tác (**Interactive Unboost Workflow**) với 2 nút bấm: Tiêu Chuẩn (ân hạn 7 ngày) và Can Thiệp (xóa role tức thì) khi Admin đặt số boost về 0. |
 | **`v0.2.8`** | Đồng bộ hóa toàn diện hệ thống: Xóa bỏ bảng và model `RoleUpdateQueue` khỏi database; bổ sung kiểm tra bắt buộc `color1` khi tạo gradient lần đầu; đồng bộ danh xưng trong `role_view` cho Staff; cập nhật chuẩn hóa kiến trúc tài liệu. |
+| **`v0.2.9`** | Cập nhật thời gian ân hạn mặc định từ 7 ngày lên 21 ngày (3 tuần) trong cấu hình nạp động và Prisma schema; điều chỉnh mô tả lệnh `role_info` linh hoạt theo cấu hình máy chủ. |
 

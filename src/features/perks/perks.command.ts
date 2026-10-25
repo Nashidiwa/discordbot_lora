@@ -25,13 +25,13 @@ import donatorUnequipSub from './donator/subcommands/donator-unequip.sub.js';
 
 const data = new SlashCommandBuilder()
   .setName('perk')
-  .setDescription('Hệ thống quản lý quyền lợi máy chủ (Server Perks)')
+  .setDescription('Tính năng quản lý quyền lợi server (Server Perks)')
   .setDMPermission(false)
   // 1. Top-level Subcommands
   .addSubcommand((sub) =>
     sub
       .setName('list')
-      .setDescription('Xem danh sách tất cả các gói quyền lợi của máy chủ'),
+      .setDescription('Xem danh sách tất cả các loại perk của server'),
   )
   .addSubcommand((sub) =>
     sub
@@ -42,7 +42,7 @@ const data = new SlashCommandBuilder()
   .addSubcommandGroup((group) =>
     group
       .setName('server_booster')
-      .setDescription('Quản lý quyền lợi dành riêng cho Server Booster')
+      .setDescription('Quản lý quyền lợi dành cho Server Booster')
       .addSubcommand((sub) =>
         sub
           .setName('info')
@@ -54,12 +54,12 @@ const data = new SlashCommandBuilder()
         sub
           .setName('role_view')
           .setDescription(
-            'Xem thông tin chi tiết Custom Role của bạn hoặc thành viên khác',
+            'Xem thông tin chi tiết đặc quyền Custom Role',
           )
           .addUserOption((opt) =>
             opt
               .setName('user')
-              .setDescription('Thành viên cần xem (chỉ Staff mới được xem người khác)')
+              .setDescription('Thành viên cần xem')
               .setRequired(false),
           ),
       )
@@ -72,7 +72,7 @@ const data = new SlashCommandBuilder()
         sub
           .setName('role_unclaim')
           .setDescription(
-            'Tạm tháo Custom Role của bạn (role không bị xóa khỏi server)',
+            'Tạm tháo Custom Role của bạn',
           ),
       )
       .addSubcommand((sub) =>
@@ -95,7 +95,7 @@ const data = new SlashCommandBuilder()
             opt
               .setName('color2')
               .setDescription(
-                'Mã màu thứ 2 (đặc quyền gradient dành riêng cho 2+ boosts)',
+                'Mã màu thứ 2 (đặc quyền gradient dành cho 2+ boosts)',
               )
               .setRequired(false),
           ),
@@ -103,17 +103,17 @@ const data = new SlashCommandBuilder()
       .addSubcommand((sub) =>
         sub
           .setName('set_boost')
-          .setDescription('(Admin) Đồng bộ số lượt boost của thành viên')
+          .setDescription('(Admin) Đồng bộ boost của member')
           .addUserOption((opt) =>
             opt
               .setName('user')
-              .setDescription('Thành viên cần đồng bộ số lượt boost')
+              .setDescription('Member cần đồng bộ số boost')
               .setRequired(true),
           )
           .addIntegerOption((opt) =>
             opt
               .setName('count')
-              .setDescription('Số lượt boost thực tế (tối thiểu 0)')
+              .setDescription('Số boost thực tế (tối thiểu 0)')
               .setMinValue(0)
               .setRequired(true),
           ),
@@ -124,7 +124,7 @@ const data = new SlashCommandBuilder()
     group
       .setName('donator')
       .setDescription(
-        'Quản lý quyền lợi và quỹ thời gian dành cho Donator (Người ủng hộ)',
+        'Quản lý quyền lợi và quỹ thời gian dành cho Donator',
       )
       .addSubcommand((sub) =>
         sub
@@ -137,13 +137,13 @@ const data = new SlashCommandBuilder()
         sub
           .setName('status')
           .setDescription(
-            'Xem số dư credit, trạng thái trang bị và chuỗi streak của bạn',
+            'Xem số dư credit, trạng thái trang bị và streak của bạn',
           )
           .addUserOption((opt) =>
             opt
               .setName('member')
               .setDescription(
-                'Thành viên cần tra cứu (chỉ Admin mới được xem người khác)',
+                'Thành viên cần tra cứu',
               )
               .setRequired(false),
           ),
@@ -152,14 +152,14 @@ const data = new SlashCommandBuilder()
         sub
           .setName('equip')
           .setDescription(
-            'Lấy Role Donator ra đeo - kích hoạt tốc độ tiêu hao 1.0x',
+            'Đeo Role Donator - hệ số tiêu hao 1.0x',
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('unequip')
           .setDescription(
-            'Cất Role Donator vào kho - kích hoạt tốc độ tiết kiệm 0.2x',
+            'Tạm gỡ Role Donator - hệ số tiêu hao 0.2x',
           ),
       )
       .addSubcommand((sub) =>
@@ -177,7 +177,7 @@ const data = new SlashCommandBuilder()
           .addIntegerOption((opt) =>
             opt
               .setName('amount')
-              .setDescription('Số tiền ủng hộ (VNĐ, tối thiểu 1)')
+              .setDescription('Số tiền ủng hộ (VNĐ)')
               .setMinValue(1)
               .setRequired(true),
           )
@@ -192,12 +192,12 @@ const data = new SlashCommandBuilder()
         sub
           .setName('adjust')
           .setDescription(
-            '(Admin) Điều chỉnh tăng/giảm thời gian credit của thành viên',
+            '(Admin) Điều chỉnh tăng/giảm thời gian credit của member',
           )
           .addUserOption((opt) =>
             opt
               .setName('user')
-              .setDescription('Thành viên cần điều chỉnh')
+              .setDescription('Member cần điều chỉnh credit')
               .setRequired(true),
           )
           .addIntegerOption((opt) =>
@@ -219,18 +219,18 @@ const data = new SlashCommandBuilder()
         sub
           .setName('set_streak')
           .setDescription(
-            '(Admin) Điều chỉnh bậc chuỗi tuần (Streak) của thành viên',
+            '(Admin) Điều chỉnh Streak của Member',
           )
           .addUserOption((opt) =>
             opt
               .setName('user')
-              .setDescription('Thành viên cần điều chỉnh streak')
+              .setDescription('Member cần điều chỉnh streak')
               .setRequired(true),
           )
           .addIntegerOption((opt) =>
             opt
               .setName('streak')
-              .setDescription('Bậc streak mới (0 đến 100)')
+              .setDescription('Bậc streak mới (0-100)')
               .setMinValue(0)
               .setMaxValue(100)
               .setRequired(true),
@@ -239,11 +239,11 @@ const data = new SlashCommandBuilder()
       .addSubcommand((sub) =>
         sub
           .setName('config')
-          .setDescription('(Admin) Cấu hình hệ thống Donator Perk của máy chủ')
+          .setDescription('(Admin) Cấu hình tính năng Perk Donator của server')
           .addStringOption((opt) =>
             opt
               .setName('action')
-              .setDescription('Hành động cấu hình (view, set_role, set_channel)')
+              .setDescription('Hành động cần cấu hình (view, set_role, set_channel)')
               .setRequired(true)
               .addChoices(
                 { name: 'Xem cấu hình hiện tại (view)', value: 'view' },
@@ -258,7 +258,7 @@ const data = new SlashCommandBuilder()
             opt
               .setName('role')
               .setDescription(
-                'Role Donator cần gán (bắt buộc khi action là set_role)',
+                'Role Donator cần gán (bắt buộc khi cần set_role)',
               )
               .setRequired(false),
           )
@@ -266,7 +266,7 @@ const data = new SlashCommandBuilder()
             opt
               .setName('channel')
               .setDescription(
-                'Kênh thông báo (bỏ trống để xóa nếu action là set_channel)',
+                'Kênh thông báo (bỏ trống để xóa khi cần set_channel)',
               )
               .addChannelTypes(
                 ChannelType.GuildText,
@@ -278,7 +278,7 @@ const data = new SlashCommandBuilder()
       .addSubcommand((sub) =>
         sub
           .setName('toggle')
-          .setDescription('(Admin) Bật hoặc tắt tính năng Donator Perk')
+          .setDescription('(Admin) Bật hoặc tắt tính năng Perk Donator')
           .addBooleanOption((opt) =>
             opt
               .setName('state')
@@ -296,7 +296,7 @@ export const command: BotCommand = {
 
     if (!interaction.inGuild() || !interaction.guild) {
       await interaction.editReply({
-        content: 'Lệnh này chỉ có thể sử dụng bên trong máy chủ (Guild).',
+        content: 'Yêu cầu này chỉ có thể thực thi trong một server (Guild).',
       });
       return;
     }

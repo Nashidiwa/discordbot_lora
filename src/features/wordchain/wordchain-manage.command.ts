@@ -16,32 +16,32 @@ import adminManageSub from './subcommands/admin-manage.sub.js';
 
 const data = new SlashCommandBuilder()
   .setName('wordchain-manage')
-  .setDescription('Quản trị và cấu hình trò chơi Word Chain cho máy chủ')
+  .setDescription('Quản trị và cấu hình Word Chain cho server')
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
   .setDMPermission(false)
   // 1. Group: channel
   .addSubcommandGroup((group) =>
     group
       .setName('channel')
-      .setDescription('Cấu hình kênh trò chơi')
+      .setDescription('Cấu hình channel chơi Word Chain')
       .addSubcommand((sub) =>
         sub
           .setName('set')
-          .setDescription('Gán kênh hoạt động cho chế độ chơi')
+          .setDescription('Gán channel cho chơi word Chain (nối từ)')
           .addChannelOption((opt) =>
             opt
               .setName('channel')
-              .setDescription('Kênh văn bản dùng để chơi nối từ')
+              .setDescription('Channel mục tiêu để chơi Word Chain (nối từ)')
               .addChannelTypes(ChannelType.GuildText)
               .setRequired(true),
           )
           .addStringOption((opt) =>
             opt
               .setName('mode')
-              .setDescription('Chế độ chơi (Normal: 1 chữ cái, Hard: 2 chữ cái)')
+              .setDescription('Chế độ chơi (Normal / Hard)')
               .addChoices(
-                { name: 'Normal Mode (1 chữ cái)', value: 'normal' },
-                { name: 'Hard Mode (2 chữ cái)', value: 'hard' },
+                { name: 'Normal Mode (nối 1 chữ cái)', value: 'normal' },
+                { name: 'Hard Mode (nối 2 chữ cái)', value: 'hard' },
               )
               .setRequired(true),
           ),
@@ -49,11 +49,11 @@ const data = new SlashCommandBuilder()
       .addSubcommand((sub) =>
         sub
           .setName('unset')
-          .setDescription('Hủy kích hoạt kênh chơi cho chế độ được chọn')
+          .setDescription('Hủy gán channel cho chế độ chơi được chọn')
           .addStringOption((opt) =>
             opt
               .setName('mode')
-              .setDescription('Chế độ chơi cần hủy kênh')
+              .setDescription('Chế độ chơi cần hủy channel')
               .addChoices(
                 { name: 'Normal Mode', value: 'normal' },
                 { name: 'Hard Mode', value: 'hard' },
@@ -66,36 +66,36 @@ const data = new SlashCommandBuilder()
   .addSubcommandGroup((group) =>
     group
       .setName('role')
-      .setDescription('Cấu hình vai trò tự động (Reliable / Failed)')
+      .setDescription('Cấu hình role tự động (Reliable / Failed)')
       .addSubcommand((sub) =>
         sub
           .setName('set')
-          .setDescription('Gán vai trò cho người chơi uy tín hoặc người phá chuỗi')
+          .setDescription('Gán role cho member uy tín hoặc hay phá chuỗi')
           .addStringOption((opt) =>
             opt
               .setName('type')
-              .setDescription('Loại vai trò cần thiết lập')
+              .setDescription('Loại role cần cấu hình')
               .addChoices(
-                { name: 'Reliable Role (Người chơi uy tín)', value: 'reliable' },
-                { name: 'Failed Role (Người làm đứt chuỗi)', value: 'failed' },
+                { name: 'Reliable Role (Player uy tín)', value: 'reliable' },
+                { name: 'Failed Role (Player làm đứt chuỗi)', value: 'failed' },
               )
               .setRequired(true),
           )
           .addRoleOption((opt) =>
             opt
               .setName('role')
-              .setDescription('Vai trò trong máy chủ')
+              .setDescription('Role trong server')
               .setRequired(true),
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('unset')
-          .setDescription('Hủy gán vai trò')
+          .setDescription('Hủy gán role')
           .addStringOption((opt) =>
             opt
               .setName('type')
-              .setDescription('Loại vai trò cần hủy')
+              .setDescription('Loại role cần hủy')
               .addChoices(
                 { name: 'Reliable Role', value: 'reliable' },
                 { name: 'Failed Role', value: 'failed' },
@@ -108,16 +108,16 @@ const data = new SlashCommandBuilder()
   .addSubcommandGroup((group) =>
     group
       .setName('language')
-      .setDescription('Quản lý ngôn ngữ chơi trong máy chủ')
+      .setDescription('Quản lý ngôn ngữ Word Chain trong server')
       .addSubcommand((sub) =>
         sub
           .setName('show-all')
-          .setDescription('Hiển thị tất cả ngôn ngữ được hỗ trợ và trạng thái kích hoạt'),
+          .setDescription('Xem tất cả ngôn ngữ được hỗ trợ và trạng thái sử dụng'),
       )
       .addSubcommand((sub) =>
         sub
           .setName('add')
-          .setDescription('Kích hoạt thêm ngôn ngữ chơi (tối đa 2 ngôn ngữ)')
+          .setDescription('Thêm ngôn ngữ cho Word Chain (tối đa 2 ngôn ngữ)')
           .addStringOption((opt) =>
             opt
               .setName('language_code')
@@ -129,7 +129,7 @@ const data = new SlashCommandBuilder()
       .addSubcommand((sub) =>
         sub
           .setName('remove')
-          .setDescription('Tắt một ngôn ngữ chơi (phải giữ lại ít nhất 1 ngôn ngữ)')
+          .setDescription('Tắt một ngôn ngữ chơi (phải còn lại ít nhất 1 ngôn ngữ)')
           .addStringOption((opt) =>
             opt
               .setName('language_code')
@@ -143,22 +143,22 @@ const data = new SlashCommandBuilder()
   .addSubcommandGroup((group) =>
     group
       .setName('blacklist')
-      .setDescription('Quản lý danh sách từ cấm riêng của máy chủ')
+      .setDescription('Quản lý danh sách từ cấm riêng của server')
       .addSubcommand((sub) =>
         sub
           .setName('add')
-          .setDescription('Thêm từ vào danh sách đen (sẽ bị loại bỏ khi chơi)')
+          .setDescription('Thêm từ vào blacklist (sẽ không được chấp nhận)')
           .addStringOption((opt) =>
             opt
               .setName('word')
-              .setDescription('Từ tiếng Anh cần cấm')
+              .setDescription('Từ cần cấm')
               .setRequired(true),
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('remove')
-          .setDescription('Gỡ từ khỏi danh sách đen')
+          .setDescription('Gỡ từ khỏi blacklist')
           .addStringOption((opt) =>
             opt
               .setName('word')
@@ -170,29 +170,29 @@ const data = new SlashCommandBuilder()
       .addSubcommand((sub) =>
         sub
           .setName('show')
-          .setDescription('Hiển thị tất cả các từ trong danh sách đen'),
+          .setDescription('Xem tất cả các từ được ghi nhận trong blacklist'),
       ),
   )
   // 5. Group: whitelist
   .addSubcommandGroup((group) =>
     group
       .setName('whitelist')
-      .setDescription('Quản lý danh sách từ cho phép (bỏ qua kiểm tra từ điển)')
+      .setDescription('Quản lý danh sách từ mặc định cho phép (bỏ qua kiểm tra từ điển)')
       .addSubcommand((sub) =>
         sub
           .setName('add')
-          .setDescription('Thêm từ vào danh sách trắng (luôn được chấp nhận)')
+          .setDescription('Thêm từ vào whitelist (luôn được chấp nhận)')
           .addStringOption((opt) =>
             opt
               .setName('word')
-              .setDescription('Từ tiếng Anh cần thêm vào whitelist')
+              .setDescription('Từ cần thêm vào whitelist')
               .setRequired(true),
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('remove')
-          .setDescription('Gỡ từ khỏi danh sách trắng')
+          .setDescription('Gỡ từ khỏi whitelist')
           .addStringOption((opt) =>
             opt
               .setName('word')
@@ -204,73 +204,73 @@ const data = new SlashCommandBuilder()
       .addSubcommand((sub) =>
         sub
           .setName('show')
-          .setDescription('Hiển thị tất cả các từ trong danh sách trắng'),
+          .setDescription('Xem tất cả các từ được ghi nhận trong whitelist'),
       ),
   )
   // 6. Subcommand: reset-stats
   .addSubcommand((sub) =>
     sub
       .setName('reset-stats')
-      .setDescription('Xóa toàn bộ điểm số người chơi và kỷ lục chuỗi của máy chủ này'),
+      .setDescription('Xóa toàn bộ điểm số người chơi và kỷ lục chuỗi của server này'),
   )
   // 7. Group: admin
   .addSubcommandGroup((group) =>
     group
       .setName('admin')
-      .setDescription('Các thao tác quản trị cấp cao dành riêng cho Administrator')
+      .setDescription('Thao tác quản trị toàn hệ thống')
       .addSubcommand((sub) =>
         sub
           .setName('purge-user')
-          .setDescription('GDPR: Xóa vĩnh viễn toàn bộ dữ liệu của người dùng trên toàn hệ thống')
+          .setDescription('GDPR: Xóa vĩnh viễn toàn bộ dữ liệu user trên toàn hệ thống')
           .addStringOption((opt) =>
             opt
               .setName('user_id')
-              .setDescription('ID người dùng Discord cần xóa dữ liệu')
+              .setDescription('userID mục tiêu cần xóa dữ liệu')
               .setRequired(true),
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('purge-server')
-          .setDescription('Xóa vĩnh viễn toàn bộ dữ liệu Word Chain của một máy chủ')
+          .setDescription('Xóa vĩnh viễn toàn bộ dữ liệu Word Chain của một server')
           .addStringOption((opt) =>
             opt
               .setName('guild_id')
-              .setDescription('ID máy chủ Discord cần xóa')
+              .setDescription('Server ID mục tiêu cần xóa dữ liệu')
               .setRequired(true),
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('ban-member')
-          .setDescription('Cấm hoặc gỡ cấm người chơi khỏi hệ thống toàn cầu')
+          .setDescription('Cấm hoặc gỡ cấm user khỏi toàn hệ thống')
           .addStringOption((opt) =>
             opt
               .setName('user_id')
-              .setDescription('ID người dùng Discord')
+              .setDescription('userID mục tiêu')
               .setRequired(true),
           )
           .addBooleanOption((opt) =>
             opt
               .setName('ban')
-              .setDescription('True: cấm chơi, False: gỡ cấm')
+              .setDescription('True: cấm, False: gỡ cấm')
               .setRequired(false),
           ),
       )
       .addSubcommand((sub) =>
         sub
           .setName('ban-server')
-          .setDescription('Cấm hoặc gỡ cấm máy chủ khỏi bảng xếp hạng toàn cầu')
+          .setDescription('Cấm hoặc gỡ cấm server khỏi global leaderboard')
           .addStringOption((opt) =>
             opt
               .setName('guild_id')
-              .setDescription('ID máy chủ Discord')
+              .setDescription('Server ID mục tiêu')
               .setRequired(true),
           )
           .addBooleanOption((opt) =>
             opt
               .setName('ban')
-              .setDescription('True: cấm khỏi BXH, False: gỡ cấm')
+              .setDescription('True: cấm khỏi leaderboard, False: gỡ cấm')
               .setRequired(false),
           ),
       ),

@@ -20,7 +20,7 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
 
 > Mỗi tính năng được phát triển độc lập theo mô hình Vertical Slice. Khi hoàn thành, tài liệu chi tiết được lưu trữ tại `README.md` nội bộ của chính tính năng đó.
 
-- [x] **FEAT-01: Perks Management - Server Booster** `(v0.2.8)`
+- [x] **FEAT-01: Perks Management - Server Booster** `(v0.2.9)`
   > 📖 *Tài liệu đặc tả kiến trúc, cẩm nang vận hành và nhật ký phát triển chi tiết:* [`src/features/perks/booster/README.md`](../src/features/perks/booster/README.md)
   - Tự động hóa Custom Role đơn sắc và Gradient 2 màu qua Discord API `EnhancedRoleColors`.
   - Nhận diện Booster hợp nhất (`member.premiumSince` + `boostCount > 0`).

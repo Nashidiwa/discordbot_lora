@@ -1,9 +1,9 @@
 export const perksLocale = {
   vi: {
     NOT_A_BOOSTER:
-      'Yêu cầu bị từ chối: Bạn không đủ điều kiện (Server Booster) để thực thi lệnh này.',
+      'Yêu cầu bị từ chối: Bạn không thể thực thi lệnh này.',
     SINGLE_BOOSTER_REJECT:
-      'Yêu cầu bị từ chối: Bạn không đủ điều kiện (Double Booster) để thực thi lệnh này.\n\n💡 *Lưu ý: Do đặc tính kỹ thuật, nếu bạn đã boost từ 2 lần trở lên nhưng vẫn bị từ chối, vui lòng liên hệ Staff để kiểm tra và đồng bộ lại.*',
+      'Yêu cầu bị từ chối: Bạn không thể thực thi lệnh này.\n\n💡 *Lưu ý: Do đặc tính kỹ thuật, nếu bạn đã boost từ 2 lần trở lên nhưng vẫn bị từ chối, vui lòng liên hệ Staff để kiểm tra và đồng bộ lại.*',
     ROLE_CLAIM_NEW: 'Đã tạo và cấp thành công Custom Role của bạn!',
     ROLE_CLAIM_REEQUIP: 'Đã cấp lại Custom Role của bạn!',
     ROLE_ALREADY_EQUIPPED:
@@ -30,6 +30,6 @@ export const perksLocale = {
     SET_BOOST_SUCCESS:
       'Đã cập nhật số lượt boost của {user} thành **{count}** lượt.',
     SERVER_LACKS_ENHANCED_ROLE_COLORS:
-      'Yêu cầu bị từ chối: Máy chủ hiện chưa kích hoạt tính năng Màu Role Nâng Cao (Enhanced Role Styles - yêu cầu tối thiểu 3 lượt Server Boost). Do đó máy chủ chưa đủ điều kiện để áp dụng Custom Role 2 màu (gradient style).',
+      'Yêu cầu bị từ chối: Server hiện chưa kích hoạt Enhanced Role Styles. Do đó server chưa thể áp dụng Custom Role 2 màu (gradient style).',
   },
 } as const;
