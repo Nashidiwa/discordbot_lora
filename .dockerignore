@@ -1,0 +1,17 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.*
+*.log
+npm-debug.log*
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+dashboard/
+.gemini/
+.idea/
+.vscode/
