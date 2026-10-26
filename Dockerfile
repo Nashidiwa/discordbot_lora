@@ -56,8 +56,8 @@ COPY --from=builder /app/node_modules ./node_modules
 # Copy compiled code from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy Prisma schema and migrations for runtime schema sync
-COPY --from=builder /app/src/shared/db ./src/shared/db
+# Copy source code, scripts, and Prisma schema/migrations for CLI tools (deploy:prod, deploy:metadata)
+COPY --from=builder /app/src ./src
 
 # Copy entrypoint script and normalize line endings for Linux
 COPY docker-entrypoint.sh ./
