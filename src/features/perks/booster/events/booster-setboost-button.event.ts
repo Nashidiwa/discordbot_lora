@@ -42,8 +42,7 @@ export const event: BotEvent<Events.InteractionCreate> = {
       return;
     }
 
-    const member = interaction.member as GuildMember;
-    if (!member.permissions.has(PermissionFlagsBits.Administrator)) {
+    if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
       await interaction.reply({
         content: perksLocale.vi.ADMIN_ONLY,
         flags: MessageFlags.Ephemeral,

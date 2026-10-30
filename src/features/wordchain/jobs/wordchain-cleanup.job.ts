@@ -16,6 +16,19 @@ export const job: BotJob = {
       } else {
         logger.debug('Word Chain: No overdue guilds to purge at this time');
       }
+
+      // Dọn dẹp Negative Word Cache đã hết hạn (DEC-003)
+      const deletedCache = await _context.db.wordChainWordCache.deleteMany({
+        where: {
+          expiresAt: { lte: new Date() },
+        },
+      });
+      if (deletedCache.count > 0) {
+        logger.info(
+          { deletedCount: deletedCache.count },
+          'Word Chain: Cleaned up expired negative word cache entries',
+        );
+      }
     } catch (err: unknown) {
       logger.error({ err }, 'Word Chain: Error during scheduled retention cleanup job');
     }

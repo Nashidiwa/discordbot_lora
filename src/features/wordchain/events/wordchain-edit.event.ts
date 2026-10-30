@@ -1,4 +1,5 @@
 import { Events, type Message, type PartialMessage, type TextChannel } from 'discord.js';
+import { logger } from '../../../core/logger.js';
 import type { BotEvent } from '../../../core/types/index.js';
 import { wordChainGameService } from '../services/wordchain-game.service.js';
 
@@ -39,7 +40,12 @@ export const event: BotEvent<Events.MessageUpdate> = {
         .send(
           `<@${after.author.id}> edited their word! The **last** word was **${currentWord}**.`,
         )
-        .catch(() => {});
+        .catch((err: unknown) => {
+          logger.warn(
+            { err, guildId: after.guildId },
+            'Failed to send word edit warning to channel',
+          );
+        });
     }
   },
 };

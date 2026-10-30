@@ -6,7 +6,7 @@ import { loadEvents } from './core/loaders/event.loader.js';
 import { loadJobs } from './core/loaders/job.loader.js';
 import { loadRoutes } from './core/loaders/route.loader.js';
 import { startServer } from './core/server/server.js';
-import { registerGracefulShutdown } from './core/lifecycle.js';
+import { registerGracefulShutdown, triggerGracefulShutdown } from './core/lifecycle.js';
 import { db } from './shared/db/client.js';
 
 // Process Safety Nets
@@ -16,7 +16,7 @@ process.on('unhandledRejection', (reason: unknown) => {
 
 process.on('uncaughtException', (err: Error) => {
   logger.fatal({ err }, 'Uncaught Exception detected, shutting down...');
-  process.exit(1);
+  void triggerGracefulShutdown(1, 'UNCAUGHT_EXCEPTION');
 });
 
 async function bootstrap(): Promise<void> {
@@ -49,5 +49,5 @@ async function bootstrap(): Promise<void> {
 
 bootstrap().catch((err: unknown) => {
   logger.fatal({ err }, 'Failed to bootstrap Discord Bot application');
-  process.exit(1);
+  void triggerGracefulShutdown(1, 'BOOTSTRAP_FAILURE');
 });

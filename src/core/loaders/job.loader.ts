@@ -142,14 +142,24 @@ export async function loadJobs(
         );
 
         if (job.runOnInit) {
-          logger.debug({ name: job.name }, 'Executing job on initialization');
-          try {
-            await job.execute({ client, db });
-          } catch (err: unknown) {
-            logger.error(
-              { err, job: job.name },
-              'Unhandled error during job runOnInit execution',
-            );
+          const executeOnInit = async () => {
+            logger.debug({ name: job.name }, 'Executing job on initialization');
+            try {
+              await job.execute({ client, db });
+            } catch (err: unknown) {
+              logger.error(
+                { err, job: job.name },
+                'Unhandled error during job runOnInit execution',
+              );
+            }
+          };
+
+          if (client.isReady()) {
+            void executeOnInit();
+          } else {
+            client.once('ready', () => {
+              void executeOnInit();
+            });
           }
         }
 

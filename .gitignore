@@ -1,7 +1,48 @@
+# Dependencies
 node_modules/
+dashboard/node_modules/
+.pnpm-store/
+
+# Environment & Secrets
 .env
+.env.*
+!.env.example
+dashboard/.env.local
+dashboard/.env.*.local
+
+# Production Build Outputs
 dist/
 build/
-*.log
+dashboard/dist/
+
+# SQLite Databases & Local Data
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
 *.sqlite
 *.sqlite-journal
+data/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor & OS Artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# AI Assistant Workspaces & Caches
+.gemini/
+.cursor/
+.agents/**/.cache/
+.agents/**/logs/
+.agents/**/tmp/
+.agents/**/*.log

@@ -32,6 +32,7 @@ export interface VoiceSession {
   status: VoiceConnectionStatusType;
   reconnectAttempts: number;
   reconnectTimer: NodeJS.Timeout | null;
+  isConnecting?: boolean;
   connectedAt: Date | null;
   lastPing: number | null;
 }

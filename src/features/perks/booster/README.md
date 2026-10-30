@@ -94,3 +94,17 @@ Khi Administrator thực hiện `/perk server_booster set_boost user:<@User> cou
 | **`v0.2.8`** | Đồng bộ hóa toàn diện hệ thống: Xóa bỏ bảng và model `RoleUpdateQueue` khỏi database; bổ sung kiểm tra bắt buộc `color1` khi tạo gradient lần đầu; đồng bộ danh xưng trong `role_view` cho Staff; cập nhật chuẩn hóa kiến trúc tài liệu. |
 | **`v0.2.9`** | Cập nhật thời gian ân hạn mặc định từ 7 ngày lên 21 ngày (3 tuần) trong cấu hình nạp động và Prisma schema; điều chỉnh mô tả lệnh `role_info` linh hoạt theo cấu hình máy chủ. |
 
+
+
+---
+
+## 6. Tích Hợp Web Dashboard & Trình Giả Lập Chat Simulator
+
+Giao diện quản lý Server Booster được tích hợp trực tiếp tại `/dashboard/guilds/:guildId/perks` (Tab Server Booster):
+
+* **Trình Giả Lập Tin Nhắn Discord Chân Thực (`DiscordChatSimulator.tsx`):**
+  * Mô phỏng trực quan khung chat Discord chuẩn thẩm mỹ Dark Theme, bao gồm Avatar, Username, Badge, Nhãn vai trò và nội dung tin nhắn mẫu.
+  * Hiển thị màu sắc vai trò chính xác theo thiết kế có chủ đích: hỗ trợ cả màu đơn sắc (Solid Hex) và phối màu Gradient 2 màu (`color1` $\rightarrow$ `color2`) theo chuẩn Discord API `EnhancedRoleColors`.
+* **Quản Trị Danh Sách Custom Roles Máy Chủ:**
+  * Thống kê tổng số Server Boosts, số lượng thành viên đang sở hữu Custom Role và số thành viên đang trong thời gian ân hạn 21 ngày.
+  * Hiển thị danh sách chi tiết các Custom Role của Booster kèm số boost bảo chứng và bộ đếm ngược ân hạn khi người dùng unboost.

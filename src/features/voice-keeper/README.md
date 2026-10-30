@@ -75,3 +75,17 @@ model VoiceKeeperConfig {
            [joinVoiceChannel]      [SUSPENDED]
                                 (Chờ Admin /reconnect)
 ```
+
+---
+
+## 5. Tích Hợp Web Dashboard & Độ Tin Cậy (Reliability & REST API)
+
+* **REST API Endpoints (`voice-keeper.route.ts`):**
+  * `GET /api/guilds/:guildId/voice-keeper`: Lấy trạng thái kết nối, ping, số lần retry và danh sách kênh thoại của server (yêu cầu quyền `VIEW_DASHBOARD`).
+  * `PUT /api/guilds/:guildId/voice-keeper/config`: Cập nhật cấu hình kênh thoại 24/7, selfDeaf, selfMute, autoReconnect trực tiếp từ Dashboard (yêu cầu quyền `MANAGE_VOICE_KEEPER`).
+  * `POST /api/guilds/:guildId/voice-keeper/reconnect`: Ép buộc kết nối lại tức thì (yêu cầu quyền `MANAGE_VOICE_KEEPER`).
+  * `POST /api/guilds/:guildId/voice-keeper/stop`: Ngắt kết nối và tắt giữ kênh 24/7 (yêu cầu quyền `MANAGE_VOICE_KEEPER`).
+* **Server-Sent Events (SSE):** Tự động phát sự kiện `voice:status` qua `eventBus` khi trạng thái kênh thoại thay đổi (CONNECTING, READY, DISCONNECTED, SUSPENDED, IDLE) để cập nhật Audio Equalizer và HUD trạng thái trên Dashboard với độ trễ 0ms.
+* **Xử Lý Sự Kiện Rời Máy Chủ (`voice-guild-delete.event.ts`):** Lắng nghe sự kiện `Events.GuildDelete` để tự động ngắt kết nối voice, giải phóng session và hủy các timer retry khi bot bị xóa khỏi server.
+* **Bảo Vệ Concurrency & Race Condition:** Sử dụng cờ bảo vệ `session.isConnecting` và dọn dẹp timer trong `finally` ngăn chặn xung đột tài nguyên giữa watchdog job và listener timeout. Bảo vệ an toàn tiến trình với guard `isShuttingDown` khi bot thực hiện Graceful Shutdown.
+

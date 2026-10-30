@@ -16,7 +16,13 @@ import {
 
 export class SwarmAuthService {
   private static getSecretKey(): string {
-    return swarmConfig.DISCORD_TOKEN || 'swarm-default-secret-salt';
+    if (!swarmConfig.DISCORD_TOKEN) {
+      throw new AppError(
+        'DISCORD_TOKEN is missing for OAuth2 HMAC signature',
+        SwarmErrorCode.CONFIG_MISSING,
+      );
+    }
+    return swarmConfig.DISCORD_TOKEN;
   }
 
   /**

@@ -75,3 +75,42 @@ Vào Discord Client $\rightarrow$ **Server Settings** $\rightarrow$ **Roles** $\
 * `SwarmOAuthToken`: Lưu `accessToken`, `refreshToken`, `expiresAt`, `scope`.
 * `SwarmOperator`: Lưu danh sách các User ID được Owner ủy quyền.
 * `SwarmGuildConfig`: Lưu `guildId` và `notificationChannelId`.
+
+---
+
+## 5. Kiến Trúc Dashboard 2 Không Gian: Server Scope & Global Scope
+
+Phân hệ The Swarm trên Web Dashboard được tổ chức thành 2 không gian điều khiển phân quyền rõ rệt:
+
+### 1. Không Gian Quản Trị Server (`/dashboard/guilds/:guildId/swarm` - `Server Scope`)
+* **Dành cho:** Server Admin (và Operator khi đang xem server đó).
+* **Quyền hạn Server Admin:**
+  * Xem số lượng thành viên The Swarm hiện diện trong máy chủ này.
+  * Xem số lượng thành viên phân bổ theo từng bậc (Level 1..8) trong server.
+  * Xem Kênh thông báo hiện tại của server (ở chế độ chỉ đọc `read-only`).
+  * Xem hướng dẫn cấu hình và sao chép Verification URL.
+  * Xem danh sách thành viên trong server được sắp xếp từ **The Swarm 8 về 0**.
+  * **Bảo mật:** Ẩn hoàn toàn trường Người cập nhật (`updatedBy`), ẩn số lượng Operators, vô hiệu hóa nút gán/thu hồi cấp bậc.
+* **Quyền hạn Operator/Owner khi ở Server Scope:**
+  * Được phép cấu hình kênh thông báo của server.
+  * Xem người cập nhật (`updatedBy`) và có nút thao tác điều chỉnh cấp bậc.
+  * Có nút chuyển nhanh sang **Bảng Quản Trị Swarm Toàn Cầu**.
+
+### 2. Không Gian Quản Trị Toàn Cầu (`/dashboard/global/swarm` - `Global Scope`)
+* **Dành riêng cho:** Bot Owner và Delegated Operator.
+* **Tính năng:**
+  * Truy cập bằng cách chọn **`🌐 Toàn Hệ Thống (Global)`** trên hộp chuyển đổi (Workspace Switcher) ở Navbar.
+  * Thống kê KPI toàn mạng lưới: Tổng thành viên linked toàn cầu, tổng Operators, số server đã cấu hình kênh.
+  * Bảng phân bổ 8 bậc danh hiệu trên toàn hệ thống.
+  * **Quản lý Delegated Operators:** Bot Owner được quyền bổ nhiệm thêm hoặc thu hồi Operator bằng Discord User ID.
+  * **Gán Cấp Bậc Toàn Cầu:** Modal tra cứu User ID trực tiếp qua Discord Gateway và gán bậc từ 0 (thu hồi) đến 8.
+  * **Danh Sách Toàn Bộ Thành Viên:** Sắp xếp từ bậc 8 về 0, hiển thị đầy đủ `updatedBy`, thời gian và nút điều chỉnh.
+
+### 3. Danh Mục Endpoints REST API
+* `GET /api/swarm/auth-status`: Kiểm tra quyền hạn `isOperator` & `isBotOwner` của tài khoản đăng nhập.
+* `GET /api/guilds/:guildId/swarm`: Lấy dữ liệu The Swarm của riêng server (bảo mật dữ liệu theo quyền).
+* `PUT /api/guilds/:guildId/swarm/config`: Cấu hình kênh thông báo (Chỉ Operator / Bot Owner).
+* `GET /api/swarm/global`: Lấy toàn bộ dữ liệu The Swarm toàn hệ thống (Chỉ Operator / Bot Owner).
+* `POST /api/swarm/global/members/:userId`: Gán/thu hồi level cấp toàn cầu (Chỉ Operator / Bot Owner).
+* `POST /api/swarm/global/operators`: Bổ nhiệm Operator mới (Chỉ Bot Owner).
+* `DELETE /api/swarm/global/operators/:userId`: Thu hồi quyền Operator (Chỉ Bot Owner).

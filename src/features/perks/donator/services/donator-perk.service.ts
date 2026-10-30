@@ -354,32 +354,36 @@ export class DonatorPerkService {
     calculation.newStreak = newStreak;
     calculation.isStreakIncremented = isStreakIncremented;
 
-    // Database updates
-    const updatedAccount = await db.donatorAccount.update({
-      where: { id: account.id },
-      data: {
-        creditSeconds: { increment: calculation.creditSecondsAdded },
-        isEquipped: true,
-        streak: newStreak,
-        currentWeekTotalVnd: newWeekTotalVnd,
-        totalDonated: { increment: BigInt(params.amountVnd) },
-        lastActiveWeekStart: currentWeekStart,
-        lastDeductedAt: now,
-      },
-    });
+    // Database updates within atomic transaction
+    const { updatedAccount, transaction } = await db.$transaction(async (tx) => {
+      const acc = await tx.donatorAccount.update({
+        where: { id: account.id },
+        data: {
+          creditSeconds: { increment: calculation.creditSecondsAdded },
+          isEquipped: true,
+          streak: newStreak,
+          currentWeekTotalVnd: newWeekTotalVnd,
+          totalDonated: { increment: BigInt(params.amountVnd) },
+          lastActiveWeekStart: currentWeekStart,
+          lastDeductedAt: now,
+        },
+      });
 
-    const transaction = await db.donatorTransaction.create({
-      data: {
-        guildId: params.guildId,
-        userId: params.userId,
-        amountVnd: params.amountVnd,
-        bonusVolumePercent: calculation.bonusVolumePercent,
-        bonusStreakPercent: calculation.bonusStreakPercent,
-        creditSecondsAdded: calculation.creditSecondsAdded,
-        actionType: DonatorActionType.DONATION,
-        note: params.note ?? null,
-        createdBy: params.createdBy,
-      },
+      const txRecord = await tx.donatorTransaction.create({
+        data: {
+          guildId: params.guildId,
+          userId: params.userId,
+          amountVnd: params.amountVnd,
+          bonusVolumePercent: calculation.bonusVolumePercent,
+          bonusStreakPercent: calculation.bonusStreakPercent,
+          creditSecondsAdded: calculation.creditSecondsAdded,
+          actionType: DonatorActionType.DONATION,
+          note: params.note ?? null,
+          createdBy: params.createdBy,
+        },
+      });
+
+      return { updatedAccount: acc, transaction: txRecord };
     });
 
     // Discord role assignment with Role Hierarchy Guard
@@ -640,23 +644,27 @@ export class DonatorPerkService {
         ? DonatorActionType.ADJUST_ADD
         : DonatorActionType.ADJUST_DEDUCT;
 
-    const updatedAccount = await db.donatorAccount.update({
-      where: { id: account.id },
-      data: { creditSeconds: newCreditSeconds },
-    });
+    const updatedAccount = await db.$transaction(async (tx) => {
+      const acc = await tx.donatorAccount.update({
+        where: { id: account.id },
+        data: { creditSeconds: newCreditSeconds },
+      });
 
-    await db.donatorTransaction.create({
-      data: {
-        guildId: params.guildId,
-        userId: params.userId,
-        amountVnd: 0,
-        bonusVolumePercent: 0,
-        bonusStreakPercent: 0,
-        creditSecondsAdded: params.seconds,
-        actionType,
-        note: params.reason ?? null,
-        createdBy: params.createdBy,
-      },
+      await tx.donatorTransaction.create({
+        data: {
+          guildId: params.guildId,
+          userId: params.userId,
+          amountVnd: 0,
+          bonusVolumePercent: 0,
+          bonusStreakPercent: 0,
+          creditSecondsAdded: params.seconds,
+          actionType,
+          note: params.reason ?? null,
+          createdBy: params.createdBy,
+        },
+      });
+
+      return acc;
     });
 
     return updatedAccount;
@@ -680,23 +688,27 @@ export class DonatorPerkService {
       );
     }
 
-    const updatedAccount = await db.donatorAccount.update({
-      where: { id: account.id },
-      data: { streak: params.streak },
-    });
+    const updatedAccount = await db.$transaction(async (tx) => {
+      const updated = await tx.donatorAccount.update({
+        where: { id: account.id },
+        data: { streak: params.streak },
+      });
 
-    await db.donatorTransaction.create({
-      data: {
-        guildId: params.guildId,
-        userId: params.userId,
-        amountVnd: 0,
-        bonusVolumePercent: 0,
-        bonusStreakPercent: 0,
-        creditSecondsAdded: 0,
-        actionType: DonatorActionType.SET_STREAK,
-        note: `Admin set streak to ${params.streak}`,
-        createdBy: params.createdBy,
-      },
+      await tx.donatorTransaction.create({
+        data: {
+          guildId: params.guildId,
+          userId: params.userId,
+          amountVnd: 0,
+          bonusVolumePercent: 0,
+          bonusStreakPercent: 0,
+          creditSecondsAdded: 0,
+          actionType: DonatorActionType.SET_STREAK,
+          note: `Admin set streak to ${params.streak}`,
+          createdBy: params.createdBy,
+        },
+      });
+
+      return updated;
     });
 
     return updatedAccount;

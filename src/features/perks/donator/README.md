@@ -183,3 +183,25 @@ model DonatorTransaction {
 | Phiên bản | Nội dung triển khai chính |
 | :--- | :--- |
 | **`v0.3.0`** *(Hoàn thành)* | • Hoàn thiện tài liệu Đặc tả Yêu cầu Tính năng ([`FRD.md`](./FRD.md)) và Kiến trúc Kỹ thuật.<br>• Xác định mô hình Quỹ Thời Gian (Time-Bank), Tỷ lệ $0.2x$ khi cất kho, và Đóng băng $0.0x$ khi tắt tính năng.<br>• Thiết lập công thức Đòn bẩy Thưởng Kép (Volume Bonus + Weekly Streak Bonus) neo múi giờ UTC+7.<br>• Thiết kế cấu trúc lệnh `/perk donator` chuẩn phân quyền tuyệt đối `Administrator`.<br>• Triển khai bộ tiện ích múi giờ UTC+7 & định dạng (`donator.utils.ts`).<br>• Xây dựng tầng Service nghiệp vụ trung tâm (`donator-perk.service.ts`) hỗ trợ Lazy Evaluation in-memory, chốt nợ credit, quản trị chu kỳ tuần và xử lý an toàn lỗi Discord API (50007, 50013).<br>• Khởi tạo 2 Cron Jobs tự động: `donator-cleanup.job.ts` (quét dọn role cạn quỹ mỗi 10 phút) và `donator-decay.job.ts` (suy giảm mềm chuỗi streak lúc 00:00 Thứ Hai UTC+7).<br>• Lắng nghe sự kiện rời máy chủ Gateway (`donator-leave.event.ts`) để tự động chuyển trạng thái cất kho 0.2x bảo lưu quyền lợi.<br>• Xây dựng từ điển bản địa hóa song ngữ `vi`/`en` (`donator.locale.ts`).<br>• Triển khai 9 subcommands độc lập (`donator-info`, `donator-status`, `donator-equip`, `donator-unequip`, `donator-add`, `donator-adjust`, `donator-setstreak`, `donator-config`, `donator-toggle`).<br>• Tích hợp Subcommand Group `donator` vào Root Command `/perk` (`perks.command.ts`).<br>• Cập nhật lệnh chung `/perk list` và `/perk status` đồng bộ hài hòa cả Booster và Donator. |
+
+
+---
+
+## 7. Tích Hợp Web Dashboard & Báo Cáo Tài Chính (`perks.route.ts`)
+
+Web Dashboard cung cấp giao diện quản trị tài chính Donator trực quan tại `/dashboard/guilds/:guildId/perks`:
+
+* **Danh Mục REST API Endpoints:**
+  * `GET /api/guilds/:guildId/perks`: Trả về dữ liệu cấu hình Donator, danh sách toàn bộ tài khoản ủng hộ trong server, số dư credit, trạng thái trang bị, chuỗi streak và ngày dự kiến cạn quỹ (yêu cầu quyền `VIEW_DASHBOARD`).
+  * `PUT /api/guilds/:guildId/perks/donator/config`: Cập nhật cấu hình Donator Perk (bật/tắt, vai trò Donator, kênh thông báo, biểu phí mốc VND, số ngày cơ sở, mức sàn tuần, hệ số tiêu hao khi cất kho). Tự động thẩm tra xác thực Role và Kênh phải thuộc về `:guildId` (yêu cầu quyền `MANAGE_PERKS`).
+  * `POST /api/guilds/:guildId/perks/donator/topup`: Ghi nhận khoản ủng hộ trực tiếp từ Dashboard:
+    - Ủy quyền thực thi qua `donatorPerkService.addDonation(...)`.
+    - Tự động tính toán đầy đủ Đòn bẩy Thưởng Kép (Volume Bonus $10\% - 35\%$ và Weekly Streak Bonus $+0\% - +20\%$).
+    - Đóng gói toàn bộ thao tác cập nhật tài khoản và ghi nhận lịch sử vào Prisma `$transaction` nguyên tử (ACID).
+    - Tự động trang bị vai trò trên Discord ($1.0x$) và gửi tin nhắn DM chúc mừng/biên lai điện tử cho người ủng hộ.
+  * `GET /api/guilds/:guildId/perks/donator/transactions`: Truy xuất nhật ký lịch sử giao dịch nạp tiền, hỗ trợ tham số `limit` tối đa 500 bản ghi phục vụ trích xuất báo cáo.
+  * `POST /api/guilds/:guildId/perks/donator/members/:userId/adjust`: Điều chỉnh số giây credit trực tiếp cho thành viên.
+  * `POST /api/guilds/:guildId/perks/donator/members/:userId/streak`: Thiết lập chuỗi streak (0..100) cho thành viên.
+* **Xuất Báo Cáo Tài Chính CSV Chuẩn UTF-8 BOM:**
+  * Bộ lọc thời gian thực trên Dashboard theo khoảng ngày (Date Range Picker) và từ khóa tìm kiếm (User ID hoặc ghi chú giao dịch).
+  * Trích xuất file `.csv` tích hợp tiền tố UTF-8 Byte Order Mark (`\uFEFF`), đảm bảo hiển thị tiếng Việt có dấu hoàn hảo trên Microsoft Excel mà không bị lỗi font ký tự.

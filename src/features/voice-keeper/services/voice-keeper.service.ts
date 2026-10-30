@@ -15,6 +15,7 @@ import {
 } from 'discord.js';
 import { AppError } from '../../../core/errors.js';
 import { logger } from '../../../core/logger.js';
+import { registerCleanupHook } from '../../../core/lifecycle.js';
 import { db } from '../../../shared/db/client.js';
 import { VoiceKeeperConstants } from '../voice-keeper.constants.js';
 import {
@@ -28,12 +29,10 @@ export class VoiceKeeperService {
   private isShuttingDown = false;
 
   constructor() {
-    // Đăng ký dọn dẹp kết nối an toàn khi tiến trình bot tắt
-    const cleanOnExit = () => {
+    // Đăng ký hook dọn dẹp an toàn vào lifecycle shutdown của bot
+    registerCleanupHook(() => {
       this.destroyAllConnections();
-    };
-    process.once('SIGINT', cleanOnExit);
-    process.once('SIGTERM', cleanOnExit);
+    });
   }
 
   /**
@@ -48,6 +47,14 @@ export class VoiceKeeperService {
     updatedBy?: string;
     isManual?: boolean;
   }): Promise<VoiceConnection> {
+    if (this.isShuttingDown) {
+      throw new AppError(
+        'Hệ thống đang tắt máy, từ chối khởi tạo kết nối thoại mới.',
+        'SYSTEM_SHUTTING_DOWN',
+        true,
+      );
+    }
+
     const { guild, channelId } = options;
 
     const channel = await guild.channels.fetch(channelId).catch(() => null);
@@ -275,6 +282,15 @@ export class VoiceKeeperService {
   ): Promise<void> {
     if (this.isShuttingDown) return;
 
+    const existingSession = this.sessions.get(guild.id);
+    if (
+      existingSession?.reconnectTimer ||
+      existingSession?.isConnecting ||
+      existingSession?.status === VoiceConnectionStatusType.IDLE
+    ) {
+      return;
+    }
+
     const config = await db.voiceKeeperConfig.findUnique({
       where: { guildId: guild.id },
     });
@@ -340,8 +356,8 @@ export class VoiceKeeperService {
     );
 
     session.reconnectTimer = setTimeout(async () => {
-      session.reconnectTimer = null;
       try {
+        session.isConnecting = true;
         await this.connect({
           guild,
           channelId,
@@ -356,6 +372,9 @@ export class VoiceKeeperService {
           'Scheduled auto-reconnect attempt failed',
         );
         void this.scheduleReconnect(guild, channelId);
+      } finally {
+        session.isConnecting = false;
+        session.reconnectTimer = null;
       }
     }, delay);
   }
@@ -463,26 +482,26 @@ export class VoiceKeeperService {
    */
   public async disconnect(guildId: string): Promise<void> {
     const session = this.sessions.get(guildId);
-    if (session?.reconnectTimer) {
-      clearTimeout(session.reconnectTimer);
-      session.reconnectTimer = null;
-    }
-
-    const connection = getVoiceConnection(guildId);
-    if (connection) {
-      connection.destroy();
-    }
-
     if (session) {
+      if (session.reconnectTimer) {
+        clearTimeout(session.reconnectTimer);
+        session.reconnectTimer = null;
+      }
       session.status = VoiceConnectionStatusType.IDLE;
       session.connection = null;
       session.reconnectAttempts = 0;
     }
 
+    // Cập nhật DB trước khi destroy connection để tránh race-condition với listener Disconnected
     await db.voiceKeeperConfig.updateMany({
       where: { guildId },
       data: { isEnabled: false },
     });
+
+    const connection = getVoiceConnection(guildId);
+    if (connection) {
+      connection.destroy();
+    }
 
     logger.info({ guildId }, 'Voice Keeper disconnected and disabled');
   }
@@ -637,7 +656,7 @@ export class VoiceKeeperService {
           connection.state.status === VoiceConnectionStatus.Destroyed ||
           connection.state.status === VoiceConnectionStatus.Disconnected;
         const isReconnecting =
-          session?.reconnectTimer !== null &&
+          (session?.reconnectTimer !== null || session?.isConnecting === true) &&
           session?.status === VoiceConnectionStatusType.RECONNECTING;
         const isSuspended =
           session?.status === VoiceConnectionStatusType.SUSPENDED;

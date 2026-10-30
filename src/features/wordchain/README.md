@@ -102,3 +102,18 @@ npx tsx --test src/features/wordchain/*.test.ts
 # Kiểm tra biên dịch TypeScript
 npm run build
 ```
+
+
+---
+
+## 5. Tích Hợp Web Dashboard & Quản Trị Từ Xa (`wordchain.route.ts`)
+
+Web Dashboard cung cấp giao diện quản trị thời gian thực tại `/dashboard/guilds/:guildId/wordchain`:
+
+* **REST API Endpoints:**
+  * `GET /api/guilds/:guildId/wordchain`: Trả về dữ liệu toàn diện bao gồm chuỗi hiện tại, kỷ lục high score, từ cuối cùng, bảng xếp hạng thành viên (Top Karma & Top Score), danh sách kênh và vai trò máy chủ (yêu cầu quyền `VIEW_DASHBOARD`).
+  * `PUT /api/guilds/:guildId/wordchain/config`: Cấu hình kênh chơi Normal/Hard, Reliable Role, Failed Role và mã ngôn ngữ. Xác thực bắt buộc kênh/vai trò phải thuộc `:guildId` (Cross-Guild Injection Guard), kiểm tra định dạng regex ngôn ngữ (`/^[a-z]{2}(,[a-z]{2})*$/`), và loại bỏ tham số nhạy cảm `isBanned` ngăn Admin tự gỡ cấm (yêu cầu quyền `MANAGE_WORDCHAIN`).
+  * `POST /api/guilds/:guildId/wordchain/reset`: Công cụ khẩn cấp cho phép Quản trị viên reset chuỗi và xóa bảng từ đã dùng của chế độ Normal, Hard hoặc cả hai khi ván chơi bị kẹt (yêu cầu quyền `MANAGE_WORDCHAIN`).
+* **Độ Toàn Vẹn & Khóa Tuần Tự (Mutex & SingleFlight):**
+  * Hàng đợi Mutex `withLock` tự động phục hồi khi gặp lỗi lượt chơi, không bao giờ gây unhandled rejection hoặc deadlock cho các lượt chơi tiếp theo.
+  * Bộ thẩm định từ điển tích hợp SingleFlight Coalescing trong `WordChainDictionaryService`, giải phóng Promise đang bay an toàn trong khối `finally` đảm bảo 100% Zero Memory Leaks.

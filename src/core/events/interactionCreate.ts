@@ -1,4 +1,4 @@
-import { EmbedBuilder, Events, type Interaction } from 'discord.js';
+import { EmbedBuilder, Events, type Interaction, MessageFlags } from 'discord.js';
 import { EmbedColor } from '../../shared/constants/colors.js';
 import type { ExtendedClient } from '../client.js';
 import { AppError } from '../errors.js';
@@ -32,12 +32,12 @@ export const event: BotEvent<Events.InteractionCreate> = {
           } else if (interaction.replied) {
             await interaction.followUp({
               embeds: [notFoundEmbed],
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           } else {
             await interaction.reply({
               embeds: [notFoundEmbed],
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           }
         } catch (replyErr: unknown) {
@@ -93,12 +93,12 @@ export const event: BotEvent<Events.InteractionCreate> = {
           } else if (interaction.replied) {
             await interaction.followUp({
               embeds: [errorEmbed],
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           } else {
             await interaction.reply({
               embeds: [errorEmbed],
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           }
         } catch (replyErr: unknown) {

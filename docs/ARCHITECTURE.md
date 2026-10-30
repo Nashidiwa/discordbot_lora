@@ -14,7 +14,7 @@ Thay vì chia mã nguồn theo tầng kỹ thuật ngang truyền thống (tất
 Request / Gateway Event
 ↓
 ┌────────────────────────────────────────────────────────┐
-│  src/core/ (Loaders, Router & Safety Nets)             │
+│  src/core/ (Loaders, Router, Server & Safety Nets)     │
 └────────────────────────────────────────────────────────┘
 ↓ (Dispatch)
 ┌────────────────────────────────────────────────────────┐
@@ -44,15 +44,21 @@ discordbot_lora/
 └── src/                          # 100% Backend Runtime (Node.js)
     ├── index.ts                  # Bootstrapper: khởi động Core, nạp Loaders, login Gateway
     │
-    ├── core/                     # VÙNG BẤT BIẾN: Hạ tầng hệ sinh thái (Agent không tự ý sửa)
+    ├── core/                     # Hạ tầng hệ sinh thái (Core Platform)
     │   ├── client.ts             # Discord Client mở rộng (chứa Collection lưu commands, bus)
     │   ├── config.ts             # Validate biến môi trường runtime (.env)
     │   ├── logger.ts             # Logger tập trung
     │   ├── bus.ts                # Internal Event Bus (Node.js EventEmitter)
     │   ├── lifecycle.ts          # Graceful shutdown handler (SIGINT, SIGTERM)
-    │   ├── server/               # Fastify HTTP Server instance
+    │   ├── server/               # Fastify Web & REST API Architecture
+    │   │   ├── server.ts         # Fastify instance, startServer, stopServer
+    │   │   ├── auth/             # Session crypto & token signing (HMAC SHA-256)
+    │   │   ├── guards/           # PreHandler guards (requireAuth, requirePermit, requireBotOwner, requireDiscordReady)
+    │   │   ├── plugins/          # Modular plugins (cookie, cors, static SPA fallback)
+    │   │   ├── sse/              # Server-Sent Events Manager (heartbeats, guild & system push)
+    │   │   └── routes/           # Core platform routes (auth.route.ts, system.route.ts, sse.route.ts)
     │   ├── types/                # Core Interfaces (BotCommand, BotEvent, BotJob, BotRoute)
-    │   ├── loaders/              # Dynamic Scanner nạp tự động tài nguyên từ src/features/
+    │   ├── loaders/              # Dynamic Scanner nạp tự động tài nguyên từ core routes & features
     │   │   ├── command.loader.ts
     │   │   ├── event.loader.ts
     │   │   ├── job.loader.ts
@@ -64,18 +70,19 @@ discordbot_lora/
     │   ├── db/
     │   │   ├── client.ts         # PrismaClient singleton instance
     │   │   └── schema.prisma     # NƠI TẬP TRUNG TOÀN BỘ DATABASE SCHEMA CỦA DỰ ÁN
+    │   ├── permit/               # Shared Wick-style RBAC Permit Engine (Service & Constants)
     │   ├── utils/                # Helper functions (Embed formatters, Time/String utilities)
     │   └── constants/            # ID cố định, Discord Permissions, Enums toàn cục
     │
     └── features/                 # VÙNG NGHIỆP VỤ (Mỗi folder là một lát cắt tính năng độc lập)
-        └── <feature-name>/       # Đóng gói hoàn chỉnh từng domain (ping, swarm-linked-roles, perks/booster, perks/donator...)
+        └── <feature-name>/       # Đóng gói hoàn chỉnh từng domain (ping, swarm-linked-roles, perks, voice-keeper, wordchain, permit, guild-meta...)
 ```
 
 ---
 
 ## 3. Quy ước Tệp tin & Cơ chế Dynamic Loaders
 
-Hệ thống Core sử dụng cơ chế **File Convention Discovery** để tự động quét đệ quy thư mục `src/features/` khi khởi động. Mọi tệp tin phải tuân thủ đúng hậu tố:
+Hệ thống Core sử dụng cơ chế **File Convention Discovery** để tự động quét cả Core Server Routes lẫn thư mục `src/features/` khi khởi động. Mọi tệp tin phải tuân thủ đúng hậu tố:
 
 | Hậu tố tệp tin | Giao diện thực thi (Interface) | Hành vi của Core Loader |
 | --- | --- | --- |
@@ -107,7 +114,7 @@ Nhằm đảm bảo dự án có thể mở rộng lâu dài và không bao gi�
 2. **Cho phép:** Mọi feature được phép import từ:
 * Chính thư mục nội bộ của nó (`src/features/<feature-name>/*`).
 * Tầng dùng chung (`src/shared/*`).
-* Tầng hạ tầng (`src/core/*` - chỉ import types, logger, bus, không import loaders).
+* Tầng hạ tầng (`src/core/*` - types, logger, bus, guards, không import loaders).
 
 ### 4.2. Luật Giao tiếp Giữa các Feature
 
@@ -187,170 +194,31 @@ model GuildSetting {
 }
 
 // ==========================================
-// DOMAIN: PERKS MANAGEMENT - SERVER BOOSTER
+// DOMAIN: CUSTOM PERMIT & RBAC (WICK-STYLE)
 // ==========================================
-model BoosterPerkConfig {
-  guildId               String   @id
-  gracePeriodDays       Int      @default(21)
-  anchorRoleId          String?
-  notificationChannelId String?
-  auditLogChannelId     String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+model GuildPermitConfig {
+  guildId           String   @id @map("guild_id")
+  trustedAdminFlags Int      @default(29) @map("trusted_admin_flags")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
-  @@map("booster_perk_configs")
+  @@map("guild_permit_configs")
 }
 
-model CustomRolePerk {
-  id                   String    @id @default(cuid())
-  guildId              String
-  userId               String
-  perkType             String    @default("SERVER_BOOSTER")
-  boostCount           Int       @default(1)
-  roleId               String?
-  roleName             String?
-  roleColor            String?
-  roleColor2           String?
-  status               String    @default("ACTIVE")
-  isEquipped           Boolean   @default(true)
-  gracePeriodExpiresAt DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-
-  @@unique([guildId, userId, perkType])
-  @@index([guildId, status])
-  @@map("custom_role_perks")
-}
-
-// ==========================================
-// DOMAIN: PERKS MANAGEMENT - DONATOR
-// ==========================================
-model DonatorPerkConfig {
-  guildId               String   @id
-  isEnabled             Boolean  @default(false)
-  donatorRoleId         String?
-  notificationChannelId String?
-  baseBenchmarkVnd      Int      @default(200000)
-  baseBenchmarkDays     Int      @default(30)
-  weeklyMinVnd          Int      @default(50000)
-  idleBurnRate          Float    @default(0.2)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  @@map("donator_perk_configs")
-}
-
-model DonatorAccount {
-  id                  String    @id @default(cuid())
-  guildId             String
-  userId              String
-  creditSeconds       Float     @default(0)
-  isEquipped          Boolean   @default(true)
-  streak              Int       @default(0)
-  currentWeekTotalVnd Int       @default(0)
-  totalDonated        BigInt    @default(0)
-  lastDeductedAt      DateTime  @default(now())
-  lastActiveWeekStart DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-
-  @@unique([guildId, userId])
-  @@index([guildId, isEquipped])
-  @@map("donator_accounts")
-}
-
-model DonatorTransaction {
-  id                 String   @id @default(cuid())
-  guildId            String
-  userId             String
-  amountVnd          Int
-  bonusVolumePercent Float    @default(0)
-  bonusStreakPercent Float    @default(0)
-  creditSecondsAdded Float
-  actionType         String
-  note               String?
-  createdBy          String
-  createdAt          DateTime @default(now())
-
-  @@index([guildId, userId])
-  @@map("donator_transactions")
-}
-
-// ==========================================
-// DOMAIN: SWARM LINKED ROLES & METADATA
-// ==========================================
-model SwarmMemberMetadata {
-  userId      String   @id @map("user_id")
-  swarmLevel  Int      @default(0) @map("swarm_level")
-  updatedBy   String   @map("updated_by")
+model GuildPermitAssignment {
+  id          String   @id @default(cuid())
+  guildId     String   @map("guild_id")
+  targetType  String   @map("target_type")
+  targetId    String   @map("target_id")
+  tier        String   @map("tier")
+  permissions Int      @default(1) @map("permissions")
+  createdBy   String   @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  @@map("swarm_member_metadata")
-}
-
-model SwarmOAuthToken {
-  userId        String   @id @map("user_id")
-  accessToken   String   @map("access_token")
-  refreshToken  String   @map("refresh_token")
-  expiresAt     DateTime @map("expires_at")
-  scope         String   @map("scope")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  @@map("swarm_oauth_tokens")
-}
-
-model SwarmOperator {
-  userId      String   @id @map("user_id")
-  addedBy     String   @map("added_by")
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  @@map("swarm_operators")
-}
-
-model SwarmGuildConfig {
-  guildId               String   @id @map("guild_id")
-  notificationChannelId String?  @map("notification_channel_id")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
-
-  @@map("swarm_guild_configs")
-}
-
-// ==========================================
-// DOMAIN: WORD CHAIN ENGINE
-// ==========================================
-model WordChainConfig {
-  guildId          String    @id @map("guild_id")
-  channelId        String?   @map("channel_id")
-  gameMode         Int       @default(1) @map("game_mode")
-  languages        String    @default("en")
-  reliableRoleId   String?   @map("reliable_role_id")
-  failedRoleId     String?   @map("failed_role_id")
-  currentWord      String?   @map("current_word")
-  currentCount     Int       @default(0) @map("current_count")
-  highScore        Int       @default(0) @map("high_score")
-  lastMemberId     String?   @map("last_member_id")
-  failedMemberId   String?   @map("failed_member_id")
-  qualifyingCount  Int       @default(0) @map("qualifying_count")
-  leftAt           DateTime? @map("left_at")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @updatedAt @map("updated_at")
-
-  @@map("word_chain_configs")
-}
-
-model WordChainWordCache {
-  language   String    @default("en")
-  word       String
-  isNegative Boolean   @default(false) @map("is_negative")
-  expiresAt  DateTime? @map("expires_at")
-  createdAt  DateTime  @default(now()) @map("created_at")
-
-  @@id([language, word])
-  @@index([expiresAt])
-  @@map("word_chain_word_caches")
+  @@unique([guildId, targetType, targetId])
+  @@index([guildId, tier])
+  @@map("guild_permit_assignments")
 }
 ```
 
@@ -372,7 +240,7 @@ model WordChainWordCache {
 
 ---
 
-## 7. Tầng Web & HTTP Server (Fastify Architecture)
+## 7. Tầng Web & HTTP Server (Fastify Clean Architecture)
 
 Hệ thống duy trì **duy nhất một HTTP Server instance** chạy song song với tiến trình bot trên một cổng duy nhất (`PORT`, mặc định: `3000`).
 
@@ -381,12 +249,20 @@ Hệ thống duy trì **duy nhất một HTTP Server instance** chạy song song
 * `src/`: 100% là Node.js Backend (xử lý Bot Gateway + Fastify REST API).
 * `dashboard/`: Thư mục chứa mã nguồn giao diện (Frontend SPA: React/Vite/...). Thư mục này tách biệt hoàn toàn về dependencies, build pipeline và runtime. Không chia sẻ code trực tiếp với `src/`.
 
-### 7.2. Phân tách Subdomain & Định tuyến (Routing via Reverse Proxy)
+### 7.2. Cấu trúc Mô-đun của Tầng Server (`src/core/server/`)
 
-Hệ thống không mở nhiều cổng. Mọi phân luồng theo subdomain được điều hướng thông qua Reverse Proxy (Nginx/Cloudflare) ở tầng hạ tầng mạng vào các tiền tố URL tương ứng:
-
-* `auth.domain.com/*` $\rightarrow$ Trỏ vào backend `localhost:3000/auth/*` (Linked Roles, OAuth2 callback).
-* `dashboard.domain.com/*` $\rightarrow$ Host file tĩnh của `dashboard/` (hoặc reverse proxy API về `localhost:3000/api/*`).
+Hạ tầng Fastify Server được tổ chức theo chuẩn Clean Architecture:
+* `server.ts`: Điểm khởi chạy Fastify instance, vòng đời start/stop.
+* `plugins/`: Đóng gói các plugin hạ tầng độc lập:
+  * `cors.plugin.ts`: Cấu hình CORS mở rộng với `credentials: true`.
+  * `cookie.plugin.ts`: Quản lý Cookie an toàn với secret key.
+  * `static.plugin.ts`: Phục vụ file tĩnh SPA (`dashboard/dist`) với bộ điều hướng 404 fallback về `index.html`.
+* `guards/`: Các PreHandler Guards dùng chung:
+  * `auth.guard.ts`: Xác thực phiên làm việc (`requireAuth`), kiểm tra Bot Owner (`requireBotOwner`).
+  * `permit.guard.ts`: Kiểm tra cờ quyền Bitfield trên Guild (`requirePermit`).
+  * `discord.guard.ts`: Bảo vệ tài nguyên khi Gateway chưa sẵn sàng (`requireDiscordReady`).
+* `sse/`: `SSEManager` quản lý kết nối Server-Sent Events, heartbeat định kỳ và chuyển tiếp sự kiện từ `eventBus`.
+* `routes/`: Các route cốt lõi của nền tảng (`auth.route.ts`, `system.route.ts`, `sse.route.ts`).
 
 ### 7.3. Dependency Injection cho Routes
 
@@ -400,13 +276,6 @@ export interface RouteContext {
 ```
 
 Cấm route tự ý import hoặc tạo mới instance Client/Prisma.
-
-### 7.4. Cơ chế Gateway Readiness Guard (PreHandler Hook)
-
-* **Độc lập Vòng đời Khởi động:** Fastify Server khởi động và mở cổng `PORT` ngay khi bot boot để sẵn sàng đón nhận các probe liveness/readiness của hạ tầng (`/healthz`).
-* **Bảo vệ Tài nguyên Gateway:** Đối với các route có tương tác trực tiếp với tài nguyên Discord (ví dụ: OAuth2 callback, Linked Roles, Discord cache/API fetch), Core Router cung cấp sẵn preHandler hook/middleware `requireDiscordReady`:
-  - Kiểm tra trạng thái `client.isReady()`.
-  - Nếu Gateway chưa sẵn sàng (đang reconnect hoặc đang boot), endpoint trả về HTTP `503 Service Unavailable` kèm thông báo JSON có cấu trúc, ngăn ngừa lỗi runtime crash do cache rỗng hoặc WebSocket chưa kết nối.
 
 ---
 

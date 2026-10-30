@@ -17,8 +17,10 @@
   * **The Swarm Linked Roles (FEAT-03):** Quản lý vai trò liên kết Discord Linked Roles cho 8 bậc (`The Swarm I` $\rightarrow$ `VIII`), RBAC 2 tầng (Bot Owner & Delegated Operator), đồng bộ metadata thời gian thực, kênh thông báo thăng cấp/thu hồi per-guild và Fastify OAuth2 endpoint xác thực bảo mật HMAC.
 * **Treo Kênh Thoại 24/7 (Voice Keeper - FEAT-04):** Quản lý kết nối thoại liên tục per-guild, cơ chế tự phục hồi 3 tầng khi rớt mạng (`ClientReady`, `voiceStateUpdate`, Watchdog Cron Job), chống spam Circuit Breaker sau 5 lần thử và tối ưu hóa tài nguyên mạng (`selfDeaf`/`selfMute`).
 * **Trò Chơi Nối Từ Đa Tầng (Wordchain Engine - FEAT-05):** Động cơ nối từ thông minh với kiến trúc từ điển 3 tầng (SCOWL RAM Lexicon 79.9K từ, SQLite Cache khóa phức hợp `language_word`, Wiktionary API Fallback kèm SingleFlight), hệ thống điểm Karma hợp tác với phân rã lặp hậu tố hàm mũ, tự động hóa vai trò Reliable/Failed Role, khóa FIFO per-guild chống race condition, thời gian ân hạn 7 ngày và bộ lệnh quản trị bảo mật GDPR.
-* **Tích hợp Web Server Kép:** Chạy song song HTTP Web Server (Fastify) phục vụ Discord OAuth2 Linked Roles và REST API cho Web Dashboard trong tương lai.
-* **Bền bỉ & An toàn (Resilience):** Cơ sở dữ liệu Prisma (SQLite WAL Mode / PostgreSQL), mạng lưới bắt lỗi tập trung (Error Boundaries) và quy trình ngắt kết nối an toàn (Graceful Shutdown).
+* **Hệ Thống Custom Permit Độc Lập (Wick-style RBAC - FEAT-07):** Phân quyền ủy quyền nâng cao chuẩn Wickbot độc lập khỏi Discord native permissions, cây thẩm quyền 4 tầng (Bot Owner, Server Owner, Co-Owner, Trusted Admin, Custom Grants) với ma trận cờ quyền Bitfield (`VIEW_DASHBOARD`, `MANAGE_PERMITS`, `MANAGE_SETTINGS`, `MANAGE_PERKS`, `MANAGE_VOICE_KEEPER`, `MANAGE_WORDCHAIN`, `MANAGE_SWARM`), đồng bộ bộ lệnh `/permit` với giao diện Web Dashboard.
+* **Web Management Dashboard & Fastify REST API (Track W):** Giao diện quản trị SPA độc lập (`dashboard/`, React 18, Vite, TypeScript Strict, Tailwind CSS, Lucide Icons, TanStack Query) với Dark Mode Discord Aesthetic. Xác thực Discord OAuth2 bảo mật qua HTTP-Only Cookie mã hóa HMAC SHA-256, hỗ trợ Master API Key, luồng Server-Sent Events (SSE) theo dõi trạng thái hệ thống, kênh thoại 24/7 và quyền lợi thành viên thời gian thực; kiến trúc Single-Port Hybrid tự động phục vụ SPA trên cổng 3000 ở production.
+* **Tích hợp Web Server Kép:** Chạy song song HTTP Web Server (Fastify) phục vụ Discord OAuth2 Linked Roles và REST API cho Web Dashboard.
+* **Bền bỉ & An toàn (Resilience):** Cơ sở dữ liệu Prisma (SQLite WAL Mode / PostgreSQL), mạng lưới bắt lỗi tập trung (Error Boundaries), hàng đợi khóa Mutex Wordchain (withLock), dọn dẹp kết nối tự động (oice-guild-delete.event.ts) và quy trình ngắt kết nối an toàn (Graceful Shutdown) tích hợp watchdog timer 10 giây chống treo tiến trình.
 
 ---
 
@@ -45,17 +47,21 @@ discordbot_lora/
 │   ├── CONVENTIONS.md            # Bộ quy chuẩn code, style guide & handling
 │   └── ROADMAP.md                # Bản đồ theo dõi tiến độ từng Milestone
 │
-├── dashboard/                    # Giao diện quản trị độc lập (React/Vite SPA)
+├── dashboard/                    # Giao diện quản trị độc lập (React/Vite SPA - Track W)
 │
 └── src/                          # Backend 100% (Bot Gateway + Fastify REST)
     ├── index.ts                  # Bootstrapper chính
     ├── core/                     # Hạ tầng hệ thống (Loaders, Client, Logger, Bus, Scripts)
+    │   └── server/               # Fastify REST API Architecture (Auth, Guards, SSE, Routes)
     ├── shared/                   # Dữ liệu & Tiện ích dùng chung (Prisma DB, Colors, Utils)
+    │   └── permit/               # Wick-style RBAC Permit Engine (Service, Constants, Types)
     └── features/                 # Các lát cắt tính năng độc lập
         ├── ping/                 # Feature mẫu xác thực hệ thống
         ├── swarm-linked-roles/   # Quản lý vai trò liên kết The Swarm (FEAT-03)
         ├── voice-keeper/         # Treo kênh thoại 24/7 & tự phục hồi kết nối (FEAT-04)
         ├── wordchain/            # Trò chơi nối từ đa tầng & hệ thống Karma (FEAT-05)
+        ├── permit/               # Phân quyền ủy quyền nâng cao Wick-style RBAC (FEAT-07)
+        ├── guild-meta/           # API tra cứu kênh, vai trò & danh tính Discord (FEAT-META)
         └── perks/                # Quản lý đặc quyền thành viên (Perks Management)
             ├── perks.command.ts  # Root Slash Command (/perk)
             ├── common/           # Lệnh tổng quát (/perk list, /perk status) & shared types/locales
@@ -134,6 +140,9 @@ npm run dev
 | `npm run deploy:clear:dev` | Xóa sạch toàn bộ Slash Commands rác trên Server Test |
 | `npm run deploy:clear:global` | Xóa sạch toàn bộ Slash Commands trên Global |
 | `npm run deploy:metadata` | Đăng ký Metadata Schema (The Swarm) lên Discord REST API |
+| `npm run dev:dashboard` | Chạy Frontend Vite Dev Server cho Web Dashboard (`http://localhost:5173`) |
+| `npm run build:dashboard` | Biên dịch Frontend SPA Web Dashboard sang thư mục `dashboard/dist` |
+| `npm run build:all` | Biên dịch toàn diện cả Backend TypeScript và Frontend Dashboard |
 
 ---
 

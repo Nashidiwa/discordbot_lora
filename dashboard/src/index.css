@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#08090d] text-[#f2f3f5] font-sans antialiased selection:bg-discord-blurple/30 selection:text-white overflow-x-hidden;
+  }
+
+  /* Triệt tiêu tap-highlight trên mobile, duy trì focus-visible cho bàn phím */
+  input, select, textarea, button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(88, 101, 242, 0.7);
+    outline-offset: 2px;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2b2e38;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f4452;
+}
+
+/* Precision Glass & Rim Light */
+.glass-panel {
+  background: rgba(18, 20, 29, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.09),
+    0 12px 36px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* Fast, Snappy Hardware-Accelerated Card Transitions (Zero Delay) */
+.glass-card-hover {
+  position: relative;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.16s ease;
+}
+
+.glass-card-hover:hover {
+  transform: translate3d(0, -3px, 0);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Spotlight Card Surface & Border Highlights */
+.card-spotlight-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  background: radial-gradient(
+    380px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+    rgba(255, 255, 255, 0.06),
+    transparent 75%
+  );
+  border-radius: inherit;
+}
+
+.card-spotlight-border {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  padding: 1px;
+  background: radial-gradient(
+    320px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+    rgba(255, 255, 255, 0.3),
+    transparent 65%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: 1;
+}
+
+.glass-card-hover:hover .card-spotlight-glow,
+.glass-card-hover:hover .card-spotlight-border {
+  opacity: 1;
+}
+
+/* Discord Text Gradient Effect */
+.discord-gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Living Aurora Orbs Animations (GPU-accelerated) */
+@keyframes aurora-1 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(100px, -80px, 0) scale(1.25);
+  }
+}
+
+@keyframes aurora-2 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1.15);
+  }
+  50% {
+    transform: translate3d(-90px, 90px, 0) scale(0.9);
+  }
+}
+
+@keyframes aurora-3 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  50% {
+    transform: translate3d(80px, 100px, 0) scale(1.2);
+  }
+}
+
+@keyframes aurora-4 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-110px, -70px, 0) scale(0.85);
+  }
+}
+
+.animate-aurora-1 {
+  animation: aurora-1 20s ease-in-out infinite;
+  will-change: transform;
+}
+.animate-aurora-2 {
+  animation: aurora-2 25s ease-in-out infinite;
+  will-change: transform;
+}
+.animate-aurora-3 {
+  animation: aurora-3 28s ease-in-out infinite;
+  will-change: transform;
+}
+.animate-aurora-4 {
+  animation: aurora-4 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Cyber Matrix Dot-Grid Pattern with Radial Fade Mask */
+.cyber-dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 75% 70% at 50% 35%, black 20%, transparent 95%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 35%, black 20%, transparent 95%);
+}
+
+/* Cyber Lines Grid */
+.cyber-lines-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 40%, black 25%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 40%, black 25%, transparent 90%);
+}
+
+/* 12-Bar Audio Equalizer Animations */
+@keyframes eq-pulse {
+  0%, 100% {
+    height: 4px;
+    opacity: 0.35;
+  }
+  50% {
+    height: 28px;
+    opacity: 1;
+  }
+}
+
+.animate-eq-1 { animation: eq-pulse 1.1s ease-in-out infinite 0.1s; }
+.animate-eq-2 { animation: eq-pulse 0.9s ease-in-out infinite 0.3s; }
+.animate-eq-3 { animation: eq-pulse 1.3s ease-in-out infinite 0.5s; }
+.animate-eq-4 { animation: eq-pulse 0.8s ease-in-out infinite 0.2s; }
+.animate-eq-5 { animation: eq-pulse 1.2s ease-in-out infinite 0.4s; }
+.animate-eq-6 { animation: eq-pulse 1.0s ease-in-out infinite 0.15s; }
+.animate-eq-7 { animation: eq-pulse 1.4s ease-in-out infinite 0.35s; }
+.animate-eq-8 { animation: eq-pulse 0.85s ease-in-out infinite 0.05s; }
+.animate-eq-9 { animation: eq-pulse 1.15s ease-in-out infinite 0.25s; }
+.animate-eq-10 { animation: eq-pulse 0.95s ease-in-out infinite 0.45s; }
+.animate-eq-11 { animation: eq-pulse 1.25s ease-in-out infinite 0.1s; }
+.animate-eq-12 { animation: eq-pulse 0.75s ease-in-out infinite 0.3s; }
+
+/* Tôn trọng cài đặt giảm chuyển động của người dùng (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -23,6 +23,10 @@ function isBotRoute(obj: unknown): obj is BotRoute {
 }
 
 async function getFilesRecursively(dir: string): Promise<string[]> {
+  if (!fs.existsSync(dir)) {
+    return [];
+  }
+
   const entries = await fs.promises.readdir(dir, { withFileTypes: true });
   const files: string[] = [];
 
@@ -45,25 +49,25 @@ export async function loadRoutes(
   customDir?: string,
 ): Promise<number> {
   const currentDir = path.dirname(fileURLToPath(import.meta.url));
-  const targetDir = customDir ?? path.resolve(currentDir, '../../features');
 
-  if (!fs.existsSync(targetDir)) {
-    logger.warn(
-      { dir: targetDir },
-      'Features directory does not exist, skipping route loading',
-    );
-    return 0;
-  }
+  // Quét cả Core Server Routes lẫn Feature Routes
+  const coreRoutesDir = path.resolve(currentDir, '../server/routes');
+  const featuresDir = customDir ?? path.resolve(currentDir, '../../features');
 
-  let filePaths: string[] = [];
+  let allFiles: string[] = [];
+
   try {
-    filePaths = await getFilesRecursively(targetDir);
+    const [coreFiles, featureFiles] = await Promise.all([
+      getFilesRecursively(coreRoutesDir),
+      getFilesRecursively(featuresDir),
+    ]);
+    allFiles = [...coreFiles, ...featureFiles];
   } catch (err: unknown) {
-    logger.error({ err, dir: targetDir }, 'Failed to scan routes directory');
+    logger.error({ err }, 'Failed to scan route directories');
     return 0;
   }
 
-  const routeFiles = filePaths.filter(
+  const routeFiles = allFiles.filter(
     (filePath) =>
       ROUTE_FILE_REGEX.test(filePath) && !EXCLUDE_FILE_REGEX.test(filePath),
   );

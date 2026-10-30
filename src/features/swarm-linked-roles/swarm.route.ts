@@ -125,12 +125,12 @@ function renderSuccessHtml(
   <div class="card">
     <div class="icon">✓</div>
     <h1>Liên Kết Thành Công!</h1>
-    <p class="desc">Tài khoản Discord <strong>${username}</strong> đã được đồng bộ với mạng lưới The Swarm.</p>
+    <p class="desc">Tài khoản Discord <strong>${safeUsername}</strong> đã được đồng bộ với mạng lưới The Swarm.</p>
     
     <div class="info-box">
       <div class="info-row">
         <span class="info-label">Tài khoản</span>
-        <span style="font-weight: 600;">@${username}</span>
+        <span style="font-weight: 600;">@${safeUsername}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Danh hiệu</span>

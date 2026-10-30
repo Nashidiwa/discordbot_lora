@@ -1,6 +1,6 @@
 {
   "name": "discordbot_lora",
-  "version": "0.6.0",
+  "version": "0.8.5",
   "description": "Modular Discord Bot with Vertical Slice Architecture",
   "main": "dist/index.js",
   "type": "module",
@@ -12,14 +12,19 @@
     "deploy:prod": "tsx src/core/scripts/deploy.ts --prod",
     "deploy:clear:dev": "tsx src/core/scripts/deploy.ts --clear-dev",
     "deploy:clear:global": "tsx src/core/scripts/deploy.ts --clear-global",
-    "deploy:metadata": "tsx src/features/swarm-linked-roles/scripts/register-metadata.ts"
+    "deploy:metadata": "tsx src/features/swarm-linked-roles/scripts/register-metadata.ts",
+    "dev:dashboard": "npm run dev --prefix dashboard",
+    "build:dashboard": "npm run build --prefix dashboard",
+    "build:all": "npm run build && npm run build:dashboard"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
+    "@fastify/cookie": "^11.1.5",
     "@fastify/cors": "^10.0.2",
+    "@fastify/static": "^10.1.8",
     "@prisma/client": "^6.4.1",
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",

@@ -1,5 +1,6 @@
 import { Events, type Message, type PartialMessage, type TextChannel } from 'discord.js';
 import type { BotEvent } from '../../../core/types/index.js';
+import { logger } from '../../../core/logger.js';
 import { wordChainGameService } from '../services/wordchain-game.service.js';
 
 export const event: BotEvent<Events.MessageDelete> = {
@@ -34,7 +35,9 @@ export const event: BotEvent<Events.MessageDelete> = {
         .send(
           `<@${message.author.id}> deleted their word! The **last** word was **${currentWord}**.`,
         )
-        .catch(() => {});
+        .catch((err: unknown) => {
+          logger.warn({ err, guildId: message.guildId, channelId: message.channelId }, '[Wordchain] Failed to send word deletion notice');
+        });
     }
   },
 };

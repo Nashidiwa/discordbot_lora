@@ -13,6 +13,16 @@ const envSchema = z.object({
   DEV_GUILD_ID: z.string().min(1, 'DEV_GUILD_ID is required'),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   PORT: z.coerce.number().default(3000),
+
+  // Web Dashboard & OAuth2 credentials
+  DISCORD_CLIENT_SECRET: z.string().optional(),
+  BOT_OWNER_ID: z.string().optional(),
+  MASTER_API_KEY: z.string().optional(),
+  COOKIE_SECRET: z.string().optional(),
+  DISCORD_REDIRECT_URI: z.string().optional(),
+  DISCORD_DASHBOARD_REDIRECT_URI: z.string().optional(),
+  CORS_ORIGIN: z.string().optional(),
+  ALLOWED_ORIGINS: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

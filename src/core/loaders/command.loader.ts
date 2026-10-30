@@ -81,6 +81,12 @@ export async function loadCommands(
       const command = importedModule.default ?? importedModule.command;
 
       if (isBotCommand(command)) {
+        if (client.commands.has(command.data.name)) {
+          logger.warn(
+            { name: command.data.name, path: relativePath },
+            'Overwriting existing Slash Command with duplicate name',
+          );
+        }
         client.commands.set(command.data.name, command);
         logger.debug(
           { name: command.data.name, path: relativePath },

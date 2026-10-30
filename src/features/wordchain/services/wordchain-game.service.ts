@@ -76,7 +76,7 @@ export class WordChainGameService {
     this.locks.set(key, currentLock);
 
     try {
-      await previous;
+      await previous.catch(() => {});
       return await fn();
     } finally {
       releaseLock!();

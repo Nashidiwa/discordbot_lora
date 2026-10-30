@@ -1,17 +1,53 @@
+# Dependencies & Build Artifacts
 node_modules
 dist
+build
+dashboard/node_modules
+
+# Git & Repository Metadata
 .git
 .gitignore
+.gitattributes
+
+# Environment Variables & Secrets
 .env
 .env.*
+!.env.example
+
+# Runtime & Debug Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Database & Persistent Volumes
 data/
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
-dashboard/
+*.sqlite
+*.sqlite-journal
+
+# AI Agent Tools & Local Assistant Metadata
+.agents/
 .gemini/
+.cursor/
+.claude/
+
+# IDE, Editor & OS Artifacts
 .idea/
 .vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Documentation & Non-runtime Assets (reduces image context size)
+docs/
+*.md
+LICENSE*
+
+# Frontend Development Files (Static build handled separately or via single-port bundle)
+dashboard/

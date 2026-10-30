@@ -276,3 +276,33 @@ model WordChainBannedMember {
 
   @@map("word_chain_banned_members")
 }
+
+
+// ==========================================
+// DOMAIN: CUSTOM PERMIT & RBAC (WICK-STYLE)
+// ==========================================
+
+model GuildPermitConfig {
+  guildId           String   @id @map("guild_id")
+  trustedAdminFlags Int      @default(29) @map("trusted_admin_flags") // Default: VIEW(1) | SETTINGS(4) | PERKS(8) | VOICE(16) = 29
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("guild_permit_configs")
+}
+
+model GuildPermitAssignment {
+  id          String   @id @default(cuid())
+  guildId     String   @map("guild_id")
+  targetType  String   @map("target_type") // 'USER' | 'ROLE'
+  targetId    String   @map("target_id")   // Discord User ID hoặc Role ID
+  tier        String   @map("tier")        // 'CO_OWNER' | 'TRUSTED_ADMIN' | 'CUSTOM'
+  permissions Int      @default(1) @map("permissions") // Bitfield flags
+  createdBy   String   @map("created_by")  // User ID thực hiện cấp quyền
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([guildId, targetType, targetId])
+  @@index([guildId, tier])
+  @@map("guild_permit_assignments")
+}
