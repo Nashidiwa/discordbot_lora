@@ -109,21 +109,27 @@ export const route: BotRoute = {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
           body: new URLSearchParams({
-            client_id: clientId,
-            client_secret: clientSecret,
+            client_id: clientId.trim(),
+            client_secret: clientSecret.trim(),
             grant_type: 'authorization_code',
             code,
-            redirect_uri: redirectUri,
-          }),
+            redirect_uri: redirectUri.trim(),
+          }).toString(),
         });
 
         if (!tokenRes.ok) {
           const errBody = await tokenRes.text();
-          logger.error({ errBody }, 'Failed to exchange Discord OAuth2 code');
+          logger.error(
+            { errBody, clientId: clientId.trim(), redirectUri: redirectUri.trim() },
+            'Failed to exchange Discord OAuth2 code',
+          );
+          const isInvalidClient = errBody.includes('invalid_client');
           return reply.status(401).send({
             statusCode: 401,
             error: 'Unauthorized',
-            message: 'Không thể xác thực với Discord API.',
+            message: isInvalidClient
+              ? 'Xác thực thất bại (invalid_client): DISCORD_CLIENT_SECRET trong .env không khớp với CLIENT_ID trên Discord Developer Portal hoặc Secret đã bị Reset.'
+              : 'Không thể xác thực với Discord API.',
           });
         }
 
