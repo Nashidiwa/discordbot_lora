@@ -164,14 +164,14 @@ export const PerksPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Đã cập nhật Server Booster',
-        'Cấu hình thời gian ân hạn và kênh thông báo đã được lưu.',
+        'Hoàn tất cập nhật',
+        'Cấu hình Perk Server Booster đã được lưu.',
       );
       void queryClient.invalidateQueries({
         queryKey: ['perks-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Lỗi cấu hình Booster', err.message),
+    onError: (err: Error) => toast.error('Lưu cấu hình Perk Booster thất bại', err.message),
   });
 
   const updateDonatorMutation = useMutation({
@@ -188,14 +188,14 @@ export const PerksPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Đã cập nhật Donator Time-Bank',
-        'Tỷ giá nạp giờ và thông số đốt quỹ cất kho đã được cập nhật.',
+        'Hoàn tất cập nhật',
+        'Cấu hình Perk Donator đã được lưu.',
       );
       void queryClient.invalidateQueries({
         queryKey: ['perks-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Lỗi cấu hình Donator', err.message),
+    onError: (err: Error) => toast.error('Lưu cấu hình Perk Donator thất bại', err.message),
   });
 
   const topupMutation = useMutation({
@@ -210,8 +210,8 @@ export const PerksPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Nạp giờ thành công!',
-        `Đã cộng thêm giờ vào quỹ của thành viên ${topupUserId}.`,
+        'Hoàn tất cập nhật bản ghi',
+        `Đã cập nhật vào tài khoản member ${topupUserId}.`,
       );
       setIsTopupModalOpen(false);
       setTopupUserId('');
@@ -223,13 +223,13 @@ export const PerksPage: React.FC = () => {
         queryKey: ['donator-transactions', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Nạp giờ thất bại', err.message),
+    onError: (err: Error) => toast.error('Lưu bản ghi Donator thất bại', err.message),
   });
 
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý Đặc quyền.
+        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý.
       </div>
     );
   }
@@ -276,7 +276,7 @@ export const PerksPage: React.FC = () => {
     if (filteredTransactions.length === 0) {
       toast.error(
         'Không có dữ liệu',
-        'Không tìm thấy giao dịch nào thỏa mãn bộ lọc hiện tại để xuất.',
+        'Không tìm thấy giao dịch nào thỏa mãn bộ lọc hiện tại.',
       );
       return;
     }
@@ -330,7 +330,7 @@ export const PerksPage: React.FC = () => {
     URL.revokeObjectURL(url);
 
     toast.success(
-      'Xuất báo cáo thành công!',
+      'Hoàn tất xuất báo cáo.',
       `Đã tải file CSV chứa ${filteredTransactions.length} bản ghi giao dịch.`,
     );
   };
@@ -379,13 +379,13 @@ export const PerksPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                Quản Lý Đặc Quyền
+                Perks Management
                 <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
                   Perks Engine
                 </span>
               </h1>
               <p className="text-xs text-discord-muted mt-0.5">
-                Tự động hóa Custom Role Gradient 2 màu và mô hình Quỹ Thời Gian Donator Time-Bank.
+                Tự động hóa quản lý các đặc quyền cho member server.
               </p>
             </div>
           </div>
@@ -415,7 +415,7 @@ export const PerksPage: React.FC = () => {
             )}
           >
             <Coins className="w-4 h-4" />
-            <span>Donator Time-Bank</span>
+            <span>Donator</span>
           </button>
         </div>
       </div>
@@ -436,10 +436,10 @@ export const PerksPage: React.FC = () => {
             <CardHeader>
               <CardTitle>
                 <Zap className="w-5 h-5 text-discord-blurple" />
-                Cấu Hình Quy Trình Server Booster
+                Cấu Hình Tùy Chỉnh Perk Server Booster
               </CardTitle>
               <CardDescription>
-                Thiết lập thời gian ân hạn giữ role sau khi unboost và các kênh thông báo tự động.
+                Thiết lập thời gian giữ role sau khi unboost, các Channel và Role neo vị trí tạo Custom Role.
               </CardDescription>
             </CardHeader>
 
@@ -452,7 +452,7 @@ export const PerksPage: React.FC = () => {
                   max={60}
                   value={gracePeriodDays}
                   onChange={(e) => setGracePeriodDays(Number(e.target.value))}
-                  hint="Số ngày thành viên được giữ custom role sau khi ngừng boost server."
+                  hint="Số ngày member được giữ custom role sau khi ngừng boost server."
                 />
 
                 <RoleSelect
@@ -465,23 +465,23 @@ export const PerksPage: React.FC = () => {
                 />
 
                 <ChannelSelect
-                  label="Kênh Thông Báo Booster"
-                  placeholder="Chọn kênh gửi thông báo..."
+                  label="Channel Thông Báo Server Booster"
+                  placeholder="Chọn channel gửi thông báo..."
                   value={notificationChannelId || null}
                   onChange={(val) => setNotificationChannelId(val || '')}
                   guildId={guildId}
                   channelTypes={['TEXT', 'ANNOUNCEMENT']}
-                  hint="Kênh gửi tin nhắn chúc mừng boost hoặc thông báo hết hạn."
+                  hint="Channel gửi tin nhắn chúc mừng và thông báo đến hạn thu hồi."
                 />
 
                 <ChannelSelect
-                  label="Kênh Nhật Ký (Audit Log)"
-                  placeholder="Chọn kênh ghi log..."
+                  label="Channel Nhật Ký (Audit Log)"
+                  placeholder="Chọn channel ghi log..."
                   value={auditLogChannelId || null}
                   onChange={(val) => setAuditLogChannelId(val || '')}
                   guildId={guildId}
                   channelTypes={['TEXT', 'ANNOUNCEMENT']}
-                  hint="Kênh ghi lại lịch sử tạo, sửa và thu hồi role booster."
+                  hint="Channel ghi lại lịch sử tạo, sửa và thu hồi custome role của server booster."
                 />
               </div>
 
@@ -494,7 +494,7 @@ export const PerksPage: React.FC = () => {
                   className="text-xs font-bold"
                 >
                   <Save className="w-4 h-4 mr-1.5" />
-                  Lưu Cấu Hình Booster
+                  Lưu Cấu Hình Tùy Chỉnh
                 </Button>
               </div>
             </CardContent>
@@ -506,10 +506,10 @@ export const PerksPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <CardTitle>
-                    Danh Sách Custom Role Thành Viên ({customRoles.length})
+                    Danh Sách Custom Role Độc Quyền ({customRoles.length})
                   </CardTitle>
                   <CardDescription>
-                    Nhấp vào bất kỳ role nào trong bảng dưới để xem mô phỏng trực tiếp trên Discord Chat Simulator phía trên.
+                    Chọn bất kỳ role nào dưới đây để xem Discord Chat Simulator phía trên.
                   </CardDescription>
                 </div>
 
@@ -535,7 +535,7 @@ export const PerksPage: React.FC = () => {
                 </div>
               ) : filteredRoles.length === 0 ? (
                 <div className="py-12 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có thành viên nào tạo Custom Role Booster.
+                  Chưa có member nào tạo Custom Role.
                 </div>
               ) : (
                 <>
@@ -544,8 +544,8 @@ export const PerksPage: React.FC = () => {
                     <table className="w-full text-left text-xs text-discord-text">
                       <thead className="bg-[#11131a] text-discord-muted uppercase text-[10px] font-extrabold tracking-wider border-b border-white/10">
                         <tr>
-                          <th className="py-3.5 px-4">Thành Viên</th>
-                          <th className="py-3.5 px-4">Tên Role & Gradient Phối Màu</th>
+                          <th className="py-3.5 px-4">Member</th>
+                          <th className="py-3.5 px-4">Role Name & Colors</th>
                           <th className="py-3.5 px-4 text-center">Số Boosts</th>
                           <th className="py-3.5 px-4 text-center">Trạng Thái</th>
                           <th className="py-3.5 px-4">Hạn Ân Hạn</th>
@@ -716,10 +716,10 @@ export const PerksPage: React.FC = () => {
                 <div>
                   <CardTitle className="text-amber-400 flex items-center gap-2">
                     <Coins className="w-5 h-5 text-amber-400" />
-                    Cấu Hình Quỹ Thời Gian Donator (Time-Bank)
+                    Cấu Hình Quỹ Thời Gian Donator (Credit)
                   </CardTitle>
                   <CardDescription>
-                    Điều chỉnh tỷ giá quy đổi VND sang thời gian, định mức tuần và tốc độ đốt khi cất kho.
+                    Điều chỉnh tỷ giá quy đổi VND sang thời gian, định mức tuần và tốc độ tiêu hao.
                   </CardDescription>
                 </div>
                 <Badge variant={isDonatorEnabled ? 'green' : 'red'} size="md" dot>
@@ -732,8 +732,8 @@ export const PerksPage: React.FC = () => {
               <Switch
                 checked={isDonatorEnabled}
                 onChange={setIsDonatorEnabled}
-                label="Kích hoạt Phân hệ Donator Time-Bank"
-                description="Khi tắt, thời gian của toàn bộ thành viên sẽ được đóng băng 0.0x bảo vệ tối đa quyền lợi."
+                label="Bật Tính năng Perk Donator"
+                description="Khi tắt, tiêu hao của toàn bộ Donator sẽ được đóng băng 0.0x và tạm thu hồi role Donator."
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -765,14 +765,14 @@ export const PerksPage: React.FC = () => {
                 />
 
                 <Input
-                  label="Tốc độ đốt khi cất kho (Idle Burn Rate)"
+                  label="Tốc độ tiêu hao khi cất role (Idle Burn Rate)"
                   type="number"
                   step={0.05}
                   min={0.1}
                   max={1.0}
                   value={idleBurnRate}
                   onChange={(e) => setIdleBurnRate(Number(e.target.value))}
-                  hint="0.2x nghĩa là thời gian trôi chậm gấp 5 lần khi cất kho."
+                  hint="0.2x nghĩa là tiêu hao chậm gấp 5 lần khi cất role."
                 />
               </div>
 
@@ -785,7 +785,7 @@ export const PerksPage: React.FC = () => {
                   className="text-xs font-bold bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:opacity-90 border-0"
                 >
                   <Save className="w-4 h-4 mr-1.5" />
-                  Lưu Cấu Hình Donator
+                  Lưu Cấu Hình Tùy Chỉnh
                 </Button>
               </div>
             </CardContent>
@@ -796,9 +796,9 @@ export const PerksPage: React.FC = () => {
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <CardTitle>Quỹ Thời Gian Thành Viên ({donatorAccounts.length})</CardTitle>
+                  <CardTitle>Tài khoản credit member ({donatorAccounts.length})</CardTitle>
                   <CardDescription>
-                    Hệ thống cấp bậc danh dự Donator theo chuỗi tuần (Crown 👑, Diamond 💎, Flame 🔥).
+                    Danh sách Donator cùng số dư credit và streak tuần (Crown 👑, Diamond 💎, Flame 🔥).
                   </CardDescription>
                 </div>
 
@@ -824,7 +824,7 @@ export const PerksPage: React.FC = () => {
                     className="text-xs font-bold shrink-0 bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:opacity-90 border-0"
                   >
                     <PlusCircle className="w-4 h-4 mr-1.5" />
-                    Nạp Giờ
+                    Nạp Credit (Bản ghi mới)
                   </Button>
                 </div>
               </div>
@@ -838,7 +838,7 @@ export const PerksPage: React.FC = () => {
                 </div>
               ) : filteredDonators.length === 0 ? (
                 <div className="py-12 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có thành viên nào trong danh sách Quỹ Donator.
+                  Chưa ghi nhận Donator nào.
                 </div>
               ) : (
                 <>
@@ -848,9 +848,9 @@ export const PerksPage: React.FC = () => {
                       <thead className="bg-[#11131a] text-discord-muted text-xs font-semibold border-b border-white/10">
                         <tr>
                           <th className="py-3.5 px-4">Thành Viên (User ID)</th>
-                          <th className="py-3.5 px-4">Quỹ Thời Gian Còn Lại</th>
+                          <th className="py-3.5 px-4">Thời Gian (Credit) Còn Lại</th>
                           <th className="py-3.5 px-4 text-center">Trạng Thái Đeo</th>
-                          <th className="py-3.5 px-4 text-center">Hạng & Chuỗi Tuần</th>
+                          <th className="py-3.5 px-4 text-center">Hạng & Streak</th>
                           <th className="py-3.5 px-4 text-right">Tổng Đã Đóng Góp</th>
                           <th className="py-3.5 px-4 text-center">Thao Tác</th>
                         </tr>
@@ -874,7 +874,7 @@ export const PerksPage: React.FC = () => {
                                 </Badge>
                               ) : (
                                 <Badge variant="muted" size="sm">
-                                  Cất Kho ({idleBurnRate}x)
+                                  Tạm Gỡ ({idleBurnRate}x)
                                 </Badge>
                               )}
                             </td>
@@ -917,7 +917,7 @@ export const PerksPage: React.FC = () => {
 
                         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/[0.06] text-xs">
                           <div>
-                            <span className="text-discord-muted block text-[11px]">Quỹ thời gian</span>
+                            <span className="text-discord-muted block text-[11px]">Quỹ thời gian (credit)</span>
                             <span className="font-extrabold text-emerald-400 text-xs flex items-center gap-1 mt-0.5">
                               <Clock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                               {formatDurationSeconds(account.creditSeconds)}
@@ -938,7 +938,7 @@ export const PerksPage: React.FC = () => {
                             </Badge>
                           ) : (
                             <Badge variant="muted" size="sm">
-                              Cất Kho ({idleBurnRate}x)
+                              Tạm Gỡ ({idleBurnRate}x)
                             </Badge>
                           )}
 
@@ -971,7 +971,7 @@ export const PerksPage: React.FC = () => {
                   Lịch Sử Giao Dịch Gần Đây
                 </CardTitle>
                 <CardDescription>
-                  Nhật ký nạp tiền, điều chỉnh và khấu trừ thời gian của thành viên.
+                  Nhật ký nạp credit, điều chỉnh và khấu trừ thời gian của member.
                 </CardDescription>
               </div>
 
@@ -1105,8 +1105,8 @@ export const PerksPage: React.FC = () => {
       <Modal
         isOpen={isTopupModalOpen}
         onClose={() => setIsTopupModalOpen(false)}
-        title="Nạp Giờ Quỹ Donator"
-        description="Quy đổi trực tiếp số tiền ủng hộ VND thành thời gian vào tài khoản thành viên."
+        title="Nạp Credit Donator"
+        description="Quy đổi trực tiếp số tiền ủng hộ (VND) thành thời gian (credit) vào tài khoản member."
         footer={
           <>
             <Button
@@ -1136,12 +1136,12 @@ export const PerksPage: React.FC = () => {
       >
         <div className="space-y-4">
           <UserInput
-            label="Thành Viên Nhận Quỹ"
-            placeholder="Nhập Discord User ID để tra cứu..."
+            label="Member Hưởng"
+            placeholder="Nhập Discord User ID để kiểm tra..."
             value={topupUserId}
             onChange={setTopupUserId}
             onVerified={setVerifiedTopupUser}
-            hint="Tài khoản sẽ được tự động tra cứu và xác thực trực tiếp qua Discord Gateway."
+            hint="Account sẽ được fetch qua Discord Gateway."
           />
 
           <div className="space-y-2">
@@ -1171,7 +1171,7 @@ export const PerksPage: React.FC = () => {
 
           <Input
             label="Ghi chú giao dịch (Tùy chọn)"
-            placeholder="Ví dụ: Chuyển khoản qua MoMo, ủng hộ server..."
+            placeholder="Ví dụ: Lời nhắn của người chuyển, ủng hộ server..."
             value={topupNote}
             onChange={(e) => setTopupNote(e.target.value)}
           />
@@ -1179,7 +1179,7 @@ export const PerksPage: React.FC = () => {
           {/* Quick estimation formula preview */}
           {baseBenchmarkVnd > 0 && topupAmountVnd > 0 && (
             <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-1">
-              <span className="text-amber-400 font-bold block">Dự kiến thời gian cộng:</span>
+              <span className="text-amber-400 font-bold block">Dự kiến thời gian cộng thêm:</span>
               <p className="text-white font-medium">
                 ≈ {formatDurationSeconds(Math.floor((topupAmountVnd / baseBenchmarkVnd) * baseBenchmarkDays * 86400))} (tính theo tỷ lệ định mức cơ sở)
               </p>

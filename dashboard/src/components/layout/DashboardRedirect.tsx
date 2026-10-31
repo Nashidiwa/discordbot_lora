@@ -31,9 +31,9 @@ export const DashboardRedirect: React.FC<DashboardRedirectProps> = ({ subpath })
 
   return (
     <div className="p-8 text-center glass-panel rounded-3xl text-discord-muted text-sm border border-white/10 max-w-xl mx-auto mt-12">
-      <h2 className="text-base font-bold text-white mb-2">Chưa có máy chủ quản trị</h2>
+      <h2 className="text-base font-bold text-white mb-2">Chưa có server để quản lý</h2>
       <p className="text-xs text-discord-muted">
-        Tài khoản Discord của bạn hiện chưa tham gia máy chủ nào có bot Lora hoặc chưa được cấp thẩm quyền quản trị.
+        Tài khoản Discord của bạn hiện chưa tham gia server nào có bot hoặc chưa được cấp quyền hạn quản lý.
       </p>
     </div>
   );

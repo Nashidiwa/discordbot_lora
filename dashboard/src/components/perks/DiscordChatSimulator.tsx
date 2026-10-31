@@ -73,7 +73,7 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-discord-green" />
           <span className="text-[11px] font-bold uppercase tracking-wider text-discord-muted">
-            Discord Native Chat Simulator (Live Preview)
+            Discord Native Chat Simulator (Preview)
           </span>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-[10px] text-pink-300 font-semibold">
@@ -141,7 +141,7 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
 
             {/* Booster Badge Pill */}
             <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-pink-500/15 text-pink-400 text-[10px] font-extrabold uppercase tracking-wider border border-pink-500/30">
-              Booster
+              Server Booster
             </span>
 
             <span className="text-[11px] text-[#949ba4] font-medium">
@@ -151,7 +151,7 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
 
           {/* Chat Message Text */}
           <div className="text-xs sm:text-sm text-[#dbdee1] leading-relaxed">
-            Vừa kích hoạt Custom Role 2 màu cực cháy trên máy chủ! Mọi người thấy phối màu này thế nào? ✨
+            Vừa claim Custom Role độc quyền trên server! Mọi người thấy màu này thế nào? ✨
           </div>
 
           {/* Color Gradient Chip / Swatch Inspector */}
@@ -167,7 +167,7 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
               />
               <div>
                 <span className="text-[10px] text-discord-muted uppercase font-bold block">
-                  Phối màu hiển thị:
+                  Phối màu đang hiển thị:
                 </span>
                 <span className="font-mono text-white text-xs font-semibold flex items-center gap-1.5">
                   <span

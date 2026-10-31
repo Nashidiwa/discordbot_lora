@@ -11,18 +11,18 @@ export const LoginPage: React.FC = () => {
   const features = [
     {
       icon: <Shield className="w-5 h-5 text-discord-blurple shrink-0" />,
-      title: 'Phân quyền Custom Permit',
-      desc: 'Ủy quyền độc lập chuẩn Wickbot, không phụ thuộc Discord admin roles.',
+      title: 'Custom Permit',
+      desc: 'Ủy quyền độc lập, không phụ thuộc Discord Permissions.',
     },
     {
       icon: <Radio className="w-5 h-5 text-emerald-400 shrink-0" />,
       title: 'Voice Keeper 24/7 Trực quan',
-      desc: 'Duy trì kết nối thoại liên tục với Equalizer âm thanh và tự phục hồi 3 tầng.',
+      desc: 'Duy trì kết nối Voice Channel liên tục và cơ chế tự phục hồi.',
     },
     {
       icon: <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />,
-      title: 'Đặc quyền Perks & Quỹ Thời Gian',
-      desc: 'Tự động hóa Custom Role Gradient 2 màu và Donator Time-Bank.',
+      title: 'Perks Management',
+      desc: 'Quản lý các đặc quyền thành viên của Server.',
     },
   ];
 
@@ -51,10 +51,10 @@ export const LoginPage: React.FC = () => {
 
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center justify-center gap-2">
-              Lora Control Panel
+              Lora Engine Control Panel
             </h1>
             <p className="text-xs sm:text-sm text-discord-muted mt-1.5 max-w-sm mx-auto leading-relaxed">
-              Bảng điều khiển quản trị trực quan thế hệ mới dành cho Quản trị viên và Chủ máy chủ Discord.
+              Dashboard quản trị trực quan dành cho App Operators và Guild Managers.
             </p>
           </div>
         </div>
@@ -96,7 +96,7 @@ export const LoginPage: React.FC = () => {
 
           <p className="text-[11px] text-discord-muted flex items-center justify-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>Xác thực an toàn qua Discord OAuth2. Không lưu trữ thông tin mật khẩu.</span>
+            <span>Xác thực an toàn qua ủy quyền OAuth2. Không lưu trữ thông tin đăng nhập.</span>
           </p>
         </div>
       </div>

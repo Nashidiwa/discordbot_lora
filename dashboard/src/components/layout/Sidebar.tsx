@@ -56,19 +56,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const serverNavItems = [
     {
       to: `/dashboard/guilds/${currentGuildId}`,
-      label: 'Tổng quan Máy chủ',
+      label: 'Server Overview',
       icon: Activity,
       end: true,
       badge: 'Server',
     },
     {
       to: `/dashboard/guilds/${currentGuildId}/permits`,
-      label: 'Phân quyền (Permit)',
+      label: 'Server Permits',
       icon: ShieldCheck,
     },
     {
       to: `/dashboard/guilds/${currentGuildId}/perks`,
-      label: 'Quản lý Đặc quyền',
+      label: 'Perks Management',
       icon: Gift,
     },
     {
@@ -84,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       to: `/dashboard/guilds/${currentGuildId}/swarm`,
-      label: 'The Swarm Linked',
+      label: 'Linked Role The Swarm',
       icon: Layers,
       badge: 'Roles',
     },
@@ -93,14 +93,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const globalNavItems = [
     {
       to: '/dashboard/global',
-      label: 'Tổng quan Hệ thống',
+      label: 'System Overview',
       icon: Activity,
       end: true,
       badge: 'System',
     },
     {
       to: '/dashboard/global/swarm',
-      label: 'The Swarm Toàn Cầu',
+      label: 'Linked Role The Swarm',
       icon: Layers,
       badge: 'Roles',
     },

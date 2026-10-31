@@ -36,51 +36,51 @@ const PERMIT_FLAGS = [
   {
     key: 'VIEW_DASHBOARD',
     flag: 1 << 0,
-    label: 'Xem Dashboard',
+    label: 'View Dashboard',
     hex: '0x01',
-    desc: 'Cho phép đăng nhập và theo dõi số liệu của server trên web.',
+    desc: 'Cho phép đăng nhập và xem cấu hình của server trên web dashboard.',
   },
   {
     key: 'MANAGE_PERMITS',
     flag: 1 << 1,
-    label: 'Quản lý Permit',
+    label: 'Permit Management',
     hex: '0x02',
-    desc: 'Bổ nhiệm/thu hồi Co-Owner, Trusted Admin và Custom Grants.',
+    desc: '(Quyền nhạy cảm) Bổ nhiệm/thu hồi Co-Owner, Trusted Admin và Custom Grants.',
   },
   {
     key: 'MANAGE_SETTINGS',
     flag: 1 << 2,
-    label: 'Cài đặt Server',
+    label: 'Server Settings',
     hex: '0x04',
-    desc: 'Điều chỉnh các cài đặt chung và kênh thông báo của bot.',
+    desc: 'Điều chỉnh các cài đặt chung và channel thông báo.',
   },
   {
     key: 'MANAGE_PERKS',
     flag: 1 << 3,
-    label: 'Quản lý Perks',
+    label: 'Perks Management',
     hex: '0x08',
-    desc: 'Cấu hình Server Booster Grace Period & Nạp giờ Donator Time-Bank.',
+    desc: 'Quản lý tất cả perks dành cho thành viên server.',
   },
   {
     key: 'MANAGE_VOICE_KEEPER',
     flag: 1 << 4,
-    label: 'Quản lý Voice 24/7',
+    label: 'Voice Keeper Management',
     hex: '0x10',
-    desc: 'Chọn phòng thoại, kích hoạt Reconnect và đổi trạng thái giữ kênh.',
+    desc: 'Chọn Voice Channel, Reconnect và đổi trạng thái Voice Keeper.',
   },
   {
     key: 'MANAGE_WORDCHAIN',
     flag: 1 << 5,
-    label: 'Quản lý Nối Từ',
+    label: 'Word Chain Management',
     hex: '0x20',
-    desc: 'Cấu hình trò chơi nối từ đa tầng và quyền quản trị từ điển.',
+    desc: 'Quản lý và cấu hình Word Chain của server.',
   },
   {
     key: 'MANAGE_SWARM',
     flag: 1 << 6,
-    label: 'Quản lý The Swarm',
+    label: 'View Linked Role The Swarm',
     hex: '0x40',
-    desc: 'Quản lý vai trò Discord Linked Roles và phân cấp người dùng.',
+    desc: 'Xem trạng thái tính năng Linked Role The Swarm trong server.',
   },
 ];
 
@@ -160,7 +160,7 @@ export const PermitPage: React.FC = () => {
         body: JSON.stringify(payload),
       }),
     onSuccess: () => {
-      toast.success('Cấp quyền thành công', 'Danh sách phân quyền đã được cập nhật.');
+      toast.success('Hoàn tất cấp quyền', 'Danh sách Permit đã được cập nhật.');
       setNewCoOwnerUserId('');
       setTrustedTargetId('');
       setCustomTargetId('');
@@ -176,7 +176,7 @@ export const PermitPage: React.FC = () => {
         body: JSON.stringify(payload),
       }),
     onSuccess: () => {
-      toast.warning('Đã thu hồi quyền', 'Quyền hạn của đối tượng đã bị gỡ bỏ.');
+      toast.warning('Đã thu hồi quyền', 'Quyền hạn của mục tiêu đã bị thu hồi.');
       setRevokeTarget(null);
       void queryClient.invalidateQueries({ queryKey: ['guild-permits', guildId] });
     },
@@ -186,7 +186,7 @@ export const PermitPage: React.FC = () => {
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý Phân quyền Permit.
+        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý Permit.
       </div>
     );
   }
@@ -217,13 +217,13 @@ export const PermitPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                Phân Quyền Custom Permit
+                Custom Permit
                 <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">
-                  Wick-style RBAC
+                  RBAC
                 </span>
               </h1>
               <p className="text-xs text-discord-muted mt-0.5">
-                Hệ thống kiểm soát thẩm quyền 4 tầng độc lập không phụ thuộc vào Discord native permissions.
+                Tính năng phân quyền đa tầng độc lập không phụ thuộc vào Discord native permissions.
               </p>
             </div>
           </div>
@@ -233,7 +233,7 @@ export const PermitPage: React.FC = () => {
         {data?.ownerId && (
           <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-[#14161f] border border-white/10 text-xs">
             <Crown className="w-4 h-4 text-amber-400 shrink-0" />
-            <span className="text-discord-muted">Chủ Server:</span>
+            <span className="text-discord-muted">Server Owner:</span>
             <code className="text-white font-mono font-bold">{data.ownerId}</code>
           </div>
         )}
@@ -246,7 +246,7 @@ export const PermitPage: React.FC = () => {
             <Crown className="w-4 h-4 text-amber-400" />
             <span>Tier 1: Server Owner</span>
           </div>
-          <p className="text-[11px] text-discord-muted">Thẩm quyền tối cao, bổ nhiệm Co-Owner.</p>
+          <p className="text-[11px] text-discord-muted">Quyền hạn tối cao, cấp quyền Co-Owner.</p>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-black/20 border border-purple-500/30 space-y-1">
@@ -270,7 +270,7 @@ export const PermitPage: React.FC = () => {
             <Key className="w-4 h-4 text-cyan-400" />
             <span>Tier 4: Custom Grants</span>
           </div>
-          <p className="text-[11px] text-discord-muted">Gán quyền linh hoạt theo Bitfield flags.</p>
+          <p className="text-[11px] text-discord-muted">Cấp quyền linh hoạt theo Bitfield flags.</p>
         </div>
       </div>
 
@@ -321,21 +321,21 @@ export const PermitPage: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-200">
           <Card hover>
             <CardHeader>
-              <CardTitle className="text-purple-300">Bổ Nhiệm Co-Owner Mới</CardTitle>
+              <CardTitle className="text-purple-300">Cấp Quyền Co-Owner</CardTitle>
               <CardDescription>
-                Chỉ Server Owner hoặc Bot Owner mới có quyền bổ nhiệm Co-Owner. Co-Owner có toàn quyền quản trị các tính năng bot trong máy chủ.
+                Chỉ Server Owner có quyền bổ nhiệm Co-Owner. Co-Owner có toàn quyền quản trị các tính năng bot trong server.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col sm:flex-row items-end gap-3">
                 <div className="flex-1 w-full">
                   <UserInput
-                    label="Discord User ID Thành Viên"
-                    placeholder="Nhập User ID cần bổ nhiệm Co-Owner..."
+                    label="Discord User ID Mục Tiêu"
+                    placeholder="Nhập User ID cần cấp quyền Co-Owner..."
                     value={newCoOwnerUserId}
                     onChange={setNewCoOwnerUserId}
                     onVerified={setVerifiedCoOwnerUser}
-                    hint="Tài khoản sẽ được xác thực trực tiếp qua Discord Gateway."
+                    hint=""
                   />
                 </div>
                 <Button
@@ -357,7 +357,7 @@ export const PermitPage: React.FC = () => {
                   className="w-full sm:w-auto text-xs font-bold bg-purple-600 hover:bg-purple-700 border-0 h-[42px]"
                 >
                   <PlusCircle className="w-4 h-4 mr-1.5" />
-                  Bổ Nhiệm Co-Owner
+                  Cấp Quyền Co-Owner
                 </Button>
               </div>
             </CardContent>
@@ -366,14 +366,14 @@ export const PermitPage: React.FC = () => {
           {/* Co-Owners List */}
           <Card hover>
             <CardHeader>
-              <CardTitle>Danh Sách Co-Owners Hiện Tại</CardTitle>
+              <CardTitle>Danh Sách Co-Owner Hiện Tại</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
                 <Skeleton className="h-16 w-full" />
               ) : !data?.coOwners || data.coOwners.length === 0 ? (
                 <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có Co-Owner nào được bổ nhiệm cho máy chủ này.
+                  Chưa có Co-Owner nào được ghi nhận cho server này.
                 </div>
               ) : (
                 <div className="space-y-2.5">
@@ -407,7 +407,7 @@ export const PermitPage: React.FC = () => {
                         className="text-xs"
                       >
                         <Trash2 className="w-3.5 h-3.5 mr-1" />
-                        Bãi nhiệm
+                        Thu hồi
                       </Button>
                     </div>
                   ))}
@@ -425,9 +425,9 @@ export const PermitPage: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-200">
           <Card hover>
             <CardHeader>
-              <CardTitle className="text-emerald-300">Bổ Nhiệm Trusted Admin</CardTitle>
+              <CardTitle className="text-emerald-300">Cấp Quyền Trusted Admin</CardTitle>
               <CardDescription>
-                Trusted Admin có các quyền vận hành mặc định: Xem Dashboard, Cài đặt Server, Quản lý Perks, Voice Keeper 24/7 (nhưng không thể sửa Permit).
+                Trusted Admin có các quyền vận hành mặc định: Xem Dashboard, Cài đặt Server, Quản lý Perks, Voice Keeper (không thể cấu hình Permit).
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -463,21 +463,21 @@ export const PermitPage: React.FC = () => {
                   <div className="flex-1 w-full">
                     {trustedTargetType === 'USER' ? (
                       <UserInput
-                        label="Discord User ID Thành Viên"
-                        placeholder="Nhập User ID để tra cứu..."
+                        label="Discord User ID Mục Tiêu"
+                        placeholder="Nhập User ID để chọn..."
                         value={trustedTargetId}
                         onChange={setTrustedTargetId}
                         onVerified={setVerifiedTrustedUser}
-                        hint="Tài khoản sẽ được xác thực trực tiếp qua Discord Gateway."
+                        hint=""
                       />
                     ) : (
                       <RoleSelect
-                        label="Vai Trò Được Cấp Quyền (Role)"
-                        placeholder="Chọn vai trò trong server..."
+                        label="Role Được Cấp Quyền"
+                        placeholder="Chọn role trong server..."
                         value={trustedTargetId || null}
                         onChange={(val) => setTrustedTargetId(val || '')}
                         guildId={guildId}
-                        hint="Tất cả thành viên nắm giữ vai trò này sẽ có quyền Trusted Admin."
+                        hint=""
                       />
                     )}
                   </div>
@@ -510,14 +510,14 @@ export const PermitPage: React.FC = () => {
           {/* Trusted Admins List */}
           <Card hover>
             <CardHeader>
-              <CardTitle>Danh Sách Trusted Admins Hiện Tại</CardTitle>
+              <CardTitle>Danh Sách Trusted Admin Hiện Tại</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
                 <Skeleton className="h-16 w-full" />
               ) : !data?.trustedAdmins || data.trustedAdmins.length === 0 ? (
                 <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có Trusted Admin nào được bổ nhiệm.
+                  Chưa có Trusted Admin nào.
                 </div>
               ) : (
                 <div className="space-y-2.5">
@@ -586,7 +586,7 @@ export const PermitPage: React.FC = () => {
             <CardHeader>
               <CardTitle className="text-cyan-300">Cấp Quyền Tùy Chỉnh (Bitfield Grants)</CardTitle>
               <CardDescription>
-                Bật/tắt các cờ quyền cụ thể cho một User hoặc Role độc lập.
+                Chọn các cờ quyền cụ thể cho một User hoặc Role tùy chỉnh.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -619,21 +619,21 @@ export const PermitPage: React.FC = () => {
 
               {customTargetType === 'USER' ? (
                 <UserInput
-                  label="Discord User ID Thành Viên"
-                  placeholder="Nhập User ID để tra cứu..."
+                  label="Discord User ID Mục Tiêu"
+                  placeholder="Nhập User ID để chọn..."
                   value={customTargetId}
                   onChange={setCustomTargetId}
                   onVerified={setVerifiedCustomUser}
-                  hint="Tài khoản sẽ được xác thực trực tiếp qua Discord Gateway."
+                  hint="User sẽ được kiểm tra qua Discord Gateway."
                 />
               ) : (
                 <RoleSelect
-                  label="Vai Trò Được Cấp Quyền (Role)"
+                  label="Role Được Cấp Quyền"
                   placeholder="Chọn vai trò trong server..."
                   value={customTargetId || null}
                   onChange={(val) => setCustomTargetId(val || '')}
                   guildId={guildId}
-                  hint="Tất cả thành viên nắm giữ vai trò này sẽ nhận các cờ quyền đã chọn."
+                  hint="Tất cả thành viên mang vai trò này sẽ nhận các quyền đã chọn."
                 />
               )}
 
@@ -710,14 +710,14 @@ export const PermitPage: React.FC = () => {
           {/* Custom Grants List */}
           <Card hover>
             <CardHeader>
-              <CardTitle>Danh Sách Custom Grants Hiện Tại</CardTitle>
+              <CardTitle>Danh Sách Custom Grant Hiện Tại</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
                 <Skeleton className="h-16 w-full" />
               ) : !data?.customPermits || data.customPermits.length === 0 ? (
                 <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có quyền Custom nào được thiết lập.
+                  Chưa có quyền Custom nào.
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -775,8 +775,8 @@ export const PermitPage: React.FC = () => {
       <Modal
         isOpen={Boolean(revokeTarget)}
         onClose={() => setRevokeTarget(null)}
-        title="Xác nhận thu hồi quyền"
-        description={`Bạn có chắc chắn muốn thu hồi quyền ${revokeTarget?.tierName} của đối tượng này?`}
+        title="Xác nhận thu hồi quyền hạn"
+        description={`Bạn có chắc chắn muốn thu hồi quyền ${revokeTarget?.tierName} của user mục tiêu?`}
         footer={
           <>
             <Button
@@ -799,17 +799,17 @@ export const PermitPage: React.FC = () => {
                 }
               }}
             >
-              Đồng ý Thu hồi
+              Xác nhận Thu hồi
             </Button>
           </>
         }
       >
         <div className="space-y-2 text-xs text-discord-muted">
           <p>
-            Đối tượng: <strong className="text-white font-mono">{revokeTarget?.targetId}</strong> ({revokeTarget?.targetType})
+            Mục tiêu: <strong className="text-white font-mono">{revokeTarget?.targetId}</strong> ({revokeTarget?.targetType})
           </p>
           <p>
-            Sau khi thu hồi, đối tượng này sẽ không còn quyền hạn tương ứng trên Dashboard và Bot của server này.
+            Sau khi thu hồi, user này sẽ không còn quyền hạn tương ứng trên Dashboard và Bot.
           </p>
         </div>
       </Modal>

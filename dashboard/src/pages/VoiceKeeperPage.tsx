@@ -92,7 +92,7 @@ export const VoiceKeeperPage: React.FC = () => {
     onSuccess: () => {
       toast.success(
         'Đã cập nhật Voice Keeper',
-        'Bot đã nhận chỉ thị kết nối và áp dụng cấu hình giữ kênh 24/7.',
+        'Bot đã nhận yêu cầu kết nối và áp dụng cấu hình.',
       );
       void queryClient.invalidateQueries({ queryKey: ['voice-keeper', guildId] });
     },
@@ -108,13 +108,13 @@ export const VoiceKeeperPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.info(
-        'Kích hoạt Reconnect',
-        'Hệ thống đang ngắt và tái lập kết nối thoại sạch mới.',
+        'Reconnecting...',
+        'Bot đã nhận yêu cầu đóng kết nối và tái lập kết nối Voice Channel.',
       );
       void queryClient.invalidateQueries({ queryKey: ['voice-keeper', guildId] });
     },
     onError: (err: Error) => {
-      toast.error('Lỗi khi reconnect', err.message);
+      toast.error('Lỗi thực thi reconnect', err.message);
     },
   });
 
@@ -126,20 +126,20 @@ export const VoiceKeeperPage: React.FC = () => {
     onSuccess: () => {
       toast.warning(
         'Đã dừng Voice Keeper',
-        'Bot đã rời kênh thoại và tắt cơ chế auto-reconnect.',
+        'Bot đã nhận yêu cầu đóng kết nối.',
       );
       setIsStopModalOpen(false);
       void queryClient.invalidateQueries({ queryKey: ['voice-keeper', guildId] });
     },
     onError: (err: Error) => {
-      toast.error('Lỗi khi dừng Voice Keeper', err.message);
+      toast.error('Lỗi thực thi dừng Voice Keeper', err.message);
     },
   });
 
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý Voice Keeper.
+        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý.
       </div>
     );
   }
@@ -152,7 +152,7 @@ export const VoiceKeeperPage: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-extrabold text-xs border border-emerald-500/30 shadow-lg shadow-emerald-500/15">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            ĐANG HOẠT ĐỘNG (READY)
+            READY
           </span>
         );
       case 'CONNECTING':
@@ -160,7 +160,7 @@ export const VoiceKeeperPage: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/15 text-yellow-300 font-extrabold text-xs border border-yellow-500/30">
             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-            ĐANG PHỤC HỒI KẾT NỐI
+            RECONNECTING
           </span>
         );
       case 'DISCONNECTED':
@@ -168,13 +168,13 @@ export const VoiceKeeperPage: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/15 text-red-400 font-extrabold text-xs border border-red-500/30">
             <span className="w-2 h-2 rounded-full bg-red-500" />
-            MẤT TÍN HIỆU
+            SUSPENDED
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-discord-muted font-bold text-xs border border-white/10">
-            CHƯA KÍCH HOẠT
+            OFFLINE
           </span>
         );
     }
@@ -197,7 +197,7 @@ export const VoiceKeeperPage: React.FC = () => {
                 </span>
               </h1>
               <p className="text-xs text-discord-muted mt-0.5">
-                Duy trì kết nối thoại liên tục 24/7 với Watchdog phục hồi 3 tầng và Circuit Breaker.
+                Duy trì timer Voice Channel 24/7 (trong điều kiện lý tưởng) với Watchdog phục hồi 3 tầng và Circuit Breaker.
               </p>
             </div>
           </div>
@@ -228,7 +228,7 @@ export const VoiceKeeperPage: React.FC = () => {
 
               <div>
                 <span className="text-[10px] uppercase font-extrabold tracking-wider text-cyan-400 block">
-                  Phòng thoại được gán
+                  Voice Channel mục tiêu
                 </span>
                 <h3 className="text-xl font-bold text-white tracking-tight">
                   {statusData?.status?.channelName || 'Chưa thiết lập phòng thoại'}
@@ -244,7 +244,7 @@ export const VoiceKeeperPage: React.FC = () => {
               <div className="flex items-center justify-between text-xs">
                 <span className="text-discord-muted font-medium flex items-center gap-1.5">
                   <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                  Luồng âm thanh thời gian thực (Audio Stream):
+                  Trạng thái kết nối:
                 </span>
                 <span className="font-mono text-cyan-400 text-[11px] font-bold">
                   {currentStatus === 'READY' ? '48kHz Stereo' : 'Offline'}
@@ -273,7 +273,7 @@ export const VoiceKeeperPage: React.FC = () => {
             <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 space-y-1">
               <span className="text-[10px] text-discord-muted uppercase font-bold flex items-center gap-1">
                 <Wifi className="w-3 h-3 text-cyan-400" />
-                Độ trễ Voice
+                Độ trễ kết nối
               </span>
               <span className="text-base font-extrabold text-white block">
                 {statusData?.status?.ping ? `${statusData.status.ping} ms` : 'N/A'}
@@ -307,23 +307,23 @@ export const VoiceKeeperPage: React.FC = () => {
         <CardHeader>
           <CardTitle>
             <Zap className="w-5 h-5 text-cyan-400" />
-            Cấu Hình Kênh Thoại & Tối Ưu Băng Thông
+            Cấu Hình Voice Channel & Tối Ưu Băng Thông
           </CardTitle>
           <CardDescription>
-            Tùy biến chế độ tiết kiệm tài nguyên mạng và thuật toán tự phục hồi kết nối.
+            Tùy biến cấu hình tiết kiệm tài nguyên kết nối và cơ chế tự phục hồi kết nối.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
           {/* Channel Selector with ChannelSelect Component */}
           <ChannelSelect
-            label="Chọn Kênh Cố Định (Voice / Stage Channel)"
-            placeholder="Chọn kênh thoại cần giữ 24/7..."
+            label="Chọn Channel Mục Tiêu (Voice / Stage)"
+            placeholder="Chọn Channel mục tiêu..."
             value={channelId || null}
             onChange={(val) => setChannelId(val || '')}
             guildId={guildId}
             channelTypes={['VOICE', 'STAGE']}
-            hint="Chỉ định kênh thoại bot sẽ kết nối và duy trì tự động phục hồi 24/7."
+            hint="Chỉ định Channel bot sẽ kết nối và duy trì timer 24/7 (trong điều kiện lý tưởng)."
           />
 
           {/* 3 Switches */}
@@ -331,20 +331,20 @@ export const VoiceKeeperPage: React.FC = () => {
             <Switch
               checked={selfDeaf}
               onChange={setSelfDeaf}
-              label="Self-Deaf (Điếc)"
-              description="Tắt nhận âm thanh để tiết kiệm tối đa băng thông đường truyền."
+              label="Self-Deaf (Tắt Nghe)"
+              description="Tắt nhận âm thanh để đảm bảo riêng tư và tiết kiệm băng thông."
             />
             <Switch
               checked={selfMute}
               onChange={setSelfMute}
-              label="Self-Mute (Câm)"
-              description="Tắt micro bot nhằm đảm bảo tính bảo mật riêng tư cho phòng thoại."
+              label="Self-Mute (Tắt Mic)"
+              description="Tắt micro để đảm bảo riêng tư và tiết kiệm băng thông."
             />
             <Switch
               checked={autoReconnect}
               onChange={setAutoReconnect}
               label="Auto-Reconnect"
-              description="Kích hoạt cơ chế Circuit Breaker tự kết nối lại khi bot gặp sự cố rớt mạng."
+              description="Bật Circuit Breaker tự kết nối lại khi kết nối gặp sự cố bất thường."
             />
           </div>
 
@@ -359,7 +359,7 @@ export const VoiceKeeperPage: React.FC = () => {
               className="text-xs font-bold bg-gradient-to-r from-cyan-500 to-emerald-400 text-[#0c0d12] hover:opacity-90 border-0"
             >
               <CheckCircle2 className="w-4 h-4 mr-1.5" />
-              Lưu & Khởi Động Giữ Kênh
+              Lưu & Tiến hành
             </Button>
 
             <Button
@@ -370,7 +370,7 @@ export const VoiceKeeperPage: React.FC = () => {
               className="text-xs font-bold"
             >
               <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
-              Buộc Reconnect Ngay
+              Gửi yêu cầu buộc Reconnect
             </Button>
 
             <Button
@@ -380,7 +380,7 @@ export const VoiceKeeperPage: React.FC = () => {
               disabled={stopMutation.isPending}
               className="text-xs font-bold ml-auto"
             >
-              Dừng Giữ Kênh
+              Dừng Voice Keeper
             </Button>
           </div>
         </CardContent>
@@ -390,8 +390,8 @@ export const VoiceKeeperPage: React.FC = () => {
       <Modal
         isOpen={isStopModalOpen}
         onClose={() => setIsStopModalOpen(false)}
-        title="Xác nhận dừng giữ kênh 24/7"
-        description="Thao tác này sẽ ngắt kết nối bot khỏi phòng thoại ngay lập tức và vô hiệu hóa tính năng auto-reconnect cho máy chủ này."
+        title="Xác nhận ngắt Voice Keeper"
+        description="Bot sẽ đóng kết nối khỏi Voice Channel ngay lập tức và tắt auto-reconnect cho server này. Nếu channel không còn user nào, timer sẽ bị reset."
         footer={
           <>
             <Button
@@ -407,17 +407,17 @@ export const VoiceKeeperPage: React.FC = () => {
               isLoading={stopMutation.isPending}
               onClick={() => stopMutation.mutate()}
             >
-              Đồng ý Dừng
+              Xác nhận Dừng
             </Button>
           </>
         }
       >
         <div className="space-y-3 text-xs text-discord-muted">
           <p>
-            Máy chủ đang lưu cấu hình: <strong className="text-white">{statusData?.status?.channelName || channelId}</strong>
+            Server đang lưu cấu hình channel: <strong className="text-white">{statusData?.status?.channelName || channelId}</strong>
           </p>
           <p>
-            Bạn có thể bật lại tính năng bất kỳ lúc nào bằng cách chọn lại kênh và nhấn <strong className="text-white">Lưu & Khởi Động Giữ Kênh</strong>.
+            Bạn có thể bật lại Voice Keeper bất kỳ lúc nào.
           </p>
         </div>
       </Modal>

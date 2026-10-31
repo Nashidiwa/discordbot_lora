@@ -37,7 +37,7 @@ export const OverviewPage: React.FC = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-              Bảng Điều Khiển Máy Chủ
+              Server Dashboard
             </h1>
             <Badge variant="blurple" size="md">
               Guild Space
@@ -46,14 +46,14 @@ export const OverviewPage: React.FC = () => {
           <p className="text-xs sm:text-sm text-discord-muted">
             Quản lý vận hành và cấu hình các phân hệ dịch vụ cho:{' '}
             <strong className="text-white">
-              {currentGuild?.name || 'Chưa chọn máy chủ'}
+              {currentGuild?.name || 'Chưa chọn server'}
             </strong>
           </p>
         </div>
 
         {currentGuild && (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-discord-muted">Thẩm quyền của bạn:</span>
+            <span className="text-xs text-discord-muted">Quyền hạn của bạn:</span>
             <Badge variant="green" size="md" dot>
               {currentGuild.roleTier}
             </Badge>
@@ -87,7 +87,7 @@ export const OverviewPage: React.FC = () => {
               </div>
               <p className="text-xs text-discord-muted flex items-center gap-3">
                 <span>
-                  Thẩm quyền:{' '}
+                  Quyền hạn:{' '}
                   <strong className="text-emerald-400">
                     {currentGuild.roleTier}
                   </strong>
@@ -122,7 +122,7 @@ export const OverviewPage: React.FC = () => {
         </Card>
       ) : (
         <div className="p-8 text-center glass-panel rounded-3xl text-discord-muted text-sm border border-white/10">
-          Vui lòng chọn một máy chủ từ thanh điều hướng phía trên để truy cập bảng điều khiển.
+          Vui lòng chọn một server từ thanh điều hướng phía trên để truy cập dashboard.
         </div>
       )}
 
@@ -131,7 +131,7 @@ export const OverviewPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-semibold text-discord-muted flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-discord-blurple" />
-            <span>Phân hệ tính năng của máy chủ</span>
+            <span>Phân hệ tính năng của server</span>
           </h2>
           <span className="text-xs text-discord-muted">5 phân hệ khả dụng</span>
         </div>
@@ -148,7 +148,7 @@ export const OverviewPage: React.FC = () => {
               </div>
               <CardTitle className="text-purple-300">Phân quyền (Permit)</CardTitle>
               <CardDescription>
-                Hệ thống phân quyền ủy thác 4 tầng độc lập chuẩn Wickbot (Co-Owner, Trusted Admin, Custom Bitfield Grants).
+                Tính năng ủy quyền đa tầng độc lập: Co-Owner, Trusted Admin, Custom Bitfield Grants...
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
@@ -158,7 +158,7 @@ export const OverviewPage: React.FC = () => {
                 onClick={() => navigate(`/dashboard/guilds/${guildId}/permits`)}
                 className="w-full text-xs font-semibold hover:border-purple-400/80 hover:text-purple-300 transition"
               >
-                Phân quyền Permit
+                Cấu hình Permit
               </Button>
             </CardContent>
           </Card>
@@ -174,7 +174,7 @@ export const OverviewPage: React.FC = () => {
               </div>
               <CardTitle className="text-amber-300">Quản lý Đặc quyền</CardTitle>
               <CardDescription>
-                Hệ thống Custom Role Gradient 2 màu cho Server Booster và mô hình Quỹ Thời Gian Donator Time-Bank.
+                Tính năng quản lý đặc quyền cho các thành viên server: Server Booster, Donator, và hơn thế
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
@@ -184,7 +184,7 @@ export const OverviewPage: React.FC = () => {
                 onClick={() => navigate(`/dashboard/guilds/${guildId}/perks`)}
                 className="w-full text-xs font-semibold hover:border-amber-400/80 hover:text-amber-300 transition"
               >
-                Quản trị Đặc quyền
+                Quản lý Đặc quyền
               </Button>
             </CardContent>
           </Card>
@@ -198,9 +198,9 @@ export const OverviewPage: React.FC = () => {
                 </div>
                 <Badge variant="muted" size="sm">24/7 Engine</Badge>
               </div>
-              <CardTitle className="text-cyan-300">Voice Keeper 24/7</CardTitle>
+              <CardTitle className="text-cyan-300">Voice Keeper</CardTitle>
               <CardDescription>
-                Duy trì bot trong phòng thoại liên tục với bộ giải mã âm thanh Equalizer và Watchdog tự phục hồi kết nối 3 tầng.
+                Duy trì timer Voice Channel liên tục với Watchdog tự phục hồi kết nối 3 tầng.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
@@ -222,11 +222,11 @@ export const OverviewPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shadow-lg shadow-emerald-500/20">
                   <BookOpen className="w-6 h-6" />
                 </div>
-                <Badge variant="muted" size="sm">2 Chế Độ Chơi</Badge>
+                <Badge variant="muted" size="sm">Normal / Hard</Badge>
               </div>
               <CardTitle className="text-emerald-300">Wordchain Engine</CardTitle>
               <CardDescription>
-                Theo dõi Live HUD nối từ 2 chế độ (Thường & Khó), thiết lập phòng chơi và Bảng Vàng Karma thành viên.
+                Theo dõi Live HUD nối từ (Normal & Hard), thiết lập channel và Leaderboard Karma thành viên.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
@@ -236,7 +236,7 @@ export const OverviewPage: React.FC = () => {
                 onClick={() => navigate(`/dashboard/guilds/${guildId}/wordchain`)}
                 className="w-full text-xs font-semibold hover:border-emerald-400/80 hover:text-emerald-300 transition"
               >
-                Vào Wordchain Game
+                Cài đặt Wordchain
               </Button>
             </CardContent>
           </Card>
@@ -250,9 +250,9 @@ export const OverviewPage: React.FC = () => {
                 </div>
                 <Badge variant="muted" size="sm">8 Linked Roles</Badge>
               </div>
-              <CardTitle className="text-indigo-300">The Swarm Linked</CardTitle>
+              <CardTitle className="text-indigo-300">Linked Role The Swarm</CardTitle>
               <CardDescription>
-                Xem danh sách thành viên trong server đã kết nối 8 bậc danh hiệu The Swarm qua Discord OAuth2.
+                Thành viên server được ghi nhận đặc quyền Linked Role từ cấp Application giúp làm phong phú UI channel.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
@@ -262,7 +262,7 @@ export const OverviewPage: React.FC = () => {
                 onClick={() => navigate(`/dashboard/guilds/${guildId}/swarm`)}
                 className="w-full text-xs font-semibold hover:border-indigo-400/80 hover:text-indigo-300 transition"
               >
-                Quản trị The Swarm
+                Đến xem Linked Role
               </Button>
             </CardContent>
           </Card>

@@ -100,7 +100,7 @@ export const WordchainPage: React.FC = () => {
     onSuccess: () => {
       toast.success(
         'Đã lưu cấu hình Wordchain',
-        'Kênh chơi và vai trò giám sát đã được cập nhật.',
+        'Channel và role đã được cập nhật.',
       );
       void queryClient.invalidateQueries({
         queryKey: ['wordchain-overview', guildId],
@@ -121,7 +121,7 @@ export const WordchainPage: React.FC = () => {
       ),
     onSuccess: (res) => {
       toast.success(
-        'Reset ván chơi thành công',
+        'Hoàn tất reset ván chơi',
         res.message || 'Chuỗi nối từ đã được đưa về trạng thái khởi đầu.',
       );
       setIsResetModalOpen(false);
@@ -129,13 +129,13 @@ export const WordchainPage: React.FC = () => {
         queryKey: ['wordchain-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Lỗi reset ván chơi', err.message),
+    onError: (err: Error) => toast.error('Reset ván chơi thất bại', err.message),
   });
 
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản trị Wordchain.
+        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý.
       </div>
     );
   }
@@ -162,10 +162,10 @@ export const WordchainPage: React.FC = () => {
             <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/25">
               <BookOpen className="w-6 h-6" />
             </span>
-            Wordchain Game & Karma Engine
+            Wordchain & Karma Engine
           </h1>
           <p className="text-xs text-discord-muted mt-1 max-w-2xl">
-            Trò chơi nối từ thời gian thực với bộ thẩm định từ điển 3 tầng, hệ số điểm Karma hợp tác chống spam hậu tố (DEC-007) và kiểm soát vai trò Reliable / Failed (DEC-008).
+            Trò chơi nối từ thời gian thực với điểm Karma hợp tác chống spam hậu tố và thiết lập role Reliable / Failed.
           </p>
         </div>
 
@@ -270,10 +270,10 @@ export const WordchainPage: React.FC = () => {
             <div>
               <CardTitle className="text-purple-400 flex items-center gap-2">
                 <Flame className="w-4 h-4 text-purple-400" />
-                Chế Độ Nâng Cao (2 Ký Tự)
+                Chế Độ Khó (2 Ký Tự)
               </CardTitle>
               <CardDescription>
-                Nối tiếp 2 ký tự cuối cùng của từ liền trước (Hard Mode).
+                Nối tiếp 2 ký tự cuối cùng của từ liền trước.
               </CardDescription>
             </div>
             <Badge variant="purple" size="sm">
@@ -345,51 +345,51 @@ export const WordchainPage: React.FC = () => {
         <CardHeader>
           <CardTitle>
             <Hash className="w-5 h-5 text-emerald-400 inline-block mr-2" />
-            Thiết Lập Kênh Chơi & Phân Vai Trò
+            Thiết Lập Channel & Role
           </CardTitle>
           <CardDescription>
-            Chỉ định phòng chơi chuyên biệt và cấp tự động vai trò danh dự Reliable hoặc cảnh báo Failed.
+            Chỉ định phòng chơi chuyên biệt và cấp tự động role danh hiệu Reliable và Failed.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ChannelSelect
-              label="Kênh Chơi Chế Độ Thường (Normal)"
-              placeholder="Chọn kênh Normal Mode..."
+              label="Channel Chơi Chế Độ Thường (Normal)"
+              placeholder="Chọn Channel Normal Mode..."
               value={normalChannelId || null}
               onChange={(val) => setNormalChannelId(val || '')}
               guildId={guildId}
               channelTypes={['TEXT']}
-              hint="Kênh văn bản dành cho Normal Mode (nối 1 ký tự)."
+              hint="Text Channel dành cho Normal Mode (nối 1 ký tự)."
             />
 
             <ChannelSelect
               label="Kênh Chơi Chế Độ Khó (Hard)"
-              placeholder="Chọn kênh Hard Mode..."
+              placeholder="Chọn Channel Hard Mode..."
               value={hardChannelId || null}
               onChange={(val) => setHardChannelId(val || '')}
               guildId={guildId}
               channelTypes={['TEXT']}
-              hint="Kênh văn bản dành cho Hard Mode (nối 2 ký tự)."
+              hint="Text Channel dành cho Hard Mode (nối 2 ký tự)."
             />
 
             <RoleSelect
-              label="Vai Trò Thành Viên Uy Tín (Reliable Role)"
-              placeholder="Chọn vai trò Reliable..."
+              label="Role Member Uy Tín (Reliable Role)"
+              placeholder="Chọn Reliable Role..."
               value={reliableRoleId || null}
               onChange={(val) => setReliableRoleId(val || '')}
               guildId={guildId}
-              hint="Tự động trao khi đạt chuỗi đóng góp chuẩn xác cao (DEC-008)."
+              hint="Tự động trao khi đạt chuỗi đóng góp chuẩn xác cao."
             />
 
             <RoleSelect
-              label="Vai Trò Cảnh Báo Phá Chuỗi (Failed Role)"
-              placeholder="Chọn vai trò Failed..."
+              label="Role Member Phá Chuỗi (Failed Role)"
+              placeholder="Chọn Failed Role..."
               value={failedRoleId || null}
               onChange={(val) => setFailedRoleId(val || '')}
               guildId={guildId}
-              hint="Tự động gán cho thành viên vừa phá chuỗi ván chơi."
+              hint="Tự động gán cho member vừa phá chuỗi ván chơi."
             />
           </div>
 
@@ -404,7 +404,7 @@ export const WordchainPage: React.FC = () => {
               </Badge>
             </div>
             <span className="text-[11px] text-discord-muted">
-              Chuẩn 3 tầng Lexicon: RAM → DB Cache → Wiktionary Fallback
+              3 tầng Lexicon: RAM → DB Cache → Wiktionary
             </span>
           </div>
 
@@ -429,10 +429,10 @@ export const WordchainPage: React.FC = () => {
           <div>
             <CardTitle>
               <Trophy className="w-5 h-5 text-amber-400 inline-block mr-2" />
-              Bảng Xếp Hạng & Chỉ Số Karma Thành Viên
+              Leaderboard & Chỉ Số Karma Member
             </CardTitle>
             <CardDescription>
-              Theo dõi độ uy tín (Karma) và tổng điểm thành tích đóng góp cho máy chủ.
+              Theo dõi độ uy tín (Karma) và tổng điểm đóng góp cho server.
             </CardDescription>
           </div>
 
@@ -485,7 +485,7 @@ export const WordchainPage: React.FC = () => {
             <Skeleton className="h-24 w-full" />
           ) : filteredMembers.length === 0 ? (
             <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-              Chưa có dữ liệu thành viên tham gia Wordchain nào.
+              Chưa có dữ liệu member tham gia Wordchain nào.
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border border-white/10">
@@ -493,11 +493,11 @@ export const WordchainPage: React.FC = () => {
                 <thead className="bg-[#11131a] text-discord-muted uppercase text-[10px] font-extrabold tracking-wider border-b border-white/10">
                   <tr>
                     <th className="py-3.5 px-4">Thứ Hạng</th>
-                    <th className="py-3.5 px-4">User ID</th>
+                    <th className="py-3.5 px-4">User</th>
                     <th className="py-3.5 px-4">Điểm Karma</th>
                     <th className="py-3.5 px-4">Tổng Điểm</th>
                     <th className="py-3.5 px-4">Từ Hợp Lệ</th>
-                    <th className="py-3.5 px-4">Lỗi Phá Chuỗi</th>
+                    <th className="py-3.5 px-4">Phá Chuỗi</th>
                     <th className="py-3.5 px-4">Tỷ Lệ Chuẩn Xác</th>
                   </tr>
                 </thead>
@@ -594,8 +594,8 @@ export const WordchainPage: React.FC = () => {
       <Modal
         isOpen={isResetModalOpen}
         onClose={() => setIsResetModalOpen(false)}
-        title="Xác Nhận Reset Ván Chơi Nối Từ"
-        description="Đưa chuỗi nối từ về 0 và dọn dẹp bộ nhớ các từ đã sử dụng."
+        title="Xác Nhận Reset Ván Chơi"
+        description="Đưa chuỗi nối từ về 0 và dọn dẹp cache các từ đã sử dụng."
         footer={
           <>
             <Button
@@ -621,7 +621,7 @@ export const WordchainPage: React.FC = () => {
           <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs text-red-300 flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 shrink-0 text-red-400 mt-0.5" />
             <p className="leading-relaxed">
-              Hành động này sẽ xóa toàn bộ danh sách các từ đã được người chơi nối trong ván hiện tại, đồng thời đưa số đếm chuỗi về 0 để mở khóa ván mới. Điểm Karma và Score cá nhân của người chơi sẽ được bảo toàn nguyên vẹn.
+              Hành động này sẽ xóa toàn bộ danh sách các từ đã được người chơi nối trong ván hiện tại, đồng thời đưa số đếm chuỗi về 0 để bắt đầu ván mới. Điểm Karma và Score cá nhân của user vẫn được bảo toàn.
             </p>
           </div>
 
