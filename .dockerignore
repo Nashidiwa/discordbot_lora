@@ -3,6 +3,7 @@ node_modules
 dist
 build
 dashboard/node_modules
+dashboard/dist
 
 # Git & Repository Metadata
 .git
@@ -48,6 +49,3 @@ Thumbs.db
 docs/
 *.md
 LICENSE*
-
-# Frontend Development Files (Static build handled separately or via single-port bundle)
-dashboard/
