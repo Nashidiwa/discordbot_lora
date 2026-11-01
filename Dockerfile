@@ -10,17 +10,18 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends openssl && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy dependency specifications
+# Copy dependency specifications (backend & dashboard)
 COPY package*.json ./
+COPY dashboard/package*.json ./dashboard/
 
 # Install all dependencies (including devDependencies needed for build)
-RUN npm ci
+RUN npm ci && npm ci --prefix dashboard
 
 # Copy Prisma schema and generate Prisma Client
 COPY src/shared/db/schema.prisma ./src/shared/db/schema.prisma
 RUN npx prisma generate
 
-# Copy tsconfig and source code
+# Copy tsconfig and backend source code
 COPY tsconfig.json ./
 COPY src/ ./src/
 
@@ -32,6 +33,10 @@ RUN if [ -d "src/features/wordchain/assets" ]; then \
       mkdir -p dist/features/wordchain/assets && \
       cp -r src/features/wordchain/assets/* dist/features/wordchain/assets/; \
     fi
+
+# Copy dashboard source code and compile Vite SPA to /app/dashboard/dist
+COPY dashboard/ ./dashboard/
+RUN npm run build:dashboard
 
 # ==========================================
 # Stage 2: Production Runner
@@ -53,8 +58,11 @@ COPY package*.json ./
 # Copy complete node_modules from builder to preserve CLI scripts (tsx, prisma)
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy compiled code from builder
+# Copy compiled backend code from builder
 COPY --from=builder /app/dist ./dist
+
+# Copy compiled frontend dashboard static SPA assets
+COPY --from=builder /app/dashboard/dist ./dashboard/dist
 
 # Copy source code, scripts, and Prisma schema/migrations for CLI tools (deploy:prod, deploy:metadata)
 COPY --from=builder /app/src ./src

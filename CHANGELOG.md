@@ -24,6 +24,9 @@ Tất cả các thay đổi đáng chú ý của dự án **Lora** (`discordbot_
   - Chuẩn hóa badge phân hệ đồng bộ trên Sidebar và Page Header.
   - Sửa màu nền trang Wordchain về tông Green đồng bộ theo bảng màu hệ thống.
   - Thêm tính năng click vào icon Lora App Engine ở góc trên bên trái để quay về trang Dashboard gốc.
+- **Tối Ưu Hóa Multi-Stage Dockerfile Cho Production (`Dockerfile`):**
+  - Bổ sung bước cài đặt dependencies frontend (`npm ci --prefix dashboard`) và biên dịch Vite SPA (`npm run build:dashboard`) trong giai đoạn `builder`.
+  - Sao chép toàn bộ tài nguyên tĩnh `dashboard/dist` sang container `runner`, bảo đảm Fastify Static Plugin phục vụ Web Dashboard hoàn hảo khi triển khai qua Docker Compose.
 
 ### Đã sửa (Fixed)
 - **Sửa Lỗi Phân Loại Bảng Xếp Hạng Wordchain (`FEAT-05`):**
