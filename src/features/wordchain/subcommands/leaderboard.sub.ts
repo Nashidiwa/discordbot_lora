@@ -19,7 +19,8 @@ export const execute: SubcommandExecutor = async (
   });
 
   const type = interaction.options.getString('type') ?? 'user';
-  const metric = interaction.options.getString('metric') ?? 'score';
+  const rawMetric = interaction.options.getString('metric') ?? 'score';
+  const metric: 'score' | 'karma' = rawMetric === 'karma' ? 'karma' : 'score';
   const scope = interaction.options.getString('scope') ?? 'server';
   const mode = interaction.options.getString('mode') ?? 'normal';
 
@@ -67,7 +68,11 @@ export const execute: SubcommandExecutor = async (
       return;
     }
 
-    const members = await wordChainGameService.getLeaderboard(interaction.guildId, 10);
+    const members = await wordChainGameService.getLeaderboard(
+      interaction.guildId,
+      10,
+      metric,
+    );
     const embed = new EmbedBuilder()
       .setColor(EmbedColor.PRIMARY)
       .setTitle(

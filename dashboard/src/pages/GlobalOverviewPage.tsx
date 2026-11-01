@@ -19,10 +19,12 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
+import { useI18n } from '../i18n';
 import { formatDurationSeconds } from '../lib/utils';
 import type { SystemOverview } from '../types';
 
 export const GlobalOverviewPage: React.FC = () => {
+  const { t } = useI18n();
   const { user, canAccessGlobal, guilds, setSelectedGuild, setIsGlobalScope } =
     useAuth();
   const navigate = useNavigate();
@@ -103,9 +105,9 @@ export const GlobalOverviewPage: React.FC = () => {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10 space-y-3">
         <Shield className="w-10 h-10 text-discord-red mx-auto" />
-        <h3 className="text-base font-bold text-white">Truy Cập Bị Từ Chối</h3>
+        <h3 className="text-base font-bold text-white">{t('globalOverview.accessDeniedTitle')}</h3>
         <p className="text-xs text-discord-muted max-w-md mx-auto">
-          System Dashboard chỉ dành cho Bot Owner hoặc Delegated Operator.
+          {t('globalOverview.accessDeniedDesc')}
         </p>
       </div>
     );
@@ -133,35 +135,38 @@ export const GlobalOverviewPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 select-none max-w-6xl">
+    <div className="space-y-8 select-none w-full">
       {/* Top Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25">
-                <Globe className="w-6 h-6" />
-              </span>
-              System Dashboard
-            </h1>
-            <Badge variant="purple" size="md">
-              Global Control
-            </Badge>
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black shadow-lg shadow-indigo-500/25 shrink-0">
+              <Globe className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                  {t('globalOverview.title')}
+                </h1>
+                <Badge variant="purple" size="md">
+                  {t('globalOverview.badge')}
+                </Badge>
+              </div>
+              <p className="text-xs sm:text-sm text-discord-muted mt-0.5">
+                {t('globalOverview.subtitle')}
+              </p>
+            </div>
           </div>
-          <p className="text-xs sm:text-sm text-discord-muted">
-            Giám sát sức khỏe hạ tầng bot và quản trị mạng lưới server cấp Ứng
-            Dụng (Application Scope).
-          </p>
         </div>
 
         <div className="flex items-center gap-2">
           {user?.isBotOwner ? (
             <Badge variant="yellow" size="md" dot>
-              Bot Owner
+              {t('globalOverview.botOwner')}
             </Badge>
           ) : (
             <Badge variant="purple" size="md" dot>
-              Delegated Operator
+              {t('globalOverview.operator')}
             </Badge>
           )}
         </div>
@@ -175,7 +180,7 @@ export const GlobalOverviewPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-extrabold uppercase tracking-wider text-discord-muted flex items-center gap-2">
               <Server className="w-4 h-4 text-discord-blurple" />
-              <span>Chỉ Số Hạ Tầng Runtime (Real-time Bento Grid)</span>
+              <span>{t('globalOverview.liveTelemetry')}</span>
             </h2>
             <span className="text-[11px] text-emerald-400 font-extrabold flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -190,7 +195,7 @@ export const GlobalOverviewPage: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block mb-1">
-                    Gateway Latency Telemetry
+                    {t('globalOverview.latencyTitle')}
                   </span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
@@ -228,7 +233,7 @@ export const GlobalOverviewPage: React.FC = () => {
               <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-discord-muted">
                 <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
                   <Wifi className="w-3.5 h-3.5" />
-                  Kết nối Gateway ổn định
+                  {t('globalOverview.gatewayStable')}
                 </span>
                 <span className="font-mono text-[11px]">Heartbeat: 41.25s</span>
               </div>
@@ -239,7 +244,7 @@ export const GlobalOverviewPage: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 block mb-1">
-                    Node.js Runtime Memory
+                    {t('globalOverview.ramTitle')}
                   </span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
@@ -282,7 +287,7 @@ export const GlobalOverviewPage: React.FC = () => {
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] text-discord-muted font-extrabold uppercase block">
-                  Uptime Tiến Trình
+                  {t('globalOverview.uptimeTitle')}
                 </span>
                 <span className="text-base font-extrabold text-white truncate block mt-0.5">
                   {isLoading ? '...' : formatDurationSeconds(uptime)}
@@ -297,7 +302,7 @@ export const GlobalOverviewPage: React.FC = () => {
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] text-discord-muted font-extrabold uppercase block">
-                  Mạng Lưới Server
+                  {t('globalOverview.guildCountTitle')}
                 </span>
                 <span className="text-base font-extrabold text-white truncate block mt-0.5">
                   {isLoading
@@ -314,7 +319,7 @@ export const GlobalOverviewPage: React.FC = () => {
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] text-discord-muted font-extrabold uppercase block">
-                  Cấu Hình Voice / Perks
+                  {t('globalOverview.voicePerksSummary')}
                 </span>
                 <span className="text-base font-extrabold text-white truncate block mt-0.5">
                   {isLoading
@@ -334,11 +339,10 @@ export const GlobalOverviewPage: React.FC = () => {
             </div>
             <div>
               <h3 className="text-base font-bold text-white">
-                Chào mừng Delegated Operator
+                {t('globalOverview.welcomeOperatorTitle')}
               </h3>
               <p className="text-xs text-discord-muted mt-0.5">
-                Bạn có toàn quyền quản trị và phân bổ Linked Role The Swarm 
-                trên toàn bộ mạng lưới server.
+                {t('globalOverview.welcomeOperatorDesc')}
               </p>
             </div>
           </div>
@@ -354,14 +358,13 @@ export const GlobalOverviewPage: React.FC = () => {
             </div>
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                Feature Linked Role The Swarm Global
+                {t('globalOverview.swarmShortcutTitle')}
                 <Badge variant="purple" size="sm">
                   8 Levels
                 </Badge>
               </h3>
               <p className="text-xs text-discord-muted mt-1 max-w-xl">
-                Quản lý toàn bộ danh sách user được ghi nhận, điều chỉnh 
-                các bản ghi và ủy quyền Delegated Operator.
+                {t('globalOverview.swarmShortcutDesc')}
               </p>
             </div>
           </div>
@@ -372,7 +375,7 @@ export const GlobalOverviewPage: React.FC = () => {
             onClick={() => navigate('/dashboard/global/swarm')}
             className="gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold shrink-0"
           >
-            Quản Lý Linked Role (Global)
+            {t('globalOverview.swarmShortcutBtn')}
             <ArrowRight className="w-4 h-4" />
           </Button>
         </CardContent>
@@ -386,10 +389,10 @@ export const GlobalOverviewPage: React.FC = () => {
           <div>
             <h2 className="text-xs font-extrabold uppercase tracking-wider text-discord-muted flex items-center gap-2">
               <Server className="w-4 h-4 text-discord-blurple" />
-              <span>Mạng Lưới Server Discord ({guilds.length})</span>
+              <span>{t('globalOverview.guildNetworkTitle')} ({guilds.length})</span>
             </h2>
             <p className="text-xs text-discord-muted mt-0.5">
-              Chọn server dưới đây để chuyển đến Dashboard chi tiết của server đó.
+              {t('globalOverview.guildNetworkSubtitle')}
             </p>
           </div>
 
@@ -397,7 +400,7 @@ export const GlobalOverviewPage: React.FC = () => {
             <Search className="w-4 h-4 text-discord-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Tìm kiếm server..."
+              placeholder={t('globalOverview.guildSearchPlaceholder')}
               value={searchGuild}
               onChange={(e) => setSearchGuild(e.target.value)}
               className="w-full bg-[#1e2029] border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-discord-muted focus:outline-none focus:border-indigo-500/60 transition"
@@ -407,7 +410,7 @@ export const GlobalOverviewPage: React.FC = () => {
 
         {filteredGuilds.length === 0 ? (
           <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-            Không tìm thấy server nào phù hợp với yêu cầu tìm kiếm.
+            {t('globalOverview.noGuildsFound')}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -460,7 +463,7 @@ export const GlobalOverviewPage: React.FC = () => {
                   }}
                   className="w-full justify-between text-xs font-bold hover:border-discord-blurple group-hover:bg-discord-blurple/10"
                 >
-                  <span>Dashboard server này</span>
+                  <span>{t('globalOverview.serverDashboardBtn')}</span>
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Card>

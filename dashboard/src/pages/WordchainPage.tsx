@@ -32,6 +32,7 @@ import { Skeleton } from '../components/ui/Skeleton';
 import { useToast } from '../components/ui/Toast';
 import { UserDisplay } from '../components/ui/UserDisplay';
 import { useAuth } from '../context/AuthContext';
+import { useI18n } from '../i18n';
 import { cn } from '../lib/utils';
 import type { WordChainOverviewData } from '../types';
 
@@ -40,6 +41,7 @@ export const WordchainPage: React.FC = () => {
   const { selectedGuild, guilds } = useAuth();
   const queryClient = useQueryClient();
   const toast = useToast();
+  const { t } = useI18n();
 
   const currentGuild =
     (paramGuildId ? guilds.find((g) => g.id === paramGuildId) : null) ||
@@ -154,19 +156,26 @@ export const WordchainPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 w-full select-none">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-3">
-            <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/25">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black shadow-lg shadow-emerald-500/25 shrink-0">
               <BookOpen className="w-6 h-6" />
-            </span>
-            Wordchain & Karma Engine
-          </h1>
-          <p className="text-xs text-discord-muted mt-1 max-w-2xl">
-            Trò chơi nối từ thời gian thực với điểm Karma hợp tác chống spam hậu tố và thiết lập role Reliable / Failed.
-          </p>
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                {t('wordchain.title')}
+                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                  {t('wordchain.badge')}
+                </span>
+              </h1>
+              <p className="text-xs text-discord-muted mt-0.5">
+                {t('wordchain.subtitle')}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -180,7 +189,7 @@ export const WordchainPage: React.FC = () => {
             className="gap-2 text-xs border-red-500/30 hover:border-red-500 font-bold"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Reset Ván Chơi Kẹt
+            {t('wordchain.resetStuckBtn')}
           </Button>
         </div>
       </div>
@@ -194,10 +203,10 @@ export const WordchainPage: React.FC = () => {
             <div>
               <CardTitle className="text-emerald-400 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-emerald-400" />
-                Chế Độ Thường (1 Ký Tự)
+                {t('wordchain.normalModeTitle')}
               </CardTitle>
               <CardDescription>
-                Nối tiếp ký tự cuối cùng của từ liền trước.
+                {t('wordchain.normalModeDesc')}
               </CardDescription>
             </div>
             <Badge variant="green" size="sm">
@@ -212,20 +221,20 @@ export const WordchainPage: React.FC = () => {
               <>
                 <div className="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 flex flex-col items-center justify-center text-center">
                   <span className="text-[11px] font-bold text-discord-muted uppercase tracking-wider mb-1">
-                    Từ Đang Chờ Nối Tiếp
+                    {t('wordchain.waitingWord')}
                   </span>
                   <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-300 tracking-wider">
                     {normalSession?.currentWord ? (
                       `"${normalSession.currentWord}"`
                     ) : (
                       <span className="text-discord-muted text-base italic">
-                        (Chưa có từ nào - Bắt đầu bằng bất kỳ từ nào)
+                        {t('wordchain.noWordYet')}
                       </span>
                     )}
                   </div>
                   {normalSession?.lastMemberId && (
                     <div className="flex items-center justify-center gap-1.5 text-[10px] text-discord-muted mt-2">
-                      <span>Người vừa nối:</span>
+                      <span>{t('wordchain.lastConnectedBy')}</span>
                       <UserDisplay userId={normalSession.lastMemberId} />
                     </div>
                   )}
@@ -234,7 +243,7 @@ export const WordchainPage: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div className="p-3 rounded-xl bg-black/30 border border-white/5">
                     <span className="text-[10px] text-discord-muted block">
-                      Chuỗi Hiện Tại
+                      {t('wordchain.currentChain')}
                     </span>
                     <span className="text-lg font-black text-white">
                       {normalSession?.currentCount ?? 0}
@@ -242,7 +251,7 @@ export const WordchainPage: React.FC = () => {
                   </div>
                   <div className="p-3 rounded-xl bg-black/30 border border-white/5">
                     <span className="text-[10px] text-discord-muted block">
-                      Kỷ Lục Cao Nhất
+                      {t('wordchain.highScore')}
                     </span>
                     <span className="text-lg font-black text-amber-400 flex items-center justify-center gap-1">
                       <Trophy className="w-3.5 h-3.5 inline" />
@@ -251,7 +260,7 @@ export const WordchainPage: React.FC = () => {
                   </div>
                   <div className="p-3 rounded-xl bg-black/30 border border-white/5">
                     <span className="text-[10px] text-discord-muted block">
-                      Từ Đã Sử Dụng
+                      {t('wordchain.usedWords')}
                     </span>
                     <span className="text-lg font-black text-emerald-400">
                       {normalSession?.usedWordsCount ?? 0}
@@ -270,10 +279,10 @@ export const WordchainPage: React.FC = () => {
             <div>
               <CardTitle className="text-purple-400 flex items-center gap-2">
                 <Flame className="w-4 h-4 text-purple-400" />
-                Chế Độ Khó (2 Ký Tự)
+                {t('wordchain.hardModeTitle')}
               </CardTitle>
               <CardDescription>
-                Nối tiếp 2 ký tự cuối cùng của từ liền trước.
+                {t('wordchain.hardModeDesc')}
               </CardDescription>
             </div>
             <Badge variant="purple" size="sm">
@@ -288,20 +297,20 @@ export const WordchainPage: React.FC = () => {
               <>
                 <div className="p-4 rounded-2xl bg-purple-950/20 border border-purple-500/20 flex flex-col items-center justify-center text-center">
                   <span className="text-[11px] font-bold text-discord-muted uppercase tracking-wider mb-1">
-                    Từ Đang Chờ Nối Tiếp (2 Token)
+                    {t('wordchain.waitingWord')} (2 Token)
                   </span>
                   <div className="text-2xl sm:text-3xl font-black font-mono text-purple-300 tracking-wider">
                     {hardSession?.currentWord ? (
                       `"${hardSession.currentWord}"`
                     ) : (
                       <span className="text-discord-muted text-base italic">
-                        (Chưa có từ nào - Bắt đầu bằng bất kỳ từ nào)
+                        {t('wordchain.noWordYet')}
                       </span>
                     )}
                   </div>
                   {hardSession?.lastMemberId && (
                     <div className="flex items-center justify-center gap-1.5 text-[10px] text-discord-muted mt-2">
-                      <span>Người vừa nối:</span>
+                      <span>{t('wordchain.lastConnectedBy')}</span>
                       <UserDisplay userId={hardSession.lastMemberId} />
                     </div>
                   )}
@@ -310,7 +319,7 @@ export const WordchainPage: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div className="p-3 rounded-xl bg-black/30 border border-white/5">
                     <span className="text-[10px] text-discord-muted block">
-                      Chuỗi Hiện Tại
+                      {t('wordchain.currentChain')}
                     </span>
                     <span className="text-lg font-black text-white">
                       {hardSession?.currentCount ?? 0}
@@ -318,7 +327,7 @@ export const WordchainPage: React.FC = () => {
                   </div>
                   <div className="p-3 rounded-xl bg-black/30 border border-white/5">
                     <span className="text-[10px] text-discord-muted block">
-                      Kỷ Lục Cao Nhất
+                      {t('wordchain.highScore')}
                     </span>
                     <span className="text-lg font-black text-amber-400 flex items-center justify-center gap-1">
                       <Trophy className="w-3.5 h-3.5 inline" />
@@ -327,7 +336,7 @@ export const WordchainPage: React.FC = () => {
                   </div>
                   <div className="p-3 rounded-xl bg-black/30 border border-white/5">
                     <span className="text-[10px] text-discord-muted block">
-                      Từ Đã Sử Dụng
+                      {t('wordchain.usedWords')}
                     </span>
                     <span className="text-lg font-black text-purple-400">
                       {hardSession?.usedWordsCount ?? 0}
@@ -345,51 +354,51 @@ export const WordchainPage: React.FC = () => {
         <CardHeader>
           <CardTitle>
             <Hash className="w-5 h-5 text-emerald-400 inline-block mr-2" />
-            Thiết Lập Channel & Role
+            {t('wordchain.configTitle')}
           </CardTitle>
           <CardDescription>
-            Chỉ định phòng chơi chuyên biệt và cấp tự động role danh hiệu Reliable và Failed.
+            {t('wordchain.configDesc')}
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ChannelSelect
-              label="Channel Chơi Chế Độ Thường (Normal)"
-              placeholder="Chọn Channel Normal Mode..."
+              label={t('wordchain.normalChannelLabel')}
+              placeholder={t('wordchain.normalChannelPlaceholder')}
               value={normalChannelId || null}
               onChange={(val) => setNormalChannelId(val || '')}
               guildId={guildId}
               channelTypes={['TEXT']}
-              hint="Text Channel dành cho Normal Mode (nối 1 ký tự)."
+              hint={t('wordchain.normalChannelHint')}
             />
 
             <ChannelSelect
-              label="Kênh Chơi Chế Độ Khó (Hard)"
-              placeholder="Chọn Channel Hard Mode..."
+              label={t('wordchain.hardChannelLabel')}
+              placeholder={t('wordchain.hardChannelPlaceholder')}
               value={hardChannelId || null}
               onChange={(val) => setHardChannelId(val || '')}
               guildId={guildId}
               channelTypes={['TEXT']}
-              hint="Text Channel dành cho Hard Mode (nối 2 ký tự)."
+              hint={t('wordchain.hardChannelHint')}
             />
 
             <RoleSelect
-              label="Role Member Uy Tín (Reliable Role)"
-              placeholder="Chọn Reliable Role..."
+              label={t('wordchain.reliableRoleLabel')}
+              placeholder={t('wordchain.reliableRolePlaceholder')}
               value={reliableRoleId || null}
               onChange={(val) => setReliableRoleId(val || '')}
               guildId={guildId}
-              hint="Tự động trao khi đạt chuỗi đóng góp chuẩn xác cao."
+              hint={t('wordchain.reliableRoleHint')}
             />
 
             <RoleSelect
-              label="Role Member Phá Chuỗi (Failed Role)"
-              placeholder="Chọn Failed Role..."
+              label={t('wordchain.failedRoleLabel')}
+              placeholder={t('wordchain.failedRolePlaceholder')}
               value={failedRoleId || null}
               onChange={(val) => setFailedRoleId(val || '')}
               guildId={guildId}
-              hint="Tự động gán cho member vừa phá chuỗi ván chơi."
+              hint={t('wordchain.failedRoleHint')}
             />
           </div>
 
@@ -417,7 +426,7 @@ export const WordchainPage: React.FC = () => {
               className="gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
             >
               <Save className="w-4 h-4" />
-              Lưu Cấu Hình Wordchain
+              {t('wordchain.saveConfigBtn')}
             </Button>
           </div>
         </CardContent>
@@ -429,7 +438,7 @@ export const WordchainPage: React.FC = () => {
           <div>
             <CardTitle>
               <Trophy className="w-5 h-5 text-amber-400 inline-block mr-2" />
-              Leaderboard & Chỉ Số Karma Member
+              {t('wordchain.leaderboardTitle')}
             </CardTitle>
             <CardDescription>
               Theo dõi độ uy tín (Karma) và tổng điểm đóng góp cho server.
@@ -450,7 +459,7 @@ export const WordchainPage: React.FC = () => {
                 )}
               >
                 <Award className="w-3.5 h-3.5" />
-                Độ Uy Tín (Karma)
+                {t('wordchain.karmaTab')}
               </button>
               <button
                 type="button"
@@ -463,7 +472,7 @@ export const WordchainPage: React.FC = () => {
                 )}
               >
                 <Zap className="w-3.5 h-3.5" />
-                Tổng Điểm (Score)
+                {t('wordchain.scoreTab')}
               </button>
             </div>
 
@@ -471,7 +480,7 @@ export const WordchainPage: React.FC = () => {
               <Search className="w-3.5 h-3.5 text-discord-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Tìm User ID..."
+                placeholder={t('wordchain.searchMemberPlaceholder')}
                 value={memberSearch}
                 onChange={(e) => setMemberSearch(e.target.value)}
                 className="w-full bg-[#1e2029] border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-discord-muted focus:outline-none focus:border-emerald-500/60 transition"
@@ -485,20 +494,20 @@ export const WordchainPage: React.FC = () => {
             <Skeleton className="h-24 w-full" />
           ) : filteredMembers.length === 0 ? (
             <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-              Chưa có dữ liệu member tham gia Wordchain nào.
+              {t('wordchain.noPlayers')}
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border border-white/10">
               <table className="w-full text-left text-xs text-discord-text">
                 <thead className="bg-[#11131a] text-discord-muted uppercase text-[10px] font-extrabold tracking-wider border-b border-white/10">
                   <tr>
-                    <th className="py-3.5 px-4">Thứ Hạng</th>
-                    <th className="py-3.5 px-4">User</th>
-                    <th className="py-3.5 px-4">Điểm Karma</th>
-                    <th className="py-3.5 px-4">Tổng Điểm</th>
-                    <th className="py-3.5 px-4">Từ Hợp Lệ</th>
-                    <th className="py-3.5 px-4">Phá Chuỗi</th>
-                    <th className="py-3.5 px-4">Tỷ Lệ Chuẩn Xác</th>
+                    <th className="py-3.5 px-4">{t('wordchain.tableRank')}</th>
+                    <th className="py-3.5 px-4">{t('wordchain.tableUser')}</th>
+                    <th className="py-3.5 px-4">{t('wordchain.tableKarma')}</th>
+                    <th className="py-3.5 px-4">{t('wordchain.tableScore')}</th>
+                    <th className="py-3.5 px-4">{t('wordchain.tableValidWords')}</th>
+                    <th className="py-3.5 px-4">{t('wordchain.tableBreaks')}</th>
+                    <th className="py-3.5 px-4">{t('wordchain.tableAccuracy')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.06]">
@@ -555,10 +564,10 @@ export const WordchainPage: React.FC = () => {
                           {member.score.toLocaleString()}
                         </td>
                         <td className="py-3.5 px-4 font-medium text-emerald-400">
-                          {member.correctInputs} từ
+                          {member.correctInputs} {t('wordchain.wordsCount')}
                         </td>
                         <td className="py-3.5 px-4 font-medium text-red-400">
-                          {member.wrongInputs} lần
+                          {member.wrongInputs} {t('wordchain.breakCount')}
                         </td>
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-2">
@@ -594,8 +603,8 @@ export const WordchainPage: React.FC = () => {
       <Modal
         isOpen={isResetModalOpen}
         onClose={() => setIsResetModalOpen(false)}
-        title="Xác Nhận Reset Ván Chơi"
-        description="Đưa chuỗi nối từ về 0 và dọn dẹp cache các từ đã sử dụng."
+        title={t('wordchain.modalResetTitle')}
+        description={t('wordchain.modalResetDesc')}
         footer={
           <>
             <Button
@@ -603,7 +612,7 @@ export const WordchainPage: React.FC = () => {
               size="sm"
               onClick={() => setIsResetModalOpen(false)}
             >
-              Hủy Bỏ
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -612,7 +621,7 @@ export const WordchainPage: React.FC = () => {
               onClick={() => resetMutation.mutate()}
               className="font-bold"
             >
-              Xác Nhận Reset
+              {t('wordchain.confirmResetBtn')}
             </Button>
           </>
         }
@@ -621,13 +630,13 @@ export const WordchainPage: React.FC = () => {
           <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs text-red-300 flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 shrink-0 text-red-400 mt-0.5" />
             <p className="leading-relaxed">
-              Hành động này sẽ xóa toàn bộ danh sách các từ đã được người chơi nối trong ván hiện tại, đồng thời đưa số đếm chuỗi về 0 để bắt đầu ván mới. Điểm Karma và Score cá nhân của user vẫn được bảo toàn.
+              {t('wordchain.resetNotice')}
             </p>
           </div>
 
           <div className="space-y-2">
             <label className="block text-xs font-bold text-discord-text uppercase tracking-wider">
-              Chọn Chế Độ Cần Reset
+              {t('wordchain.resetModeLabel')}
             </label>
             <div className="grid grid-cols-3 gap-2">
               <button
@@ -640,7 +649,7 @@ export const WordchainPage: React.FC = () => {
                     : 'border-white/10 bg-black/30 text-discord-muted hover:border-white/30',
                 )}
               >
-                <span>Chế Độ Thường</span>
+                <span>{t('wordchain.resetNormalOnly')}</span>
                 <span className="text-[10px] font-normal">(1 Ký Tự)</span>
               </button>
 
@@ -654,7 +663,7 @@ export const WordchainPage: React.FC = () => {
                     : 'border-white/10 bg-black/30 text-discord-muted hover:border-white/30',
                 )}
               >
-                <span>Chế Độ Khó</span>
+                <span>{t('wordchain.resetHardOnly')}</span>
                 <span className="text-[10px] font-normal">(2 Ký Tự)</span>
               </button>
 
@@ -668,7 +677,7 @@ export const WordchainPage: React.FC = () => {
                     : 'border-white/10 bg-black/30 text-discord-muted hover:border-white/30',
                 )}
               >
-                <span>Cả 2 Chế Độ</span>
+                <span>{t('wordchain.resetBoth')}</span>
                 <span className="text-[10px] font-normal">(Toàn Bộ)</span>
               </button>
             </div>

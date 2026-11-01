@@ -6,6 +6,29 @@ Tất cả các thay đổi đáng chú ý của dự án **Lora** (`discordbot_
 
 ---
 
+## [0.8.6] - 2026-11-01 [TRACK-I18N/UX: Full Bilingual Dashboard, Role Hierarchy & Wordchain Fix]
+
+### Đã thêm & Cải tiến (Added & Enhanced)
+- **Hệ Thống Đa Ngôn Ngữ Song Ngữ Cho Dashboard (`dashboard/src/i18n/`):**
+  - Hỗ trợ toàn diện 2 ngôn ngữ: Tiếng Việt (`vi`) và English (`en`), bảo toàn các thuật ngữ hệ thống kỹ thuật chuẩn mực (Custom Permit, RBAC, Perks Management, Voice Keeper 24/7, Wordchain Engine, The Swarm, Channel, Role, OAuth2, Ping, RAM, Grace Period, Audit Log, Time-Bank).
+  - Chuỗi phân giải ngôn ngữ thông minh: `localStorage` (`lora_dashboard_locale`) $\rightarrow$ Discord User Locale (`user.locale` từ Discord OAuth2) $\rightarrow$ Ngôn ngữ trình duyệt (`navigator.language`) $\rightarrow$ Mặc định Tiếng Việt.
+  - Tích hợp component `LanguageSwitcher` trực quan trên Navbar và màn hình `LoginPage`.
+  - Kết nối backend Fastify OAuth2 chuyển tiếp `locale` từ tài khoản Discord (`@me`) vào session token và API `/api/auth/me`.
+  - Bộ từ điển song ngữ strict type-safe 100% (`TranslationDictionary`) cho toàn bộ 10 phân hệ giao diện: `common`, `nav`, `overview`, `permits`, `perks`, `voice`, `wordchain`, `swarm`, `globalOverview`, `globalSwarm`, `login`.
+- **Phân Cấp Role Mặc Định Cho Booster Custom Role (`FEAT-02`):**
+  - Cập nhật vị trí mặc định của custom role: Thay vì nằm dưới role cao nhất của bot (tiềm ẩn rủi ro quyền hạn), role mới được tạo sẽ tự động xếp ngay dưới **Integration Managed Role** của bot (`guild.members.me.roles.botRole`).
+  - Hỗ trợ chỉ định `anchorRoleId` tùy chỉnh qua Dashboard API và cập nhật mô tả gợi ý trên giao diện.
+- **Đồng Bộ Hoá & Cải Tiến Giao Diện Dashboard (`dashboard/`):**
+  - Căn chỉnh thụt lề subtitle ngang hàng với icon title trên các trang Wordchain, Swarm và Global Overview/Swarm.
+  - Bổ sung vạch ngăn cách mờ phân tách tiêu đề với vùng thẻ nội dung, khắc phục cảm giác chật chội.
+  - Chuẩn hóa badge phân hệ đồng bộ trên Sidebar và Page Header.
+  - Sửa màu nền trang Wordchain về tông Green đồng bộ theo bảng màu hệ thống.
+  - Thêm tính năng click vào icon Lora App Engine ở góc trên bên trái để quay về trang Dashboard gốc.
+
+### Đã sửa (Fixed)
+- **Sửa Lỗi Phân Loại Bảng Xếp Hạng Wordchain (`FEAT-05`):**
+  - Khắc phục lỗi slash command `/wordchain leaderboard sort:karma` vẫn trả về danh sách xếp theo Score do nhầm lẫn logic ánh xạ tham số `order_by`.
+
 ## [0.8.5] - 2026-10-30 [TRACK-SECURITY/CONCURRENCY: Full Codebase Security Audit & Race-Condition Hardening]
 
 ### Đã sửa & Vá bảo mật (Fixed & Hardened)

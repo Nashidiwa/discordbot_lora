@@ -107,6 +107,12 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
   - **Bảo Toàn Tab Khi Đổi Máy Chủ:** `GuildSwitcher` tự động trích xuất subpath hiện tại và điều hướng sang tab tương ứng của máy chủ mới (ví dụ `/perks` $\rightarrow$ `/perks`).
   - **Đồng Bộ State Tự Động & Chuyển Hướng Dự Phòng:** Tự động đối soát `:guildId` từ URL với session cache; ghi nhớ `lora_last_active_guild` trong `localStorage`; tự động fallback an toàn cho `/dashboard`, `/dashboard/guilds`, `/dashboard/servers` và các legacy URLs.
   - **Chính Sách Bảo Vệ Vùng Cấm:** Thực thi 100% phía frontend dashboard mà không can thiệp vào `src/core/`.
+- [x] **WEB-07: Bilingual Internationalization (i18n), Anchor Role Hierarchy & UI Polish** `(v0.8.6)`
+  - **Hệ Thống Đa Ngôn Ngữ Song Ngữ (vi / en):** Hỗ trợ chuyển đổi mượt mà giữa Tiếng Việt và English. Ngôn ngữ mặc định phân giải theo chuỗi ưu tiên: `localStorage` $\rightarrow$ Discord User Locale (`user.locale`) $\rightarrow$ Browser Locale $\rightarrow$ Fallback Tiếng Việt.
+  - **Bảo Toàn Thuật Ngữ Kỹ Thuật:** Giữ nguyên các định danh hệ thống (Server Dashboard, RBAC, Perks Engine, Voice Keeper 24/7, Wordchain Engine, The Swarm, Channel, Role, OAuth2, Ping, RAM).
+  - **Bộ Chuyển Đổi Ngôn Ngữ (LanguageSwitcher):** Tích hợp công tắc chuyển ngôn ngữ trực quan trên Navbar và màn hình Login.
+  - **Anchor Role Hierarchy Mặc Định:** Chuyển anchor role mặc định của Booster custom role về Integration Managed Role của bot.
+  - **Tinh Chỉnh Bố Cục & Sửa Lỗi Leaderboard:** Đồng bộ subtitle, thanh ngăn mờ, badge các trang; sửa lỗi xếp hạng Karma trong Wordchain.
 
 ---
 

@@ -8,6 +8,7 @@ export interface AuthContext {
   userId: string;
   username: string;
   avatar: string | null;
+  locale?: string | null;
   isMasterKey: boolean;
   isBotOwner: boolean;
 }
@@ -51,6 +52,7 @@ export function extractAuthContext(request: FastifyRequest): AuthContext | null 
         userId: botOwnerId || 'MASTER_API_KEY',
         username: 'Bot Owner (API Key)',
         avatar: null,
+        locale: null,
         isMasterKey: true,
         isBotOwner: true,
       };
@@ -76,6 +78,7 @@ export function extractAuthContext(request: FastifyRequest): AuthContext | null 
     userId: payload.userId,
     username: payload.username,
     avatar: payload.avatar,
+    locale: payload.locale ?? null,
     isMasterKey: false,
     isBotOwner,
   };

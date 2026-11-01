@@ -9,6 +9,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useI18n } from '../../i18n';
 import { cn } from '../../lib/utils';
 import { Badge } from '../ui/Badge';
 
@@ -22,6 +23,7 @@ export const GuildSwitcher: React.FC = () => {
     canAccessGlobal,
     user,
   } = useAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -101,7 +103,7 @@ export const GuildSwitcher: React.FC = () => {
 
         <div className="max-w-[140px] sm:max-w-[180px] overflow-hidden">
           <div className="text-xs font-bold text-white truncate leading-tight">
-            {isGlobalScope ? 'Toàn Hệ Thống' : activeGuild?.name || 'Chọn Server'}
+            {isGlobalScope ? t('nav.allSystems') : activeGuild?.name || t('nav.selectServer')}
           </div>
           <div className="text-[10px] text-discord-muted truncate flex items-center gap-1">
             {isGlobalScope ? (
@@ -122,7 +124,7 @@ export const GuildSwitcher: React.FC = () => {
 
       {/* Popover Dropdown */}
       {isOpen && (
-        <div className="absolute left-0 mt-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl bg-[#2b2d31] border border-[#3f4147] shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute left-0 mt-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl bg-[#2b2d31] border border-[#3f4147] shadow-2xl z-50 overflow-hidden animate-dropdown-in">
           {/* Section 1: Toàn Cầu (Global Scope) - Dành cho Bot Owner hoặc Operator */}
           {canAccessGlobal && (
             <div className="p-2 border-b border-[#3f4147] bg-[#232428]/60">
@@ -150,7 +152,7 @@ export const GuildSwitcher: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-1">
                     <span className="text-xs font-bold text-white truncate group-hover:text-indigo-300 transition-colors">
-                      Toàn Hệ Thống (Global)
+                      {t('nav.allSystems')}
                     </span>
                     {isGlobalScope && (
                       <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
@@ -158,10 +160,10 @@ export const GuildSwitcher: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant={user?.isBotOwner ? 'yellow' : 'purple'} size="sm">
-                      {user?.isBotOwner ? 'Bot Owner' : 'Operator'}
+                      {user?.isBotOwner ? t('nav.botOwnerBadge') : t('nav.operatorBadge')}
                     </Badge>
                     <span className="text-[10px] text-discord-muted">
-                      Quản trị toàn bot
+                      {t('nav.manageFullBot')}
                     </span>
                   </div>
                 </div>
@@ -175,7 +177,7 @@ export const GuildSwitcher: React.FC = () => {
               <Search className="w-4 h-4 text-discord-muted absolute left-3 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Tìm kiếm máy chủ..."
+                placeholder={t('nav.searchServers')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
@@ -193,7 +195,7 @@ export const GuildSwitcher: React.FC = () => {
 
             {filteredGuilds.length === 0 ? (
               <div className="py-6 text-center text-xs text-discord-muted">
-                Không tìm thấy máy chủ nào khớp
+                {t('nav.noServerFound')}
               </div>
             ) : (
               filteredGuilds.map((guild) => {

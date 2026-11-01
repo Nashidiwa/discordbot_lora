@@ -109,7 +109,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({
           <div
             key={t.id}
             className={cn(
-              'pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-2xl backdrop-blur-md transition-all duration-200 animate-in slide-in-from-bottom-5',
+              'pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-2xl backdrop-blur-md animate-toast-in',
               borders[t.type],
             )}
           >

@@ -2,6 +2,7 @@ export interface User {
   userId: string;
   username: string;
   avatar: string | null;
+  locale?: string | null;
   isBotOwner: boolean;
   isMasterKey: boolean;
 }

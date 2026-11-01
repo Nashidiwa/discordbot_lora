@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useI18n } from '../../i18n';
 import { cn } from '../../lib/utils';
 
 interface SidebarProps {
@@ -30,6 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
 }) => {
   const { selectedGuild, guilds, isGlobalScope } = useAuth();
+  const { t } = useI18n();
   const location = useLocation();
   const { guildId: paramGuildId } = useParams<{ guildId: string }>();
 
@@ -56,53 +58,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const serverNavItems = [
     {
       to: `/dashboard/guilds/${currentGuildId}`,
-      label: 'Server Overview',
+      label: t('nav.serverOverview'),
       icon: Activity,
       end: true,
-      badge: 'Server',
     },
     {
       to: `/dashboard/guilds/${currentGuildId}/permits`,
-      label: 'Server Permits',
+      label: t('nav.serverPermits'),
       icon: ShieldCheck,
     },
     {
       to: `/dashboard/guilds/${currentGuildId}/perks`,
-      label: 'Perks Management',
+      label: t('nav.perksManagement'),
       icon: Gift,
     },
     {
       to: `/dashboard/guilds/${currentGuildId}/voice-keeper`,
-      label: 'Voice Keeper 24/7',
+      label: t('nav.voiceKeeper'),
       icon: Radio,
     },
     {
       to: `/dashboard/guilds/${currentGuildId}/wordchain`,
-      label: 'Wordchain Engine',
+      label: t('nav.wordchain'),
       icon: BookOpen,
-      badge: 'Game',
     },
     {
       to: `/dashboard/guilds/${currentGuildId}/swarm`,
-      label: 'Linked Role The Swarm',
+      label: t('nav.swarm'),
       icon: Layers,
-      badge: 'Roles',
     },
   ];
 
   const globalNavItems = [
     {
       to: '/dashboard/global',
-      label: 'System Overview',
+      label: t('nav.systemOverview'),
       icon: Activity,
       end: true,
-      badge: 'System',
     },
     {
       to: '/dashboard/global/swarm',
-      label: 'Linked Role The Swarm',
+      label: t('nav.globalSwarm'),
       icon: Layers,
-      badge: 'Roles',
     },
   ];
 
@@ -127,7 +124,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {!isCollapsed && (
               <div className="overflow-hidden min-w-0">
                 <h2 className="text-xs font-bold text-white truncate">
-                  Toàn Hệ Thống
+                  {t('nav.allSystems')}
                 </h2>
                 <div className="flex items-center gap-1.5 text-[10px] text-indigo-400 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0 animate-pulse" />
@@ -174,10 +171,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <nav className="space-y-1">
           {!isCollapsed && (
             <div className="text-[11px] font-semibold text-discord-muted px-3 mb-2 flex items-center justify-between">
-              <span>{isGlobal ? 'Quản trị toàn cầu' : 'Quản trị máy chủ'}</span>
-              {isGlobal && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">
+              <span>{isGlobal ? t('nav.globalManagement') : t('nav.serverManagement')}</span>
+              {isGlobal ? (
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
                   GLOBAL
+                </span>
+              ) : (
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-discord-blurple/20 text-discord-blurple font-bold border border-discord-blurple/30">
+                  SERVER
                 </span>
               )}
             </div>
@@ -203,23 +204,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title={isCollapsed ? item.label : undefined}
             >
               <item.icon className="w-4 h-4 shrink-0" />
-              {!isCollapsed && (
-                <>
-                  <span className="truncate">{item.label}</span>
-                  {item.badge && (
-                    <span
-                      className={cn(
-                        'ml-auto text-[9px] px-1.5 py-0.5 rounded font-bold uppercase',
-                        isGlobal
-                          ? 'bg-indigo-400/20 text-indigo-300'
-                          : 'bg-discord-green/20 text-discord-green',
-                      )}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </>
-              )}
+              {!isCollapsed && <span className="truncate">{item.label}</span>}
             </NavLink>
           ))}
         </nav>
@@ -231,14 +216,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={onToggleCollapse}
           className="hidden lg:flex items-center justify-center w-full py-2 rounded-xl text-discord-muted hover:text-white hover:bg-[#313338] transition-colors text-xs gap-2"
-          title={isCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
+          title={isCollapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')}
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4" />
           ) : (
             <>
               <ChevronLeft className="w-4 h-4" />
-              <span>Thu gọn menu</span>
+              <span>{t('nav.collapseSidebar')}</span>
             </>
           )}
         </button>

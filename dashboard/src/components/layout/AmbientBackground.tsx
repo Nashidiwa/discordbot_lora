@@ -10,6 +10,8 @@ export const AmbientBackground: React.FC = () => {
   const isVoiceRoute = path.includes('voice-keeper');
   const isPerksRoute = path.includes('perks');
   const isPermitsRoute = path.includes('permits');
+  const isWordchainRoute = path.includes('wordchain');
+  const isSwarmRoute = path.includes('swarm');
 
   const spotlightRef = useRef<HTMLDivElement>(null);
   const dotGridRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,10 @@ export const AmbientBackground: React.FC = () => {
     ? 'rgba(245, 158, 11, 0.20)' // Liquid Gold / Amber
     : isPermitsRoute
     ? 'rgba(168, 85, 247, 0.22)' // Royal Violet
+    : isWordchainRoute
+    ? 'rgba(16, 185, 129, 0.22)' // Emerald Green
+    : isSwarmRoute
+    ? 'rgba(99, 102, 241, 0.22)' // Electric Indigo
     : 'rgba(88, 101, 242, 0.22)'; // Discord Blurple
 
   return (
@@ -105,6 +111,10 @@ export const AmbientBackground: React.FC = () => {
               ? 'bg-amber-500'
               : isPermitsRoute
               ? 'bg-purple-600'
+              : isWordchainRoute
+              ? 'bg-emerald-500'
+              : isSwarmRoute
+              ? 'bg-indigo-500'
               : 'bg-discord-blurple',
           )}
         />
@@ -117,6 +127,10 @@ export const AmbientBackground: React.FC = () => {
               ? 'bg-pink-500'
               : isPermitsRoute
               ? 'bg-fuchsia-600'
+              : isWordchainRoute
+              ? 'bg-teal-600'
+              : isSwarmRoute
+              ? 'bg-purple-600'
               : 'bg-indigo-600',
           )}
         />

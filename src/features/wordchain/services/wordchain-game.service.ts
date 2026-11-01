@@ -834,12 +834,21 @@ export class WordChainGameService {
   }
 
   /**
-   * Retrieves guild leaderboard sorted by score and karma descending.
+   * Retrieves guild leaderboard sorted by score or karma descending.
    */
-  public async getLeaderboard(guildId: string, limit = 10): Promise<LeaderboardEntry[]> {
+  public async getLeaderboard(
+    guildId: string,
+    limit = 10,
+    metric: 'score' | 'karma' = 'score',
+  ): Promise<LeaderboardEntry[]> {
+    const orderBy =
+      metric === 'karma'
+        ? [{ karma: 'desc' as const }, { score: 'desc' as const }]
+        : [{ score: 'desc' as const }, { karma: 'desc' as const }];
+
     const rows = await this.db.wordChainMember.findMany({
       where: { guildId },
-      orderBy: [{ score: 'desc' }, { karma: 'desc' }],
+      orderBy,
       take: limit,
     });
 

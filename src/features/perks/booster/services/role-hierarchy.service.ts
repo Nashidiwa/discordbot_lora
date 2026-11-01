@@ -31,6 +31,7 @@ export class RoleHierarchyService {
     const me = guild.members.me;
     const botHighest = me?.roles.highest.position ?? 1;
 
+    // Anchor role được cấu hình cụ thể bởi Admin
     if (anchorRoleId) {
       const anchorRole = guild.roles.cache.get(anchorRoleId);
       if (anchorRole && anchorRole.position > 1) {
@@ -40,7 +41,16 @@ export class RoleHierarchyService {
       }
     }
 
-    return Math.max(1, botHighest - 1);
+    // Anchor role mặc định: Integration Managed Role của bot
+    const botIntegrationRole =
+      me?.roles.botRole ??
+      guild.roles.cache.find(
+        (r) => r.managed && r.tags?.botId === guild.client.user?.id,
+      ) ??
+      me?.roles.highest;
+
+    const basePosition = botIntegrationRole?.position ?? botHighest;
+    return Math.max(1, basePosition - 1);
   }
 
   public isValidHexColor(hex: string): boolean {

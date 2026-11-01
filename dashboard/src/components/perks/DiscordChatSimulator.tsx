@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
+import { useI18n } from '../../i18n';
 import { cn } from '../../lib/utils';
 import type { CustomRolePerk } from '../../types';
 
@@ -31,13 +32,15 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
   activeRole,
   className,
 }) => {
+  const { t } = useI18n();
+
   const hasGradient = Boolean(activeRole?.roleColor && activeRole?.roleColor2);
   const color1 = normalizeHexColor(activeRole?.roleColor, '#f47fff');
   const color2 = activeRole?.roleColor2
     ? normalizeHexColor(activeRole.roleColor2)
     : color1;
 
-  const roleName = activeRole?.roleName || 'Legendary Booster';
+  const roleName = activeRole?.roleName || t('perks.simulatorRoleSample');
   const roleStyle: React.CSSProperties = hasGradient
     ? {
         background: `linear-gradient(90deg, ${color1}, ${color2})`,
@@ -73,7 +76,7 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-discord-green" />
           <span className="text-[11px] font-bold uppercase tracking-wider text-discord-muted">
-            Discord Native Chat Simulator (Preview)
+            {t('perks.simulatorTitle')}
           </span>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-[10px] text-pink-300 font-semibold">
@@ -145,13 +148,13 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
             </span>
 
             <span className="text-[11px] text-[#949ba4] font-medium">
-              Hôm nay lúc 14:32
+              {t('perks.simulatorTodayAt')}
             </span>
           </div>
 
           {/* Chat Message Text */}
           <div className="text-xs sm:text-sm text-[#dbdee1] leading-relaxed">
-            Vừa claim Custom Role độc quyền trên server! Mọi người thấy màu này thế nào? ✨
+            {t('perks.simulatorChatMessage')}
           </div>
 
           {/* Color Gradient Chip / Swatch Inspector */}
@@ -167,7 +170,7 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
               />
               <div>
                 <span className="text-[10px] text-discord-muted uppercase font-bold block">
-                  Phối màu đang hiển thị:
+                  {t('perks.simulatorColorInspect')}
                 </span>
                 <span className="font-mono text-white text-xs font-semibold flex items-center gap-1.5">
                   <span

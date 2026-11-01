@@ -42,6 +42,7 @@ import { useToast } from '../components/ui/Toast';
 import { UserDisplay } from '../components/ui/UserDisplay';
 import { UserInput } from '../components/ui/UserInput';
 import { useAuth } from '../context/AuthContext';
+import { useI18n } from '../i18n';
 import {
   cn,
   formatDateTime,
@@ -62,6 +63,7 @@ export const PerksPage: React.FC = () => {
   const { selectedGuild, guilds } = useAuth();
   const queryClient = useQueryClient();
   const toast = useToast();
+  const { t } = useI18n();
 
   const currentGuild =
     (paramGuildId ? guilds.find((g) => g.id === paramGuildId) : null) ||
@@ -369,7 +371,7 @@ export const PerksPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-6xl select-none">
+    <div className="space-y-8 w-full select-none">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
         <div className="space-y-1">
@@ -379,13 +381,13 @@ export const PerksPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                Perks Management
+                {t('perks.title')}
                 <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
-                  Perks Engine
+                  {t('perks.badge')}
                 </span>
               </h1>
               <p className="text-xs text-discord-muted mt-0.5">
-                Tự động hóa quản lý các đặc quyền cho member server.
+                {t('perks.subtitle')}
               </p>
             </div>
           </div>
@@ -403,7 +405,7 @@ export const PerksPage: React.FC = () => {
             )}
           >
             <Sparkles className="w-4 h-4" />
-            <span>Server Booster</span>
+            <span>{t('perks.boosterTab')}</span>
           </button>
           <button
             onClick={() => setActiveTab('donator')}
@@ -415,7 +417,7 @@ export const PerksPage: React.FC = () => {
             )}
           >
             <Coins className="w-4 h-4" />
-            <span>Donator</span>
+            <span>{t('perks.donatorTab')}</span>
           </button>
         </div>
       </div>
@@ -436,52 +438,52 @@ export const PerksPage: React.FC = () => {
             <CardHeader>
               <CardTitle>
                 <Zap className="w-5 h-5 text-discord-blurple" />
-                Cấu Hình Tùy Chỉnh Perk Server Booster
+                {t('perks.boosterConfigTitle')}
               </CardTitle>
               <CardDescription>
-                Thiết lập thời gian giữ role sau khi unboost, các Channel và Role neo vị trí tạo Custom Role.
+                {t('perks.boosterConfigDesc')}
               </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                  label="Thời gian Ân hạn (Grace Period - Ngày)"
+                  label={t('perks.gracePeriodLabel')}
                   type="number"
                   min={1}
                   max={60}
                   value={gracePeriodDays}
                   onChange={(e) => setGracePeriodDays(Number(e.target.value))}
-                  hint="Số ngày member được giữ custom role sau khi ngừng boost server."
+                  hint={t('perks.gracePeriodHint')}
                 />
 
                 <RoleSelect
-                  label="Role Neo Vị Trí (Anchor Role)"
-                  placeholder="Chọn role neo vị trí custom role..."
+                  label={t('perks.anchorRoleLabel')}
+                  placeholder={t('perks.anchorRolePlaceholder')}
                   value={anchorRoleId || null}
                   onChange={(val) => setAnchorRoleId(val || '')}
                   guildId={guildId}
-                  hint="Custom role sinh ra sẽ được xếp ngay dưới role này."
+                  hint={t('perks.anchorRoleHint')}
                 />
 
                 <ChannelSelect
-                  label="Channel Thông Báo Server Booster"
-                  placeholder="Chọn channel gửi thông báo..."
+                  label={t('perks.notifyChannelLabel')}
+                  placeholder={t('perks.notifyChannelPlaceholder')}
                   value={notificationChannelId || null}
                   onChange={(val) => setNotificationChannelId(val || '')}
                   guildId={guildId}
                   channelTypes={['TEXT', 'ANNOUNCEMENT']}
-                  hint="Channel gửi tin nhắn chúc mừng và thông báo đến hạn thu hồi."
+                  hint={t('perks.notifyChannelHint')}
                 />
 
                 <ChannelSelect
-                  label="Channel Nhật Ký (Audit Log)"
-                  placeholder="Chọn channel ghi log..."
+                  label={t('perks.auditChannelLabel')}
+                  placeholder={t('perks.auditChannelPlaceholder')}
                   value={auditLogChannelId || null}
                   onChange={(val) => setAuditLogChannelId(val || '')}
                   guildId={guildId}
                   channelTypes={['TEXT', 'ANNOUNCEMENT']}
-                  hint="Channel ghi lại lịch sử tạo, sửa và thu hồi custome role của server booster."
+                  hint={t('perks.auditChannelHint')}
                 />
               </div>
 
@@ -494,7 +496,7 @@ export const PerksPage: React.FC = () => {
                   className="text-xs font-bold"
                 >
                   <Save className="w-4 h-4 mr-1.5" />
-                  Lưu Cấu Hình Tùy Chỉnh
+                  {t('perks.saveBoosterConfig')}
                 </Button>
               </div>
             </CardContent>
@@ -506,10 +508,10 @@ export const PerksPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <CardTitle>
-                    Danh Sách Custom Role Độc Quyền ({customRoles.length})
+                    {t('perks.boosterRolesTitle')} ({customRoles.length})
                   </CardTitle>
                   <CardDescription>
-                    Chọn bất kỳ role nào dưới đây để xem Discord Chat Simulator phía trên.
+                    {t('perks.boosterRolesDesc')}
                   </CardDescription>
                 </div>
 
@@ -517,7 +519,7 @@ export const PerksPage: React.FC = () => {
                   <Search className="w-4 h-4 text-discord-muted absolute left-3 top-2.5 pointer-events-none" />
                   <input
                     type="text"
-                    placeholder="Tìm theo User ID hoặc Tên Role..."
+                    placeholder={t('perks.boosterSearchPlaceholder')}
                     value={boosterSearch}
                     onChange={(e) => setBoosterSearch(e.target.value)}
                     className="w-full bg-[#0c0d12]/80 border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder:text-discord-muted focus:outline-none focus:border-discord-blurple"
@@ -535,7 +537,7 @@ export const PerksPage: React.FC = () => {
                 </div>
               ) : filteredRoles.length === 0 ? (
                 <div className="py-12 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có member nào tạo Custom Role.
+                  {t('perks.noBoosterRoles')}
                 </div>
               ) : (
                 <>
@@ -544,12 +546,12 @@ export const PerksPage: React.FC = () => {
                     <table className="w-full text-left text-xs text-discord-text">
                       <thead className="bg-[#11131a] text-discord-muted uppercase text-[10px] font-extrabold tracking-wider border-b border-white/10">
                         <tr>
-                          <th className="py-3.5 px-4">Member</th>
-                          <th className="py-3.5 px-4">Role Name & Colors</th>
-                          <th className="py-3.5 px-4 text-center">Số Boosts</th>
-                          <th className="py-3.5 px-4 text-center">Trạng Thái</th>
-                          <th className="py-3.5 px-4">Hạn Ân Hạn</th>
-                          <th className="py-3.5 px-4 text-center">Xem Simulator</th>
+                          <th className="py-3.5 px-4">{t('perks.boosterTableMember')}</th>
+                          <th className="py-3.5 px-4">{t('perks.boosterTableRole')}</th>
+                          <th className="py-3.5 px-4 text-center">{t('perks.boosterTableBoosts')}</th>
+                          <th className="py-3.5 px-4 text-center">{t('perks.boosterTableStatus')}</th>
+                          <th className="py-3.5 px-4">{t('perks.boosterTableGrace')}</th>
+                          <th className="py-3.5 px-4 text-center">{t('perks.boosterTableSim')}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/[0.06]">
@@ -639,7 +641,7 @@ export const PerksPage: React.FC = () => {
                                   size="sm"
                                   className="h-7 text-[11px]"
                                 >
-                                  {isSelected ? 'Đang Xem' : 'Xem Thử'}
+                                  {isSelected ? t('perks.viewingBtn') : t('perks.viewSampleBtn')}
                                 </Button>
                               </td>
                             </tr>
@@ -691,7 +693,7 @@ export const PerksPage: React.FC = () => {
                           </div>
                           <div className="flex items-center justify-between text-discord-muted text-[11px]">
                             <UserDisplay userId={role.userId} showAvatar={false} />
-                            <span className="text-discord-blurple font-bold">Chạm để xem Preview</span>
+                            <span className="text-discord-blurple font-bold">{t('perks.previewBtn')}</span>
                           </div>
                         </div>
                       );
@@ -716,14 +718,14 @@ export const PerksPage: React.FC = () => {
                 <div>
                   <CardTitle className="text-amber-400 flex items-center gap-2">
                     <Coins className="w-5 h-5 text-amber-400" />
-                    Cấu Hình Quỹ Thời Gian Donator (Credit)
+                    {t('perks.donatorConfigHeading')}
                   </CardTitle>
                   <CardDescription>
-                    Điều chỉnh tỷ giá quy đổi VND sang thời gian, định mức tuần và tốc độ tiêu hao.
+                    {t('perks.donatorConfigSubtitle')}
                   </CardDescription>
                 </div>
                 <Badge variant={isDonatorEnabled ? 'green' : 'red'} size="md" dot>
-                  {isDonatorEnabled ? 'Đang Hoạt Động' : 'Đóng Băng (0.0x)'}
+                  {isDonatorEnabled ? t('perks.donatorActiveBadge') : t('perks.donatorFrozenBadge')}
                 </Badge>
               </div>
             </CardHeader>
@@ -732,13 +734,13 @@ export const PerksPage: React.FC = () => {
               <Switch
                 checked={isDonatorEnabled}
                 onChange={setIsDonatorEnabled}
-                label="Bật Tính năng Perk Donator"
-                description="Khi tắt, tiêu hao của toàn bộ Donator sẽ được đóng băng 0.0x và tạm thu hồi role Donator."
+                label={t('perks.enableDonatorLabel')}
+                description={t('perks.enableDonatorDesc')}
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Input
-                  label="Định mức Tiêu chuẩn (VND)"
+                  label={t('perks.baseBenchmarkLabel')}
                   type="number"
                   step={10000}
                   value={baseBenchmarkVnd}
@@ -747,16 +749,16 @@ export const PerksPage: React.FC = () => {
                 />
 
                 <Input
-                  label="Số ngày quy đổi tương ứng"
+                  label={t('perks.benchmarkDaysLabel')}
                   type="number"
                   min={1}
                   value={baseBenchmarkDays}
                   onChange={(e) => setBaseBenchmarkDays(Number(e.target.value))}
-                  hint={`= ${(baseBenchmarkVnd / baseBenchmarkDays).toFixed(0)} đ/ngày`}
+                  hint={`= ${(baseBenchmarkVnd / baseBenchmarkDays).toFixed(0)} đ/${t('common.days')}`}
                 />
 
                 <Input
-                  label="Định mức giữ chuỗi tuần (Weekly Min)"
+                  label={t('perks.weeklyMinLabel')}
                   type="number"
                   step={10000}
                   value={weeklyMinVnd}
@@ -765,14 +767,14 @@ export const PerksPage: React.FC = () => {
                 />
 
                 <Input
-                  label="Tốc độ tiêu hao khi cất role (Idle Burn Rate)"
+                  label={t('perks.idleBurnLabel')}
                   type="number"
                   step={0.05}
                   min={0.1}
                   max={1.0}
                   value={idleBurnRate}
                   onChange={(e) => setIdleBurnRate(Number(e.target.value))}
-                  hint="0.2x nghĩa là tiêu hao chậm gấp 5 lần khi cất role."
+                  hint={t('perks.idleBurnHint')}
                 />
               </div>
 
@@ -785,7 +787,7 @@ export const PerksPage: React.FC = () => {
                   className="text-xs font-bold bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:opacity-90 border-0"
                 >
                   <Save className="w-4 h-4 mr-1.5" />
-                  Lưu Cấu Hình Tùy Chỉnh
+                  {t('perks.saveDonatorConfig')}
                 </Button>
               </div>
             </CardContent>
@@ -796,9 +798,9 @@ export const PerksPage: React.FC = () => {
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <CardTitle>Tài khoản credit member ({donatorAccounts.length})</CardTitle>
+                  <CardTitle>{t('perks.donatorAccountsTitle')} ({donatorAccounts.length})</CardTitle>
                   <CardDescription>
-                    Danh sách Donator cùng số dư credit và streak tuần (Crown 👑, Diamond 💎, Flame 🔥).
+                    {t('perks.donatorAccountsSubtitle')}
                   </CardDescription>
                 </div>
 
@@ -807,7 +809,7 @@ export const PerksPage: React.FC = () => {
                     <Search className="w-4 h-4 text-discord-muted absolute left-3 top-2.5 pointer-events-none" />
                     <input
                       type="text"
-                      placeholder="Tìm theo User ID..."
+                      placeholder={t('perks.donatorSearchPlaceholder')}
                       value={donatorSearch}
                       onChange={(e) => setDonatorSearch(e.target.value)}
                       className="w-full bg-[#0c0d12]/80 border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder:text-discord-muted focus:outline-none focus:border-amber-400"
@@ -824,7 +826,7 @@ export const PerksPage: React.FC = () => {
                     className="text-xs font-bold shrink-0 bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:opacity-90 border-0"
                   >
                     <PlusCircle className="w-4 h-4 mr-1.5" />
-                    Nạp Credit (Bản ghi mới)
+                    {t('perks.topUpBtn')}
                   </Button>
                 </div>
               </div>
@@ -838,7 +840,7 @@ export const PerksPage: React.FC = () => {
                 </div>
               ) : filteredDonators.length === 0 ? (
                 <div className="py-12 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa ghi nhận Donator nào.
+                  {t('perks.noDonators')}
                 </div>
               ) : (
                 <>
@@ -847,12 +849,12 @@ export const PerksPage: React.FC = () => {
                     <table className="w-full text-left text-xs text-discord-text">
                       <thead className="bg-[#11131a] text-discord-muted text-xs font-semibold border-b border-white/10">
                         <tr>
-                          <th className="py-3.5 px-4">Thành Viên (User ID)</th>
-                          <th className="py-3.5 px-4">Thời Gian (Credit) Còn Lại</th>
-                          <th className="py-3.5 px-4 text-center">Trạng Thái Đeo</th>
-                          <th className="py-3.5 px-4 text-center">Hạng & Streak</th>
-                          <th className="py-3.5 px-4 text-right">Tổng Đã Đóng Góp</th>
-                          <th className="py-3.5 px-4 text-center">Thao Tác</th>
+                          <th className="py-3.5 px-4">{t('perks.donatorTableMember')}</th>
+                          <th className="py-3.5 px-4">{t('perks.donatorTableCredit')}</th>
+                          <th className="py-3.5 px-4 text-center">{t('perks.donatorTableEquipped')}</th>
+                          <th className="py-3.5 px-4 text-center">{t('perks.donatorTableStreak')}</th>
+                          <th className="py-3.5 px-4 text-right">{t('perks.donatorTableTotal')}</th>
+                          <th className="py-3.5 px-4 text-center">{t('perks.donatorTableActions')}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/[0.06]">
@@ -870,11 +872,11 @@ export const PerksPage: React.FC = () => {
                             <td className="py-3.5 px-4 text-center">
                               {account.isEquipped ? (
                                 <Badge variant="green" size="sm" dot>
-                                  Đang Đeo (1.0x)
+                                  {t('perks.equippedBadge')}
                                 </Badge>
                               ) : (
                                 <Badge variant="muted" size="sm">
-                                  Tạm Gỡ ({idleBurnRate}x)
+                                  {t('perks.unequippedBadge')} ({idleBurnRate}x)
                                 </Badge>
                               )}
                             </td>
@@ -894,7 +896,7 @@ export const PerksPage: React.FC = () => {
                                 }}
                                 className="text-xs h-7 px-2.5 hover:border-amber-400"
                               >
-                                Nạp Thêm
+                                {t('perks.topUpMoreBtn')}
                               </Button>
                             </td>
                           </tr>
@@ -917,14 +919,14 @@ export const PerksPage: React.FC = () => {
 
                         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/[0.06] text-xs">
                           <div>
-                            <span className="text-discord-muted block text-[11px]">Quỹ thời gian (credit)</span>
+                            <span className="text-discord-muted block text-[11px]">{t('perks.donatorTableCredit')}</span>
                             <span className="font-extrabold text-emerald-400 text-xs flex items-center gap-1 mt-0.5">
                               <Clock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                               {formatDurationSeconds(account.creditSeconds)}
                             </span>
                           </div>
                           <div>
-                            <span className="text-discord-muted block text-[11px]">Tổng đóng góp</span>
+                            <span className="text-discord-muted block text-[11px]">{t('perks.donatorTableTotal')}</span>
                             <span className="font-bold text-amber-300 text-xs block mt-0.5">
                               {formatVnd(account.totalDonated)}
                             </span>
@@ -934,11 +936,11 @@ export const PerksPage: React.FC = () => {
                         <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
                           {account.isEquipped ? (
                             <Badge variant="green" size="sm" dot>
-                              Đang Đeo (1.0x)
+                              {t('perks.equippedBadge')}
                             </Badge>
                           ) : (
                             <Badge variant="muted" size="sm">
-                              Tạm Gỡ ({idleBurnRate}x)
+                              {t('perks.unequippedBadge')} ({idleBurnRate}x)
                             </Badge>
                           )}
 
@@ -951,7 +953,7 @@ export const PerksPage: React.FC = () => {
                             }}
                             className="text-xs h-7 px-3 hover:border-amber-400"
                           >
-                            Nạp Thêm
+                            {t('perks.topUpMoreBtn')}
                           </Button>
                         </div>
                       </div>
@@ -968,10 +970,10 @@ export const PerksPage: React.FC = () => {
               <div>
                 <CardTitle>
                   <History className="w-5 h-5 text-amber-400 inline-block mr-2" />
-                  Lịch Sử Giao Dịch Gần Đây
+                  {t('perks.recentTxTitle')}
                 </CardTitle>
                 <CardDescription>
-                  Nhật ký nạp credit, điều chỉnh và khấu trừ thời gian của member.
+                  {t('perks.recentTxSubtitle')}
                 </CardDescription>
               </div>
 
@@ -984,7 +986,7 @@ export const PerksPage: React.FC = () => {
               >
                 <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
                 <Download className="w-3.5 h-3.5" />
-                Xuất Báo Cáo CSV ({filteredTransactions.length})
+                {t('perks.exportCsvBtn')} ({filteredTransactions.length})
               </Button>
             </CardHeader>
 
@@ -995,7 +997,7 @@ export const PerksPage: React.FC = () => {
                   <Search className="w-4 h-4 text-discord-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="text"
-                    placeholder="Tìm theo User ID, loại tác vụ, ghi chú..."
+                    placeholder={t('perks.txSearchPlaceholder')}
                     value={txSearch}
                     onChange={(e) => setTxSearch(e.target.value)}
                     className="w-full bg-[#1e2029] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-discord-muted focus:outline-none focus:border-amber-500/60 transition"
@@ -1005,7 +1007,7 @@ export const PerksPage: React.FC = () => {
                 <div className="sm:col-span-3">
                   <input
                     type="date"
-                    title="Từ ngày"
+                    title={t('perks.dateFrom')}
                     value={txStartDate}
                     onChange={(e) => setTxStartDate(e.target.value)}
                     style={{ colorScheme: 'dark' }}
@@ -1016,7 +1018,7 @@ export const PerksPage: React.FC = () => {
                 <div className="sm:col-span-3">
                   <input
                     type="date"
-                    title="Đến ngày"
+                    title={t('perks.dateTo')}
                     value={txEndDate}
                     onChange={(e) => setTxEndDate(e.target.value)}
                     style={{ colorScheme: 'dark' }}
@@ -1046,23 +1048,23 @@ export const PerksPage: React.FC = () => {
                 <Skeleton className="h-20 w-full" />
               ) : rawTransactions.length === 0 ? (
                 <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có giao dịch Donator nào phát sinh.
+                  {t('perks.noTx')}
                 </div>
               ) : filteredTransactions.length === 0 ? (
                 <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Không tìm thấy giao dịch nào phù hợp với điều kiện tìm kiếm/ngày đã chọn.
+                  {t('perks.noFilteredTx')}
                 </div>
               ) : (
                 <div className="overflow-x-auto rounded-2xl border border-white/10">
                   <table className="w-full text-left text-xs text-discord-text">
                     <thead className="bg-[#11131a] text-discord-muted uppercase text-[10px] font-extrabold tracking-wider border-b border-white/10">
                       <tr>
-                        <th className="py-3.5 px-4">Thời Gian</th>
-                        <th className="py-3.5 px-4">User ID</th>
-                        <th className="py-3.5 px-4">Số Tiền Nạp</th>
-                        <th className="py-3.5 px-4">Thời Gian Quy Đổi</th>
-                        <th className="py-3.5 px-4">Loại Tác Vụ</th>
-                        <th className="py-3.5 px-4">Ghi Chú</th>
+                        <th className="py-3.5 px-4">{t('perks.txTimeCol')}</th>
+                        <th className="py-3.5 px-4">{t('perks.txUserCol')}</th>
+                        <th className="py-3.5 px-4">{t('perks.txAmountCol')}</th>
+                        <th className="py-3.5 px-4">{t('perks.txCreditCol')}</th>
+                        <th className="py-3.5 px-4">{t('perks.txActionCol')}</th>
+                        <th className="py-3.5 px-4">{t('perks.txNoteCol')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/[0.06]">
@@ -1105,8 +1107,8 @@ export const PerksPage: React.FC = () => {
       <Modal
         isOpen={isTopupModalOpen}
         onClose={() => setIsTopupModalOpen(false)}
-        title="Nạp Credit Donator"
-        description="Quy đổi trực tiếp số tiền ủng hộ (VND) thành thời gian (credit) vào tài khoản member."
+        title={t('perks.modalTopUpTitle')}
+        description={t('perks.modalTopUpDesc')}
         footer={
           <>
             <Button
@@ -1114,7 +1116,7 @@ export const PerksPage: React.FC = () => {
               size="sm"
               onClick={() => setIsTopupModalOpen(false)}
             >
-              Hủy bỏ
+              {t('common.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -1129,24 +1131,24 @@ export const PerksPage: React.FC = () => {
               onClick={() => topupMutation.mutate()}
               className="bg-gradient-to-r from-amber-500 to-yellow-500 text-black hover:opacity-90 border-0 font-bold"
             >
-              Xác Nhận Nạp
+              {t('perks.confirmTopUpBtn')}
             </Button>
           </>
         }
       >
         <div className="space-y-4">
           <UserInput
-            label="Member Hưởng"
-            placeholder="Nhập Discord User ID để kiểm tra..."
+            label={t('perks.topupUserIdLabel')}
+            placeholder={t('perks.topupUserIdPlaceholder')}
             value={topupUserId}
             onChange={setTopupUserId}
             onVerified={setVerifiedTopupUser}
-            hint="Account sẽ được fetch qua Discord Gateway."
+            hint=""
           />
 
           <div className="space-y-2">
             <Input
-              label="Số Tiền Ủng Hộ (VND)"
+              label={t('perks.amountLabel')}
               type="number"
               step={10000}
               value={topupAmountVnd}
@@ -1170,8 +1172,8 @@ export const PerksPage: React.FC = () => {
           </div>
 
           <Input
-            label="Ghi chú giao dịch (Tùy chọn)"
-            placeholder="Ví dụ: Lời nhắn của người chuyển, ủng hộ server..."
+            label={t('perks.noteLabel')}
+            placeholder={t('perks.notePlaceholder')}
             value={topupNote}
             onChange={(e) => setTopupNote(e.target.value)}
           />
@@ -1179,7 +1181,7 @@ export const PerksPage: React.FC = () => {
           {/* Quick estimation formula preview */}
           {baseBenchmarkVnd > 0 && topupAmountVnd > 0 && (
             <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-1">
-              <span className="text-amber-400 font-bold block">Dự kiến thời gian cộng thêm:</span>
+              <span className="text-amber-400 font-bold block">{t('perks.estimatedTimeLabel')}</span>
               <p className="text-white font-medium">
                 ≈ {formatDurationSeconds(Math.floor((topupAmountVnd / baseBenchmarkVnd) * baseBenchmarkDays * 86400))} (tính theo tỷ lệ định mức cơ sở)
               </p>

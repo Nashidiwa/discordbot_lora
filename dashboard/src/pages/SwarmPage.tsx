@@ -33,6 +33,7 @@ import { useToast } from '../components/ui/Toast';
 import { UserDisplay } from '../components/ui/UserDisplay';
 import { UserInput } from '../components/ui/UserInput';
 import { useAuth } from '../context/AuthContext';
+import { useI18n } from '../i18n';
 import { cn, formatDateTime } from '../lib/utils';
 import type {
   DiscordUserInfo,
@@ -46,6 +47,7 @@ export const SwarmPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const toast = useToast();
+  const { t } = useI18n();
 
   const currentGuild =
     (paramGuildId ? guilds.find((g) => g.id === paramGuildId) : null) ||
@@ -178,40 +180,41 @@ export const SwarmPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 w-full select-none">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
+        <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-black text-white flex items-center gap-3">
-              <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25">
-                <Layers className="w-6 h-6" />
-              </span>
-              Linked Role The Swarm
-            </h1>
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black shadow-lg shadow-indigo-500/25 shrink-0">
+              <Layers className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                  {t('swarm.title')}
+                </h1>
 
-            {/* Thẩm quyền caller badge */}
-            {isBotOwner ? (
-              <Badge variant="yellow" size="sm">
-                Bot Owner
-              </Badge>
-            ) : isOperator ? (
-              <Badge variant="purple" size="sm">
-                Delegated Operator
-              </Badge>
-            ) : (
-              <Badge variant="blurple" size="sm">
-                Server Scope
-              </Badge>
-            )}
+                {/* Thẩm quyền caller badge */}
+                {isBotOwner ? (
+                  <Badge variant="yellow" size="sm">
+                    {t('swarm.botOwner')}
+                  </Badge>
+                ) : isOperator ? (
+                  <Badge variant="purple" size="sm">
+                    {t('swarm.delegatedOperator')}
+                  </Badge>
+                ) : (
+                  <Badge variant="blurple" size="sm">
+                    {t('swarm.serverScope')}
+                  </Badge>
+                )}
+              </div>
+
+              <p className="text-xs text-discord-muted mt-0.5 max-w-2xl">
+                {t('swarm.subtitle')}
+              </p>
+            </div>
           </div>
-
-          <p className="text-xs text-discord-muted mt-1 max-w-2xl">
-            Quản lý Linked Role The Swarm trong phạm vi server{' '}
-            <strong className="text-white">{currentGuild?.name}</strong>. Role
-            được member tự nhận qua Server Settings - Linked Roles sau khi ủy 
-            quyền OAuth2 cho phép update Application metadata.
-          </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -222,7 +225,7 @@ export const SwarmPage: React.FC = () => {
             className="gap-2 text-xs border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10"
           >
             <Copy className="w-3.5 h-3.5" />
-            Sao chép URL ủy quyền OAuth2
+            {t('swarm.copyOAuthBtn')}
           </Button>
 
           {/* Lối tắt sang Quản Trị Toàn Cầu nếu là Operator / Bot Owner */}
@@ -237,7 +240,7 @@ export const SwarmPage: React.FC = () => {
               className="gap-2 text-xs bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold shadow-md shadow-indigo-500/25"
             >
               <Globe className="w-3.5 h-3.5" />
-              Global Management Dashboard
+              {t('swarm.manageGlobalBtn')}
               <ArrowRight className="w-3 h-3 ml-0.5" />
             </Button>
           )}
@@ -250,15 +253,8 @@ export const SwarmPage: React.FC = () => {
           <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div className="text-xs leading-relaxed space-y-1">
             <span className="font-bold text-amber-300 block">
-              Quyền Hạn Cấp Server (Server-Scoped Mode)
+              {t('swarm.readOnlyNotice')}
             </span>
-            <p className="text-white/80">
-              Bạn đang xem danh sách member thuộc server này sở hữu đặc quyền
-              Linked Role The Swarm. Do Linked Role The Swarm có hiệu lực global
-              ở cấp Ứng Dụng (Application-wide), việc cấu hình channel và cập
-              nhật bản ghi bị giới hạn nghiêm ngặt, chỉ có thể được thực thi bởi 
-              {' '}<strong>Delegated Operator</strong>.
-            </p>
           </div>
         </div>
       )}
@@ -272,7 +268,7 @@ export const SwarmPage: React.FC = () => {
             </div>
             <div>
               <p className="text-[11px] font-bold text-discord-muted uppercase tracking-wider">
-                Member Liên Kết Trong Server
+                {t('swarm.serverKpiLinked')}
               </p>
               <h3 className="text-xl font-black text-white mt-0.5">
                 {isLoading ? (
@@ -292,10 +288,10 @@ export const SwarmPage: React.FC = () => {
             </div>
             <div>
               <p className="text-[11px] font-bold text-discord-muted uppercase tracking-wider">
-              Cấp Bậc Khả Dụng
+                {t('swarm.serverKpiTiers')}
               </p>
               <h3 className="text-xl font-black text-white mt-0.5">
-                8 Bậc (Level 1-8)
+                {t('swarm.serverKpiTiersVal')}
               </h3>
             </div>
           </CardContent>
@@ -308,7 +304,7 @@ export const SwarmPage: React.FC = () => {
             </div>
             <div>
               <p className="text-[11px] font-bold text-discord-muted uppercase tracking-wider">
-                Channel thông báo Của Server
+                {t('swarm.serverKpiChannel')}
               </p>
               <h3 className="text-sm font-bold text-white mt-0.5 truncate max-w-[180px]">
                 {isLoading ? (
@@ -318,7 +314,7 @@ export const SwarmPage: React.FC = () => {
                     #{data.config.notificationChannelId}
                   </span>
                 ) : (
-                  <span className="text-discord-muted italic">Chưa thiết lập</span>
+                  <span className="text-discord-muted italic">{t('swarm.notConfigured')}</span>
                 )}
               </h3>
             </div>
@@ -334,10 +330,10 @@ export const SwarmPage: React.FC = () => {
             <CardHeader>
               <CardTitle>
                 <Shield className="w-5 h-5 text-indigo-400 inline-block mr-2" />
-                Member Từng Bậc Trong Server (The Swarm I → VIII)
+                {t('swarm.tierDistributionTitle')}
               </CardTitle>
               <CardDescription>
-                Số lượng member có mặt trong server này sở hữu đặc quyền Linked Role.
+                {t('swarm.tierDistributionDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -380,7 +376,7 @@ export const SwarmPage: React.FC = () => {
                           }
                           size="sm"
                         >
-                          {count} member
+                          {count} {t('swarm.memberCount')}
                         </Badge>
                       </div>
                     );
@@ -398,20 +394,20 @@ export const SwarmPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <CardTitle>
                   <Bell className="w-5 h-5 text-indigo-400 inline-block mr-2" />
-                  Channel Thông Báo Của Server
+                  {t('swarm.configTitle')}
                 </CardTitle>
                 <Badge variant={canEditConfig ? 'purple' : 'muted'} size="sm">
-                  {canEditConfig ? 'Editable' : 'View only'}
+                  {canEditConfig ? t('common.edit') : t('common.details')}
                 </Badge>
               </div>
               <CardDescription>
-                Channel gửi thông báo khi có cập nhật bản ghi đặc quyền Linked Role The Swarm.
+                {t('swarm.configDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <ChannelSelect
-                label="Channel Thông Báo Của Server"
-                placeholder="Chọn channel gửi thông báo..."
+                label={t('swarm.channelLabel')}
+                placeholder={t('swarm.channelPlaceholder')}
                 value={notificationChannelId || null}
                 onChange={(val) => setNotificationChannelId(val || '')}
                 guildId={guildId}
@@ -419,8 +415,8 @@ export const SwarmPage: React.FC = () => {
                 channelTypes={['TEXT', 'ANNOUNCEMENT']}
                 hint={
                   canEditConfig
-                    ? 'Để trống nếu muốn tắt tính năng gửi tin nhắn thông báo tự động.'
-                    : 'Chỉ Delegated Operator có quyền hạn cấu hình channel thông báo.'
+                    ? t('swarm.channelHint')
+                    : t('swarm.readOnlyNotice')
                 }
               />
 
@@ -433,12 +429,12 @@ export const SwarmPage: React.FC = () => {
                   className="w-full gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold"
                 >
                   <Save className="w-4 h-4" />
-                  Lưu Channel Thông Báo Server
+                  {t('swarm.saveConfigBtn')}
                 </Button>
               ) : (
                 <div className="p-3 rounded-xl bg-black/20 border border-white/5 flex items-center justify-center gap-2 text-xs text-discord-muted">
                   <Lock className="w-3.5 h-3.5" />
-                  <span>Cấu hình channel được quản lý bởi Delegated Operator</span>
+                  <span>{t('swarm.readOnlyNotice')}</span>
                 </div>
               )}
             </CardContent>
@@ -448,20 +444,17 @@ export const SwarmPage: React.FC = () => {
           <div className="p-4 rounded-3xl bg-indigo-950/20 border border-indigo-500/20 text-xs space-y-2.5">
             <div className="flex items-center gap-2 text-indigo-400 font-bold">
               <Info className="w-4 h-4" />
-              <span>Hướng dẫn nhận Linked Roles trong Server:</span>
+              <span>{t('swarm.instructionsTitle')}</span>
             </div>
             <ol className="list-decimal list-inside space-y-1.5 text-discord-muted leading-relaxed pl-1">
               <li>
-                Bot Owner đã đăng ký metadata schema với Discord REST API.
+                {t('swarm.instruction1')}
               </li>
               <li>
-                Server Admins vào <strong>Server Settings → Roles → Links</strong>{' '}
-                của server này để tạo 8 roles với requirement{' '}
-                <code className="text-white">swarm_level = 1..8</code>.
+                {t('swarm.instruction2')}
               </li>
               <li>
-                Member vào mục <strong>Linked Roles</strong> trên Server Settings
-                để ủy quyền OAuth2 cập nhật metadata và tự động nhận role.
+                {t('swarm.instruction3')}
               </li>
             </ol>
           </div>
@@ -475,14 +468,14 @@ export const SwarmPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <CardTitle>
                 <Users className="w-5 h-5 text-indigo-400 inline-block mr-2" />
-                Member sở hữu Linked Role The Swarm trong server ({serverMembers.length})
+                {t('swarm.membersTitle')} ({serverMembers.length})
               </CardTitle>
               <Badge variant="blurple" size="sm">
-                Xếp từ Level 8 → 0
+                {t('swarm.sortBadge')}
               </Badge>
             </div>
             <CardDescription>
-              Danh sách đầy đủ member của server này đã có bản ghi đặc quyền Linked Role The Swarm.
+              {t('swarm.membersSubtitle')}
             </CardDescription>
           </div>
 
@@ -490,7 +483,7 @@ export const SwarmPage: React.FC = () => {
             <Search className="w-4 h-4 text-discord-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Tìm theo Tên, User ID, Level..."
+              placeholder={t('swarm.searchMemberPlaceholder')}
               value={memberSearch}
               onChange={(e) => setMemberSearch(e.target.value)}
               className="w-full bg-[#1e2029] border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-discord-muted focus:outline-none focus:border-indigo-500/60 transition"
@@ -503,21 +496,21 @@ export const SwarmPage: React.FC = () => {
             <Skeleton className="h-28 w-full" />
           ) : filteredMembers.length === 0 ? (
             <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-              Không tìm thấy thành viên nào.
+              {t('swarm.noMembersFound')}
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border border-white/10">
               <table className="w-full text-left text-xs text-discord-text">
                 <thead className="bg-[#11131a] text-discord-muted uppercase text-[10px] font-extrabold tracking-wider border-b border-white/10">
                   <tr>
-                    <th className="py-3.5 px-4">Member</th>
-                    <th className="py-3.5 px-4">Level</th>
+                    <th className="py-3.5 px-4">{t('swarm.userCol')}</th>
+                    <th className="py-3.5 px-4">{t('swarm.levelCol')}</th>
                     {/* CỘT NGƯỜI CẬP NHẬT: ẨN HOÀN TOÀN NẾU KHÔNG PHẢI OPERATOR/OWNER */}
                     {canManageMembers && (
-                      <th className="py-3.5 px-4">Người Cập Nhật</th>
+                      <th className="py-3.5 px-4">{t('swarm.updatedByCol')}</th>
                     )}
-                    <th className="py-3.5 px-4">Thời Gian Cập Nhật</th>
-                    <th className="py-3.5 px-4 text-right">Thao Tác</th>
+                    <th className="py-3.5 px-4">{t('swarm.updatedAtCol')}</th>
+                    <th className="py-3.5 px-4 text-right">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.06]">
@@ -538,7 +531,7 @@ export const SwarmPage: React.FC = () => {
                         >
                           {m.swarmLevel > 0
                             ? `The Swarm ${m.swarmLevel}`
-                            : 'Đã Thu Hồi'}
+                            : t('swarm.revoked')}
                         </span>
                       </td>
 
@@ -548,7 +541,7 @@ export const SwarmPage: React.FC = () => {
                           {m.updatedBy ? (
                             <UserDisplay userId={m.updatedBy} showAvatar={false} />
                           ) : (
-                            <span className="italic">Hệ thống</span>
+                            <span className="italic">{t('swarm.system')}</span>
                           )}
                         </td>
                       )}
@@ -569,7 +562,7 @@ export const SwarmPage: React.FC = () => {
                             }}
                             className="text-xs h-7 px-2.5 hover:border-indigo-400"
                           >
-                            Điều Chỉnh
+                            {t('swarm.editLevelBtn')}
                           </Button>
                         ) : (
                           <span className="text-[11px] text-discord-muted italic flex items-center justify-end gap-1">
@@ -591,8 +584,8 @@ export const SwarmPage: React.FC = () => {
         <Modal
           isOpen={isUpdateModalOpen}
           onClose={() => setIsUpdateModalOpen(false)}
-          title="Điều Chỉnh Bản Ghi Linked Role The Swarm"
-          description="Gửi cập nhật trực tiếp metadata Linked Role đến Discord account của user (global)."
+          title={t('swarm.modalUpdateTitle')}
+          description={t('swarm.modalUpdateDesc')}
           footer={
             <>
               <Button
@@ -600,7 +593,7 @@ export const SwarmPage: React.FC = () => {
                 size="sm"
                 onClick={() => setIsUpdateModalOpen(false)}
               >
-                Hủy bỏ
+                {t('common.cancel')}
               </Button>
               <Button
                 variant="primary"
@@ -614,24 +607,24 @@ export const SwarmPage: React.FC = () => {
                 onClick={() => updateMemberMutation.mutate()}
                 className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold"
               >
-                Lưu Bản Ghi (Global)
+                {t('swarm.updateLevelBtn')}
               </Button>
             </>
           }
         >
           <div className="space-y-4">
             <UserInput
-              label="Member Mục Tiêu"
-              placeholder="Nhập User ID để kiểm tra..."
+              label={t('swarm.targetUserLabel')}
+              placeholder={t('swarm.targetUserPlaceholder')}
               value={targetUserId}
               onChange={setTargetUserId}
               onVerified={setVerifiedTargetUser}
-              hint="Tự động fetch user qua Discord Gateway."
+              hint={t('swarm.fetchUserGatewayHint')}
             />
 
             <div className="space-y-2">
               <label className="block text-xs font-bold text-discord-text uppercase tracking-wider">
-                Chọn Level Linked Role The Swarm
+                {t('swarm.levelLabel')}
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <button
@@ -645,7 +638,7 @@ export const SwarmPage: React.FC = () => {
                   )}
                 >
                   <span>Level 0</span>
-                  <span className="text-[10px] font-normal">(Thu Hồi)</span>
+                  <span className="text-[10px] font-normal">({t('swarm.revoked')})</span>
                 </button>
 
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((lvl) => (

@@ -28,6 +28,7 @@ interface DiscordUserResponse {
   discriminator: string;
   global_name?: string | null;
   avatar: string | null;
+  locale?: string;
 }
 
 export const route: BotRoute = {
@@ -159,6 +160,7 @@ export const route: BotRoute = {
             username: userData.username,
             globalName: userData.global_name,
             avatar: userData.avatar,
+            locale: userData.locale ?? null,
           },
           getJwtSecret(),
         );
@@ -205,6 +207,7 @@ export const route: BotRoute = {
           userId: auth.userId,
           username: auth.username,
           avatar: auth.avatar,
+          locale: auth.locale ?? null,
           isBotOwner: auth.isBotOwner,
           isMasterKey: auth.isMasterKey,
         },

@@ -1,11 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   LogOut,
   Menu,
   ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useI18n } from '../../i18n';
 import { GuildSwitcher } from './GuildSwitcher';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface NavbarProps {
   onToggleMobileSidebar: () => void;
@@ -13,6 +16,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileSidebar }) => {
   const { user, logout } = useAuth();
+  const { t } = useI18n();
 
   return (
     <header className="h-16 bg-[#10121a]/85 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors shadow-2xl">
@@ -27,23 +31,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileSidebar }) => {
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Logo & Brand */}
-        <div className="flex items-center gap-2.5">
+        {/* Logo & Brand (Clickable to root dashboard) */}
+        <Link
+          to="/dashboard"
+          className="flex items-center gap-2.5 group cursor-pointer transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-discord-blurple/50 rounded-xl"
+          title={t('nav.backToDashboard')}
+        >
           <img
             src="/lora_icon_badge.png"
             alt="Lora Engine"
-            className="w-9 h-9 rounded-xl object-contain shadow-md shadow-discord-blurple/25 shrink-0"
+            className="w-9 h-9 rounded-xl object-contain shadow-md shadow-discord-blurple/25 shrink-0 transition-transform group-hover:scale-105"
           />
           <div className="hidden sm:block">
             <h1 className="font-bold text-base leading-none text-white flex items-center gap-1.5">
               Lora
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-discord-blurple/20 text-discord-blurple font-semibold border border-discord-blurple/30">
-                v0.8.5
+                v0.8.6
               </span>
             </h1>
             <p className="text-[10px] text-discord-muted leading-tight mt-0.5">App Engine</p>
           </div>
-        </div>
+        </Link>
 
         {/* Divider */}
         <div className="hidden sm:block h-6 w-px bg-[#3f4147]" />
@@ -52,8 +60,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileSidebar }) => {
         <GuildSwitcher />
       </div>
 
-      {/* Right: User Section */}
+      {/* Right: Language Switcher & User Section */}
       <div className="flex items-center gap-3">
+        <LanguageSwitcher />
+
         {user?.isBotOwner && (
           <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-discord-yellow/15 border border-discord-yellow/30 text-discord-yellow text-xs font-semibold">
             <ShieldAlert className="w-3.5 h-3.5" />
@@ -87,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileSidebar }) => {
           <button
             onClick={() => void logout()}
             className="p-2 text-discord-muted hover:text-discord-red hover:bg-[#313338] rounded-xl transition ml-1"
-            title="Đăng xuất"
+            title={t('nav.logout')}
           >
             <LogOut className="w-4 h-4" />
           </button>

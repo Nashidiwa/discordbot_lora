@@ -29,6 +29,7 @@ import { useToast } from '../components/ui/Toast';
 import { UserDisplay } from '../components/ui/UserDisplay';
 import { UserInput } from '../components/ui/UserInput';
 import { useAuth } from '../context/AuthContext';
+import { useI18n } from '../i18n';
 import { cn, formatDateTime } from '../lib/utils';
 import type { DiscordUserInfo, PermitOverview } from '../types';
 
@@ -89,6 +90,7 @@ export const PermitPage: React.FC = () => {
   const { selectedGuild, guilds } = useAuth();
   const queryClient = useQueryClient();
   const toast = useToast();
+  const { t } = useI18n();
 
   const currentGuild =
     (paramGuildId ? guilds.find((g) => g.id === paramGuildId) : null) ||
@@ -207,7 +209,7 @@ export const PermitPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl select-none">
+    <div className="space-y-8 w-full select-none">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
         <div className="space-y-1">
@@ -217,13 +219,13 @@ export const PermitPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                Custom Permit
+                {t('permits.title')}
                 <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">
-                  RBAC
+                  {t('permits.badge')}
                 </span>
               </h1>
               <p className="text-xs text-discord-muted mt-0.5">
-                Tính năng phân quyền đa tầng độc lập không phụ thuộc vào Discord native permissions.
+                {t('permits.subtitle')}
               </p>
             </div>
           </div>
@@ -233,7 +235,7 @@ export const PermitPage: React.FC = () => {
         {data?.ownerId && (
           <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-[#14161f] border border-white/10 text-xs">
             <Crown className="w-4 h-4 text-amber-400 shrink-0" />
-            <span className="text-discord-muted">Server Owner:</span>
+            <span className="text-discord-muted">{t('permits.serverOwner')}</span>
             <code className="text-white font-mono font-bold">{data.ownerId}</code>
           </div>
         )}
@@ -244,33 +246,33 @@ export const PermitPage: React.FC = () => {
         <div className="p-3.5 rounded-2xl bg-black/20 border border-amber-500/30 space-y-1">
           <div className="flex items-center gap-1.5 text-amber-300 font-extrabold">
             <Crown className="w-4 h-4 text-amber-400" />
-            <span>Tier 1: Server Owner</span>
+            <span>{t('permits.tier1Title')}</span>
           </div>
-          <p className="text-[11px] text-discord-muted">Quyền hạn tối cao, cấp quyền Co-Owner.</p>
+          <p className="text-[11px] text-discord-muted">{t('permits.tier1Desc')}</p>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-black/20 border border-purple-500/30 space-y-1">
           <div className="flex items-center gap-1.5 text-purple-300 font-extrabold">
             <ShieldAlert className="w-4 h-4 text-purple-400" />
-            <span>Tier 2: Co-Owner</span>
+            <span>{t('permits.tier2Title')}</span>
           </div>
-          <p className="text-[11px] text-discord-muted">Ủy quyền toàn diện, quản lý toàn bộ bot.</p>
+          <p className="text-[11px] text-discord-muted">{t('permits.tier2Desc')}</p>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-black/20 border border-emerald-500/30 space-y-1">
           <div className="flex items-center gap-1.5 text-emerald-300 font-extrabold">
             <UserCheck className="w-4 h-4 text-emerald-400" />
-            <span>Tier 3: Trusted Admin</span>
+            <span>{t('permits.tier3Title')}</span>
           </div>
-          <p className="text-[11px] text-discord-muted">Vận hành tính năng (Voice, Perks, Settings).</p>
+          <p className="text-[11px] text-discord-muted">{t('permits.tier3Desc')}</p>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-black/20 border border-cyan-500/30 space-y-1">
           <div className="flex items-center gap-1.5 text-cyan-300 font-extrabold">
             <Key className="w-4 h-4 text-cyan-400" />
-            <span>Tier 4: Custom Grants</span>
+            <span>{t('permits.tier4Title')}</span>
           </div>
-          <p className="text-[11px] text-discord-muted">Cấp quyền linh hoạt theo Bitfield flags.</p>
+          <p className="text-[11px] text-discord-muted">{t('permits.tier4Desc')}</p>
         </div>
       </div>
 
@@ -286,7 +288,7 @@ export const PermitPage: React.FC = () => {
           )}
         >
           <ShieldAlert className="w-4 h-4" />
-          <span>Co-Owners ({data?.coOwners?.length ?? 0})</span>
+          <span>{t('permits.coOwnersTab')} ({data?.coOwners?.length ?? 0})</span>
         </button>
         <button
           onClick={() => setActiveTab('trusted')}
@@ -298,7 +300,7 @@ export const PermitPage: React.FC = () => {
           )}
         >
           <UserCheck className="w-4 h-4" />
-          <span>Trusted Admins ({data?.trustedAdmins?.length ?? 0})</span>
+          <span>{t('permits.trustedTab')} ({data?.trustedAdmins?.length ?? 0})</span>
         </button>
         <button
           onClick={() => setActiveTab('custom')}
@@ -310,7 +312,7 @@ export const PermitPage: React.FC = () => {
           )}
         >
           <Key className="w-4 h-4" />
-          <span>Custom Grants ({data?.customPermits?.length ?? 0})</span>
+          <span>{t('permits.customTab')} ({data?.customPermits?.length ?? 0})</span>
         </button>
       </div>
 
@@ -321,17 +323,17 @@ export const PermitPage: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-200">
           <Card hover>
             <CardHeader>
-              <CardTitle className="text-purple-300">Cấp Quyền Co-Owner</CardTitle>
+              <CardTitle className="text-purple-300">{t('permits.assignCoOwnerTitle')}</CardTitle>
               <CardDescription>
-                Chỉ Server Owner có quyền bổ nhiệm Co-Owner. Co-Owner có toàn quyền quản trị các tính năng bot trong server.
+                {t('permits.assignCoOwnerDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col sm:flex-row items-end gap-3">
                 <div className="flex-1 w-full">
                   <UserInput
-                    label="Discord User ID Mục Tiêu"
-                    placeholder="Nhập User ID cần cấp quyền Co-Owner..."
+                    label={t('permits.targetUserInputLabel')}
+                    placeholder={t('permits.targetUserInputPlaceholder')}
                     value={newCoOwnerUserId}
                     onChange={setNewCoOwnerUserId}
                     onVerified={setVerifiedCoOwnerUser}
@@ -357,7 +359,7 @@ export const PermitPage: React.FC = () => {
                   className="w-full sm:w-auto text-xs font-bold bg-purple-600 hover:bg-purple-700 border-0 h-[42px]"
                 >
                   <PlusCircle className="w-4 h-4 mr-1.5" />
-                  Cấp Quyền Co-Owner
+                  {t('permits.assignCoOwnerTitle')}
                 </Button>
               </div>
             </CardContent>
@@ -366,14 +368,14 @@ export const PermitPage: React.FC = () => {
           {/* Co-Owners List */}
           <Card hover>
             <CardHeader>
-              <CardTitle>Danh Sách Co-Owner Hiện Tại</CardTitle>
+              <CardTitle>{t('permits.currentCoOwners')}</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
                 <Skeleton className="h-16 w-full" />
               ) : !data?.coOwners || data.coOwners.length === 0 ? (
                 <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có Co-Owner nào được ghi nhận cho server này.
+                  {t('permits.noCoOwners')}
                 </div>
               ) : (
                 <div className="space-y-2.5">
@@ -389,7 +391,7 @@ export const PermitPage: React.FC = () => {
                         <div>
                           <UserDisplay userId={p.targetId} className="text-sm font-bold" />
                           <span className="text-[11px] text-discord-muted block mt-0.5">
-                            Được cấp bởi: <UserDisplay userId={p.createdBy} showAvatar={false} /> • {formatDateTime(p.createdAt)}
+                            {t('permits.grantedBy')} <UserDisplay userId={p.createdBy} showAvatar={false} /> • {formatDateTime(p.createdAt)}
                           </span>
                         </div>
                       </div>
@@ -407,7 +409,7 @@ export const PermitPage: React.FC = () => {
                         className="text-xs"
                       >
                         <Trash2 className="w-3.5 h-3.5 mr-1" />
-                        Thu hồi
+                        {t('permits.revokeBtn')}
                       </Button>
                     </div>
                   ))}
@@ -425,9 +427,9 @@ export const PermitPage: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-200">
           <Card hover>
             <CardHeader>
-              <CardTitle className="text-emerald-300">Cấp Quyền Trusted Admin</CardTitle>
+              <CardTitle className="text-emerald-300">{t('permits.assignTrustedTitle')}</CardTitle>
               <CardDescription>
-                Trusted Admin có các quyền vận hành mặc định: Xem Dashboard, Cài đặt Server, Quản lý Perks, Voice Keeper (không thể cấu hình Permit).
+                {t('permits.assignTrustedDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -443,7 +445,7 @@ export const PermitPage: React.FC = () => {
                         : 'bg-black/30 text-discord-muted border-white/10',
                     )}
                   >
-                    Gán cho User
+                    {t('permits.assignToUser')}
                   </button>
                   <button
                     type="button"
@@ -455,7 +457,7 @@ export const PermitPage: React.FC = () => {
                         : 'bg-black/30 text-discord-muted border-white/10',
                     )}
                   >
-                    Gán cho Role
+                    {t('permits.assignToRole')}
                   </button>
                 </div>
 
@@ -463,8 +465,8 @@ export const PermitPage: React.FC = () => {
                   <div className="flex-1 w-full">
                     {trustedTargetType === 'USER' ? (
                       <UserInput
-                        label="Discord User ID Mục Tiêu"
-                        placeholder="Nhập User ID để chọn..."
+                        label={t('permits.targetUserInputLabel')}
+                        placeholder={t('permits.targetUserInputPlaceholder')}
                         value={trustedTargetId}
                         onChange={setTrustedTargetId}
                         onVerified={setVerifiedTrustedUser}
@@ -472,8 +474,8 @@ export const PermitPage: React.FC = () => {
                       />
                     ) : (
                       <RoleSelect
-                        label="Role Được Cấp Quyền"
-                        placeholder="Chọn role trong server..."
+                        label={t('permits.targetRoleSelectLabel')}
+                        placeholder={t('permits.targetRoleSelectPlaceholder')}
                         value={trustedTargetId || null}
                         onChange={(val) => setTrustedTargetId(val || '')}
                         guildId={guildId}
@@ -500,7 +502,7 @@ export const PermitPage: React.FC = () => {
                     className="w-full sm:w-auto text-xs font-bold bg-purple-600 hover:bg-purple-700 border-0 h-[42px]"
                   >
                     <PlusCircle className="w-4 h-4 mr-1.5" />
-                    Thêm Trusted Admin
+                    {t('permits.addTrustedBtn')}
                   </Button>
                 </div>
               </div>
@@ -510,14 +512,14 @@ export const PermitPage: React.FC = () => {
           {/* Trusted Admins List */}
           <Card hover>
             <CardHeader>
-              <CardTitle>Danh Sách Trusted Admin Hiện Tại</CardTitle>
+              <CardTitle>{t('permits.currentTrusted')}</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
                 <Skeleton className="h-16 w-full" />
               ) : !data?.trustedAdmins || data.trustedAdmins.length === 0 ? (
                 <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có Trusted Admin nào.
+                  {t('permits.noTrusted')}
                 </div>
               ) : (
                 <div className="space-y-2.5">
@@ -548,7 +550,7 @@ export const PermitPage: React.FC = () => {
                             </Badge>
                           </div>
                           <span className="text-[11px] text-discord-muted block mt-0.5">
-                            Được cấp bởi: <UserDisplay userId={p.createdBy} showAvatar={false} /> • {formatDateTime(p.createdAt)}
+                            {t('permits.grantedBy')} <UserDisplay userId={p.createdBy} showAvatar={false} /> • {formatDateTime(p.createdAt)}
                           </span>
                         </div>
                       </div>
@@ -566,7 +568,7 @@ export const PermitPage: React.FC = () => {
                         className="text-xs"
                       >
                         <Trash2 className="w-3.5 h-3.5 mr-1" />
-                        Gỡ bỏ
+                        {t('permits.revokeBtn')}
                       </Button>
                     </div>
                   ))}
@@ -584,9 +586,9 @@ export const PermitPage: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-200">
           <Card hover>
             <CardHeader>
-              <CardTitle className="text-cyan-300">Cấp Quyền Tùy Chỉnh (Bitfield Grants)</CardTitle>
+              <CardTitle className="text-cyan-300">{t('permits.assignCustomTitle')}</CardTitle>
               <CardDescription>
-                Chọn các cờ quyền cụ thể cho một User hoặc Role tùy chỉnh.
+                {t('permits.assignCustomDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -601,7 +603,7 @@ export const PermitPage: React.FC = () => {
                       : 'bg-black/30 text-discord-muted border-white/10',
                   )}
                 >
-                  Gán cho User
+                  {t('permits.assignToUser')}
                 </button>
                 <button
                   type="button"
@@ -613,34 +615,34 @@ export const PermitPage: React.FC = () => {
                       : 'bg-black/30 text-discord-muted border-white/10',
                   )}
                 >
-                  Gán cho Role
+                  {t('permits.assignToRole')}
                 </button>
               </div>
 
               {customTargetType === 'USER' ? (
                 <UserInput
-                  label="Discord User ID Mục Tiêu"
-                  placeholder="Nhập User ID để chọn..."
+                  label={t('permits.targetUserInputLabel')}
+                  placeholder={t('permits.targetUserInputPlaceholder')}
                   value={customTargetId}
                   onChange={setCustomTargetId}
                   onVerified={setVerifiedCustomUser}
-                  hint="User sẽ được kiểm tra qua Discord Gateway."
+                  hint=""
                 />
               ) : (
                 <RoleSelect
-                  label="Role Được Cấp Quyền"
-                  placeholder="Chọn vai trò trong server..."
+                  label={t('permits.targetRoleSelectLabel')}
+                  placeholder={t('permits.targetRoleSelectPlaceholder')}
                   value={customTargetId || null}
                   onChange={(val) => setCustomTargetId(val || '')}
                   guildId={guildId}
-                  hint="Tất cả thành viên mang vai trò này sẽ nhận các quyền đã chọn."
+                  hint=""
                 />
               )}
 
               {/* Bitfield Checkbox Chips Grid */}
               <div className="space-y-2">
                 <label className="text-xs font-extrabold text-discord-muted uppercase tracking-wider block">
-                  Chọn Các Cờ Quyền (Bitfield: {selectedFlags} - 0x{selectedFlags.toString(16)})
+                  {t('permits.flagsTitle')} (Bitfield: {selectedFlags} - 0x{selectedFlags.toString(16)})
                 </label>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -701,7 +703,7 @@ export const PermitPage: React.FC = () => {
                   className="text-xs font-bold bg-purple-600 hover:bg-purple-700 border-0"
                 >
                   <PlusCircle className="w-4 h-4 mr-1.5" />
-                  Lưu Quyền Custom
+                  {t('permits.saveCustomBtn')}
                 </Button>
               </div>
             </CardContent>
@@ -710,14 +712,14 @@ export const PermitPage: React.FC = () => {
           {/* Custom Grants List */}
           <Card hover>
             <CardHeader>
-              <CardTitle>Danh Sách Custom Grant Hiện Tại</CardTitle>
+              <CardTitle>{t('permits.currentCustom')}</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
                 <Skeleton className="h-16 w-full" />
               ) : !data?.customPermits || data.customPermits.length === 0 ? (
                 <div className="py-8 text-center text-discord-muted text-xs bg-black/20 rounded-2xl border border-white/5">
-                  Chưa có quyền Custom nào.
+                  {t('permits.noCustom')}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -753,13 +755,13 @@ export const PermitPage: React.FC = () => {
                           className="text-xs h-7"
                         >
                           <Trash2 className="w-3.5 h-3.5 mr-1" />
-                          Thu hồi
+                          {t('permits.revokeBtn')}
                         </Button>
                       </div>
 
                       {/* Chips */}
                       <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-white/[0.06]">
-                        <span className="text-discord-muted text-[11px] mr-1">Các quyền được cấp:</span>
+                        <span className="text-discord-muted text-[11px] mr-1">{t('permits.grantedPermissionsLabel')}</span>
                         {renderFlagChips(p.permissions)}
                       </div>
                     </div>
@@ -775,8 +777,8 @@ export const PermitPage: React.FC = () => {
       <Modal
         isOpen={Boolean(revokeTarget)}
         onClose={() => setRevokeTarget(null)}
-        title="Xác nhận thu hồi quyền hạn"
-        description={`Bạn có chắc chắn muốn thu hồi quyền ${revokeTarget?.tierName} của user mục tiêu?`}
+        title={t('permits.revokeConfirmTitle')}
+        description={t('permits.revokeConfirmDesc')}
         footer={
           <>
             <Button
@@ -784,7 +786,7 @@ export const PermitPage: React.FC = () => {
               size="sm"
               onClick={() => setRevokeTarget(null)}
             >
-              Hủy bỏ
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -799,7 +801,7 @@ export const PermitPage: React.FC = () => {
                 }
               }}
             >
-              Xác nhận Thu hồi
+              {t('permits.confirmRevokeBtn')}
             </Button>
           </>
         }
@@ -807,9 +809,6 @@ export const PermitPage: React.FC = () => {
         <div className="space-y-2 text-xs text-discord-muted">
           <p>
             Mục tiêu: <strong className="text-white font-mono">{revokeTarget?.targetId}</strong> ({revokeTarget?.targetType})
-          </p>
-          <p>
-            Sau khi thu hồi, user này sẽ không còn quyền hạn tương ứng trên Dashboard và Bot.
           </p>
         </div>
       </Modal>

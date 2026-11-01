@@ -7,6 +7,7 @@ export interface SessionPayload {
   username: string;
   globalName?: string | null;
   avatar: string | null;
+  locale?: string | null;
   exp: number; // Unix timestamp (seconds)
 }
 

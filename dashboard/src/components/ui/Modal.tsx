@@ -51,14 +51,14 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity animate-backdrop-in"
         onClick={onClose}
       />
 
       {/* Modal Dialog Card */}
       <div
         className={cn(
-          'relative w-full rounded-2xl bg-[#2b2d31] border border-[#3f4147] shadow-2xl z-10 overflow-hidden animate-in zoom-in-95 duration-200',
+          'relative w-full rounded-2xl bg-[#2b2d31] border border-[#3f4147] shadow-2xl z-10 overflow-hidden animate-modal-in',
           maxWidths[maxWidth],
         )}
       >

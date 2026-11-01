@@ -274,7 +274,7 @@ export const ChannelSelect: React.FC<ChannelSelectProps> = ({
               zIndex: 99999,
             }}
             className={cn(
-              'bg-[#18191c] border border-white/10 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl animate-in fade-in-50 zoom-in-95 duration-100',
+              'bg-[#18191c] border border-white/10 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl animate-dropdown-in',
               coords.placement === 'top' ? 'origin-bottom' : 'origin-top',
             )}
           >
