@@ -45,11 +45,13 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
     ? {
         background: `linear-gradient(90deg, ${color1}, ${color2})`,
         WebkitBackgroundClip: 'text',
+        backgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
         display: 'inline-block',
       }
     : {
         color: color1,
+        display: 'inline-block',
       };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -114,8 +116,8 @@ export const DiscordChatSimulator: React.FC<DiscordChatSimulatorProps> = ({
           <div className="flex items-center gap-2 flex-wrap">
             <span
               className={cn(
-                'text-sm font-bold tracking-tight hover:underline cursor-pointer transition-all duration-300',
-                hasGradient && 'discord-gradient-text drop-shadow-[0_2px_8px_rgba(255,255,255,0.15)]',
+                'text-sm font-bold tracking-tight hover:underline cursor-pointer',
+                hasGradient && 'discord-gradient-text',
               )}
               style={roleStyle}
             >

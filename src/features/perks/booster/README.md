@@ -9,10 +9,11 @@ Tài liệu đặc tả kiến trúc, hướng dẫn vận hành và nhật ký 
 Lát cắt `booster/` nằm trong tính năng `src/features/perks/`, được thiết kế theo mô hình **Vertical Slice Architecture**, độc lập hoàn toàn với các gói quyền lợi khác (như `donator/`):
 
 * **Quyền sở hữu:** Mỗi Server Booster chỉ được sở hữu tối đa **1 Custom Role duy nhất**.
-* **Đặc quyền màu sắc:**
-  * **Single Booster (1 boost):** Tùy chỉnh Tên role và Màu đơn sắc (Solid Hex Color).
+* **Đặc quyền màu sắc & Mention:**
+  * **Single Booster (1 boost):** Tùy chỉnh Tên role, Màu đơn sắc (Solid Hex Color), và Tùy chọn Bật/Tắt khả năng cho phép người khác `@mention` Custom Role của họ.
   * **Double Booster (2+ boosts):** Mở khóa đặc quyền phối màu **Gradient 2 màu** (`color1` chuyển sang `color2`) được áp dụng tự động 100% qua Discord API.
 * **Chính sách Ân hạn (Grace Period):** Khi người dùng hết hạn boost trên Discord (hoặc Admin hạ boost về 0), Custom Role được bảo lưu trong thời gian ân hạn (mặc định **21 ngày / 3 tuần**) trên server. Sau khi hết thời gian ân hạn nếu không boost lại, hệ thống sẽ tự động thu hồi và xóa role vĩnh viễn.
+* **Điều khiển Trạng Thái Hệ Thống (Lifecycle & State Control):** Quản trị viên có toàn quyền tạm ngưng đóng băng (`SUSPEND` kèm tùy chọn giải phóng role list) hoặc tắt vĩnh viễn xóa sạch role (`PURGE`), trong khi dữ liệu số lượt boost (`boostCount`) vẫn được bảo lưu và cập nhật liên tục qua Gateway events.
 
 ---
 
@@ -45,11 +46,15 @@ Hệ thống cung cấp nhóm lệnh `/perk` tương tác qua Slash Commands:
 
 ### Nhóm Lệnh Server Booster (`booster/`)
 * `/perk server_booster info`: Xem chi tiết chính sách và quyền lợi độc quyền của Server Booster.
-* `/perk server_booster role_view [user]`: Xem chi tiết thông số Custom Role (tên, mã màu, trạng thái trang bị, số lượt boost). Thành viên chỉ xem được của mình; Staff (`ManageRoles`) có thể tra cứu của thành viên khác.
-* `/perk server_booster role_claim`: Tạo mới hoặc trang bị lại Custom Role cho bản thân.
+* `/perk server_booster role_view [user]`: Xem chi tiết thông số Custom Role (tên, mã màu, trạng thái trang bị, số lượt boost, trạng thái mention). Thành viên chỉ xem được của mình; Staff (`ManageRoles`) có thể tra cứu của thành viên khác.
+* `/perk server_booster role_claim`: Tạo mới hoặc trang bị lại Custom Role cho bản thân (tự động nhận lại cấu hình cũ nếu từng bị xóa role do suspend).
 * `/perk server_booster role_unclaim`: Tạm thời gỡ Custom Role khỏi hồ sơ cá nhân mà không xóa role khỏi server.
-* `/perk server_booster role_config [name] [color1] [color2]`: Cập nhật tên và mã màu Hex cho Custom Role. Nhập cả 2 màu để kích hoạt Gradient style (yêu cầu 2+ boosts và server hỗ trợ).
+* `/perk server_booster role_config [name] [color1] [color2] [mentionable]`: Cập nhật tên, mã màu Hex và tùy chọn bật/tắt quyền `@mention` cho Custom Role. Nhập cả 2 màu để kích hoạt Gradient style (yêu cầu 2+ boosts và server hỗ trợ).
 * `/perk server_booster set_boost user:<@User> count:<number>`: **(Dành riêng cho Administrator)** Đồng bộ số lượt boost chuẩn cho thành viên khi phát sinh sai lệch hoặc cấp quyền thủ công.
+* `/perk server_booster toggle action:<resume|suspend|purge> [clear_roles:<boolean>]`: **(Dành riêng cho Administrator)** Điều khiển trạng thái vận hành của hệ thống:
+  * `resume`: Khôi phục hệ thống về trạng thái hoạt động bình thường (`ACTIVE`).
+  * `suspend`: Đóng băng hệ thống (`SUSPENDED`). Tùy chọn `clear_roles: true` sẽ tạm xóa Custom Role trên Discord để giải phóng giới hạn 250 role, trong khi cấu hình người dùng vẫn được bảo lưu an toàn.
+  * `purge`: Tắt vĩnh viễn (`DISABLED`) và xóa toàn bộ Custom Role trên server Discord (bảo lưu dữ liệu boost).
 
 ---
 
@@ -60,23 +65,27 @@ Một thành viên được hệ thống công nhận là Booster hợp lệ khi
 1. `member.premiumSince != null`: Người dùng có boost thực tế trên Discord (hoạt động bình thường kể cả khi user boost trong thời gian bot offline).
 2. `perk.boostCount > 0`: Người dùng được Administrator bảo chứng thủ công thông qua lệnh `/perk server_booster set_boost`.
 
-### 2. Tự Động Hóa Màu Sắc (Zero-Touch Automation)
+### 2. Tự Động Hóa Màu Sắc & Thuộc Tính Mention
 * Sử dụng cấu trúc mới nhất của Discord API v10 (`discord.js: 14.27.0`):
   * Màu đơn sắc: Gọi `role.edit({ colors: { primaryColor: hex1 } })` và cập nhật `roleColor = hex1, roleColor2 = null`.
-  * Màu Gradient: Kiểm tra `guild.features.includes(GuildFeature.EnhancedRoleColors)`. Nếu đủ điều kiện, gọi `role.edit({ colors: { primaryColor: hex1, secondaryColor: hex2 } })` để biến đổi màu tức thì sau 0.5s.
-* Khi người dùng đang sở hữu màu Gradient chuyển về màu đơn, hệ thống tự động reset `roleColor2 = null` để đảm bảo lệnh `role_view` không bị kẹt hiển thị mã màu thứ 2 cũ.
+  * Màu Gradient: Kiểm tra `guild.features.includes(GuildFeature.EnhancedRoleColors)`. Nếu đủ điều kiện, gọi `role.edit({ colors: { primaryColor: hex1, secondaryColor: hex2 } })`.
+  * Mentionable: Gọi `role.edit({ mentionable: options.mentionable })` đồng bộ trực tiếp lên Discord và cơ sở dữ liệu.
+* Khi người dùng đang sở hữu màu Gradient chuyển về màu đơn, hệ thống tự động reset `roleColor2 = null`.
 
 ### 3. Vòng Đời Ân Hạn (Grace Period Lifecycle)
-* **Kích hoạt:** Khi thành viên unboost hoàn toàn trên Discord (`GuildMemberUpdate`), role chuyển sang `status: 'GRACE_PERIOD'` với hạn định 7 ngày (`gracePeriodExpiresAt`).
+* **Kích hoạt:** Khi thành viên unboost hoàn toàn trên Discord (`GuildMemberUpdate`), role chuyển sang `status: 'GRACE_PERIOD'` với hạn định 21 ngày (`gracePeriodExpiresAt`).
 * **Bảo lưu:** Role vẫn được giữ nguyên trên người dùng. Giao diện `/perk server_booster role_view` chuyển sang màu vàng cảnh báo kèm bộ đếm ngược thời gian hết hạn.
-* **Khôi phục:** Nếu người dùng re-boost trong vòng 7 ngày, bot tự động xóa hạn ân hạn và đưa trạng thái về `ACTIVE`.
-* **Thu hồi tự động:** Cron Job định kỳ mỗi 10 phút (`booster-cleanup.job.ts`) tự động quét và xóa Custom Role khỏi Discord nếu đã quá hạn 7 ngày, đồng thời reset `boostCount = 0`, `status: 'REVOKED'`.
+* **Khôi phục:** Nếu người dùng re-boost trong vòng 21 ngày, bot tự động xóa hạn ân hạn và đưa trạng thái về `ACTIVE`.
+* **Thu hồi tự động:** Cron Job định kỳ mỗi 10 phút (`booster-cleanup.job.ts`) tự động quét và xóa Custom Role khỏi Discord nếu đã quá hạn 21 ngày (chỉ thực hiện khi hệ thống đang ở trạng thái `ACTIVE`).
 
 ### 4. Quy Trình Can Thiệp Quản Trị Đặc Biệt (Interactive Unboost Workflow)
 Khi Administrator thực hiện `/perk server_booster set_boost user:<@User> count:0` đối với thành viên đang sở hữu Custom Role, Bot sẽ gửi Embed cảnh báo đi kèm **2 nút bấm tương tác**:
-* **Nút 1: `Tiêu Chuẩn (7 Ngày Ân Hạn)` (Secondary):** Dành cho trường hợp điều chỉnh bình thường. Người dùng được hưởng trọn vẹn 7 ngày ân hạn để boost lại mà không mất role.
+* **Nút 1: `Tiêu Chuẩn (21 Ngày Ân Hạn)` (Secondary):** Dành cho trường hợp điều chỉnh bình thường. Người dùng được hưởng trọn vẹn 21 ngày ân hạn để boost lại mà không mất role.
 * **Nút 2: `Can Thiệp (Thu Hồi Ngay)` (Danger):** Dành cho trường hợp kỷ luật, gian lận, hoặc hủy quyền khẩn cấp. Bot lập tức xóa vĩnh viễn Custom Role trên server Discord và chuyển bản ghi về `REVOKED` ngay tức thì.
-* **Bảo mật:** Nút bấm chỉ chấp nhận tương tác từ chính Quản trị viên đã khởi tạo lệnh.
+
+### 5. Quy Trình Điều Khiển Hệ Thống (System State Control & Purge Workflow)
+* **Suspend (Tạm Ngưng):** Tạm thời đóng băng tính năng. Tùy chọn `clear_roles: true` giúp quản trị viên giải phóng danh sách role khỏi máy chủ khi cần slot khẩn cấp mà không làm mất thông tin thiết kế của Booster.
+* **Purge (Xóa Sạch):** Kích hoạt hộp thoại xác nhận 2 nút bấm (`Xác Nhận Xóa Sạch` / `Hủy Bỏ`). Khi xác nhận, bot xóa sạch Custom Role trên Discord và reset cấu hình Custom Role trong database, nhưng **giữ lại nguyên vẹn số lượt boost (`boostCount`)** của tất cả thành viên.
 
 ---
 
@@ -90,11 +99,10 @@ Khi Administrator thực hiện `/perk server_booster set_boost user:<@User> cou
 | **`v0.2.4`** | Khắc phục lỗi lưu giữ mã màu gradient cũ (`roleColor2`) khi người dùng cấu hình lại Custom Role về màu đơn sắc. |
 | **`v0.2.5`** | Tự động hóa hoàn toàn 100% phối màu gradient qua Discord API `EnhancedRoleColors`. Loại bỏ hoàn toàn hàng đợi duyệt thủ công. Xóa sạch 100% cảnh báo Deprecation của `discord.js: 14.27.0`. |
 | **`v0.2.6`** | Hợp nhất cơ chế nhận diện Server Booster (**Unified Booster Resolution**), cho phép claim role và hiển thị trạng thái chính xác cho cả booster tự nhiên lẫn tài khoản test được Admin gán thủ công. |
-| **`v0.2.7`** | Bổ sung quy trình unboost tương tác (**Interactive Unboost Workflow**) với 2 nút bấm: Tiêu Chuẩn (ân hạn 7 ngày) và Can Thiệp (xóa role tức thì) khi Admin đặt số boost về 0. |
+| **`v0.2.7`** | Bổ sung quy trình unboost tương tác (**Interactive Unboost Workflow**) với 2 nút bấm: Tiêu Chuẩn (ân hạn 21 ngày) và Can Thiệp (xóa role tức thì) khi Admin đặt số boost về 0. |
 | **`v0.2.8`** | Đồng bộ hóa toàn diện hệ thống: Xóa bỏ bảng và model `RoleUpdateQueue` khỏi database; bổ sung kiểm tra bắt buộc `color1` khi tạo gradient lần đầu; đồng bộ danh xưng trong `role_view` cho Staff; cập nhật chuẩn hóa kiến trúc tài liệu. |
 | **`v0.2.9`** | Cập nhật thời gian ân hạn mặc định từ 7 ngày lên 21 ngày (3 tuần) trong cấu hình nạp động và Prisma schema; điều chỉnh mô tả lệnh `role_info` linh hoạt theo cấu hình máy chủ. |
-
-
+| **`v0.2.10`** | Bổ sung tùy chọn `mentionable` trong `/perk server_booster role_config`, lệnh `/perk server_booster toggle` (`resume`, `suspend` kèm `clear_roles`, `purge` kèm quy trình nút bấm xác nhận an toàn), bảo lưu 100% số lượt boost khi tạm ngưng hoặc xóa sạch. |
 
 ---
 

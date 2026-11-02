@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, Loader2, User, XCircle } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { useI18n } from '../../i18n';
 import { cn } from '../../lib/utils';
 import type { DiscordUserInfo } from '../../types';
 
@@ -20,9 +21,13 @@ export const UserInput: React.FC<UserInputProps> = ({
   value,
   onChange,
   onVerified,
-  placeholder = 'Ví dụ: 123456789012345678',
+  placeholder,
   hint,
 }) => {
+  const { t, locale } = useI18n();
+  const effectivePlaceholder =
+    placeholder ??
+    (locale === 'en' ? 'e.g. 123456789012345678' : 'Ví dụ: 123456789012345678');
   const [debouncedId, setDebouncedId] = useState(value);
 
   // Debounce 400ms để tránh spam API
@@ -65,7 +70,7 @@ export const UserInput: React.FC<UserInputProps> = ({
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={effectivePlaceholder}
           className={cn(
             'w-full bg-[#1e1f22] border rounded-xl px-4 py-2.5 text-sm text-discord-text font-mono placeholder:font-sans placeholder:text-[#6d6f78]',
             'outline-none transition-[border-color,box-shadow] duration-200 ease-out pr-10',
@@ -117,7 +122,7 @@ export const UserInput: React.FC<UserInputProps> = ({
         </div>
       ) : isError && isValidFormat ? (
         <p className="text-xs text-discord-red font-medium flex items-center gap-1.5">
-          <span>✕ Không tìm thấy tài khoản Discord có ID này.</span>
+          <span>✕ {t('common.userNotFound')}</span>
         </p>
       ) : hint ? (
         <p className="text-xs text-discord-muted">{hint}</p>

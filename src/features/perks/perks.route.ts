@@ -2,6 +2,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import type { BotRoute, RouteContext } from '../../core/types/index.js';
 import { PermitFlag } from '../../shared/permit/permit.constants.js';
 import { requirePermit } from '../../core/server/guards/index.js';
+import { boosterPerkService } from './booster/services/booster-perk.service.js';
 import { donatorPerkService } from './donator/services/donator-perk.service.js';
 
 export const route: BotRoute = {
@@ -57,12 +58,24 @@ export const route: BotRoute = {
         const guildId = (request.params as { guildId: string }).guildId;
         const body = request.body as
           | {
+              status?: string;
               gracePeriodDays?: number;
               anchorRoleId?: string | null;
               notificationChannelId?: string | null;
               auditLogChannelId?: string | null;
             }
           | undefined;
+
+        if (
+          body?.status !== undefined &&
+          !['ACTIVE', 'SUSPENDED', 'DISABLED'].includes(body.status)
+        ) {
+          return reply.status(400).send({
+            statusCode: 400,
+            error: 'Bad Request',
+            message: 'status phải là ACTIVE, SUSPENDED hoặc DISABLED.',
+          });
+        }
 
         if (
           body?.gracePeriodDays !== undefined &&
@@ -109,6 +122,9 @@ export const route: BotRoute = {
         const updated = await db.boosterPerkConfig.upsert({
           where: { guildId },
           update: {
+            ...(body?.status !== undefined && {
+              status: body.status,
+            }),
             ...(body?.gracePeriodDays !== undefined && {
               gracePeriodDays: body.gracePeriodDays,
             }),
@@ -124,6 +140,7 @@ export const route: BotRoute = {
           },
           create: {
             guildId,
+            status: body?.status ?? 'ACTIVE',
             gracePeriodDays: body?.gracePeriodDays ?? 21,
             anchorRoleId: body?.anchorRoleId ?? null,
             notificationChannelId: body?.notificationChannelId ?? null,
@@ -132,6 +149,62 @@ export const route: BotRoute = {
         });
 
         return reply.send({ success: true, config: updated });
+      },
+    );
+
+    // 3. Thực thi Action Hệ thống Server Booster (Resume / Suspend / Purge)
+    fastify.post(
+      '/booster/system-action',
+      { preHandler: [requirePermit(client, PermitFlag.MANAGE_PERKS)] },
+      async (request, reply) => {
+        const guildId = (request.params as { guildId: string }).guildId;
+        const body = request.body as
+          | {
+              action?: string;
+              clearRoles?: boolean;
+            }
+          | undefined;
+
+        if (
+          !body?.action ||
+          !['resume', 'suspend', 'purge'].includes(body.action)
+        ) {
+          return reply.status(400).send({
+            statusCode: 400,
+            error: 'Bad Request',
+            message: 'action phải là resume, suspend hoặc purge.',
+          });
+        }
+
+        const guild =
+          client.guilds.cache.get(guildId) ??
+          (await client.guilds.fetch(guildId).catch(() => null));
+
+        if (!guild) {
+          return reply.status(404).send({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'Không tìm thấy máy chủ trong hệ thống của bot.',
+          });
+        }
+
+        if (body.action === 'resume') {
+          const result = await boosterPerkService.resumeSystem(guild);
+          return reply.send({ success: true, action: body.action, ...result });
+        }
+
+        if (body.action === 'suspend') {
+          const result = await boosterPerkService.suspendSystem(
+            guild,
+            body.clearRoles ?? false,
+          );
+          return reply.send({ success: true, action: body.action, ...result });
+        }
+
+        if (body.action === 'purge') {
+          const result = await boosterPerkService.purgeSystem(guild);
+          return reply.send({ success: true, action: body.action, ...result });
+        }
       },
     );
 

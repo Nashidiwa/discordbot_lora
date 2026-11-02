@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useI18n } from '../../i18n';
 
 interface DashboardRedirectProps {
   subpath?: string;
@@ -8,6 +9,7 @@ interface DashboardRedirectProps {
 
 export const DashboardRedirect: React.FC<DashboardRedirectProps> = ({ subpath }) => {
   const { guilds, loading, canAccessGlobal } = useAuth();
+  const { t } = useI18n();
 
   if (loading) {
     return null;
@@ -31,9 +33,9 @@ export const DashboardRedirect: React.FC<DashboardRedirectProps> = ({ subpath })
 
   return (
     <div className="p-8 text-center glass-panel rounded-3xl text-discord-muted text-sm border border-white/10 max-w-xl mx-auto mt-12">
-      <h2 className="text-base font-bold text-white mb-2">Chưa có server để quản lý</h2>
+      <h2 className="text-base font-bold text-white mb-2">{t('common.noServersTitle')}</h2>
       <p className="text-xs text-discord-muted">
-        Tài khoản Discord của bạn hiện chưa tham gia server nào có bot hoặc chưa được cấp quyền hạn quản lý.
+        {t('common.noServersDesc')}
       </p>
     </div>
   );

@@ -11,6 +11,7 @@ import boosterInfoSub from './booster/subcommands/booster-info.sub.js';
 import boosterSetBoostSub from './booster/subcommands/booster-setboost.sub.js';
 import boosterUnclaimSub from './booster/subcommands/booster-unclaim.sub.js';
 import boosterViewSub from './booster/subcommands/booster-view.sub.js';
+import boosterToggleSub from './booster/subcommands/booster-toggle.sub.js';
 import listSub from './common/subcommands/list.sub.js';
 import statusSub from './common/subcommands/status.sub.js';
 import donatorAddSub from './donator/subcommands/donator-add.sub.js';
@@ -98,6 +99,14 @@ const data = new SlashCommandBuilder()
                 'Mã màu thứ 2 (đặc quyền gradient dành cho 2+ boosts)',
               )
               .setRequired(false),
+          )
+          .addBooleanOption((opt) =>
+            opt
+              .setName('mentionable')
+              .setDescription(
+                'Bật hoặc tắt khả năng mention (@Role) cho Custom Role của bạn',
+              )
+              .setRequired(false),
           ),
       )
       .addSubcommand((sub) =>
@@ -116,6 +125,30 @@ const data = new SlashCommandBuilder()
               .setDescription('Số boost thực tế (tối thiểu 0)')
               .setMinValue(0)
               .setRequired(true),
+          ),
+      )
+      .addSubcommand((sub) =>
+        sub
+          .setName('toggle')
+          .setDescription('(Admin) Điều khiển trạng thái hệ thống Server Booster Perk')
+          .addStringOption((opt) =>
+            opt
+              .setName('action')
+              .setDescription('Hành động trạng thái (resume, suspend, purge)')
+              .setRequired(true)
+              .addChoices(
+                { name: 'Khôi phục hoạt động (resume)', value: 'resume' },
+                { name: 'Tạm ngưng / Đóng băng (suspend)', value: 'suspend' },
+                { name: 'Tắt vĩnh viễn & Xóa sạch role (purge)', value: 'purge' },
+              ),
+          )
+          .addBooleanOption((opt) =>
+            opt
+              .setName('clear_roles')
+              .setDescription(
+                'Khi suspend: Xóa Custom Role trên Discord để giải phóng role list (Mặc định: False)',
+              )
+              .setRequired(false),
           ),
       ),
   )
@@ -334,6 +367,9 @@ export const command: BotCommand = {
           return;
         case 'set_boost':
           await boosterSetBoostSub(interaction);
+          return;
+        case 'toggle':
+          await boosterToggleSub(interaction);
           return;
       }
     }

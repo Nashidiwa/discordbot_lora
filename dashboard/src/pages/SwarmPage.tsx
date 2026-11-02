@@ -101,14 +101,14 @@ export const SwarmPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Đã lưu cấu hình server',
-        'Channel thông báo cập nhật Linked Role The Swarm của server này đã được lưu.',
+        t('swarm.savedConfigSuccess'),
+        t('swarm.savedConfigSuccessDesc'),
       );
       void queryClient.invalidateQueries({
         queryKey: ['swarm-server-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Cập nhật cấu hình thất bại', err.message),
+    onError: (err: Error) => toast.error(t('swarm.savedConfigError'), err.message),
   });
 
   // Mutation gán/thu hồi level thành viên (Application Scope - Operator Only)
@@ -122,15 +122,25 @@ export const SwarmPage: React.FC = () => {
         },
       ),
     onSuccess: (res) => {
+      const syncedNote = res.synced
+        ? t('swarm.metadataSynced')
+        : t('swarm.metadataNotAuthorized');
       if (res.level === 0) {
         toast.success(
-          'Hoàn tất thu hồi đặc quyền (Global)',
-          `Đã xóa đặc quyền Linked Role The Swarm của user ${targetUserId}. ${res.synced ? '(Đã gửi cập nhật metadata)' : '(User chưa ủy quyền OAuth2, bỏ qua cập nhật metadata)'}`,
+          t('swarm.revokedGlobalSuccess'),
+          t('swarm.revokedGlobalSuccessDesc', {
+            userId: targetUserId,
+            syncedNote,
+          }),
         );
       } else {
         toast.success(
-          'Hoàn tất cập nhật đặc quyền (Global)',
-          `Đã ghi lại Level ${res.level} cho user ${targetUserId}. ${res.synced ? '(Đã gửi cập nhật metadata)' : '(User chưa ủy quyền OAuth2, bỏ qua cập nhật metadata)'}`,
+          t('swarm.updatedGlobalSuccess'),
+          t('swarm.updatedGlobalSuccessDesc', {
+            level: res.level,
+            userId: targetUserId,
+            syncedNote,
+          }),
         );
       }
       setIsUpdateModalOpen(false);
@@ -139,7 +149,7 @@ export const SwarmPage: React.FC = () => {
         queryKey: ['swarm-server-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Cập nhật bản ghi đặc quyền thất bại', err.message),
+    onError: (err: Error) => toast.error(t('swarm.updatedGlobalError'), err.message),
   });
 
   const handleCopyVerificationUrl = () => {
@@ -147,8 +157,8 @@ export const SwarmPage: React.FC = () => {
     const url = `${origin}/auth/discord/login`;
     void navigator.clipboard.writeText(url);
     toast.success(
-      'Đã sao chép URL ủy quyền OAuth2',
-      'Truy cập để ủy quyền OAuth2 cho phép bot cập nhật Application metadata.',
+      t('swarm.copyOAuthSuccess'),
+      t('swarm.copyOAuthSuccessDesc'),
     );
   };
 
@@ -166,7 +176,7 @@ export const SwarmPage: React.FC = () => {
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý.
+        {t('common.pleaseSelectServerDesc')}
       </div>
     );
   }

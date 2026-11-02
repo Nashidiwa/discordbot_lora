@@ -14,6 +14,7 @@ export const execute: SubcommandExecutor = async (
   const name = interaction.options.getString('name') ?? undefined;
   const color1 = interaction.options.getString('color1') ?? undefined;
   const color2 = interaction.options.getString('color2') ?? undefined;
+  const mentionable = interaction.options.getBoolean('mentionable') ?? undefined;
 
   const result = await boosterPerkService.configCustomRole(
     interaction.guild!,
@@ -22,6 +23,7 @@ export const execute: SubcommandExecutor = async (
       name,
       color1,
       color2,
+      mentionable,
     },
   );
 
@@ -29,8 +31,15 @@ export const execute: SubcommandExecutor = async (
     ? `\`${result.roleColor}\` + \`${result.roleColor2}\` (Gradient)`
     : `\`${result.roleColor ?? 'Không đổi'}\``;
 
+  const mentionDisplay =
+    result.isMentionable !== undefined
+      ? result.isMentionable
+        ? perksLocale.vi.MENTIONABLE_STATUS_ON
+        : perksLocale.vi.MENTIONABLE_STATUS_OFF
+      : 'Không đổi';
+
   const embed = createSuccessEmbed(
-    `${perksLocale.vi.ROLE_CONFIG_SUCCESS}\n\n• Tên Role: **${result.roleName ?? 'Không đổi'}**\n• Màu sắc: ${colorDisplay}`,
+    `${perksLocale.vi.ROLE_CONFIG_SUCCESS}\n\n• Tên Role: **${result.roleName ?? 'Không đổi'}**\n• Màu sắc: ${colorDisplay}\n• Cho phép Mention: **${mentionDisplay}**`,
   );
 
   await interaction.editReply({ embeds: [embed] });

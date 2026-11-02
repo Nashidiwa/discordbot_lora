@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import {
   Activity,
+  Bomb,
   BookOpen,
   ChevronLeft,
   ChevronRight,
@@ -83,6 +84,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: BookOpen,
     },
     {
+      to: `/dashboard/guilds/${currentGuildId}/landmine`,
+      label: t('nav.landmine'),
+      icon: Bomb,
+    },
+    {
       to: `/dashboard/guilds/${currentGuildId}/swarm`,
       label: t('nav.swarm'),
       icon: Layers,
@@ -115,7 +121,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               'p-2.5 bg-indigo-950/30 rounded-xl border border-indigo-500/30 flex items-center transition-all',
               isCollapsed ? 'justify-center p-2' : 'gap-3',
             )}
-            title="Toàn Hệ Thống (Application Scope)"
+            title={`${t('nav.allSystems')} (Application Scope)`}
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md shadow-indigo-500/25">
               <Globe className="w-4 h-4" />
@@ -280,7 +286,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="fixed inset-y-0 left-0 w-72 bg-[#12141c] border-r border-white/10 shadow-2xl z-50 flex flex-col animate-in slide-in-from-left duration-200">
             {/* Drawer Header */}
             <div className="h-16 px-4 flex items-center justify-between border-b border-[#3f4147]">
-              <span className="text-sm font-bold text-white">Menu Điều hướng</span>
+              <span className="text-sm font-bold text-white">{t('nav.navigationMenu')}</span>
               <button
                 onClick={onCloseMobile}
                 className="p-2 rounded-lg text-discord-muted hover:text-white"

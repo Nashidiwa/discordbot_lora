@@ -93,13 +93,13 @@ export const VoiceKeeperPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Đã cập nhật Voice Keeper',
-        'Bot đã nhận yêu cầu kết nối và áp dụng cấu hình.',
+        t('voice.savedSuccess'),
+        t('voice.savedSuccessDesc'),
       );
       void queryClient.invalidateQueries({ queryKey: ['voice-keeper', guildId] });
     },
     onError: (err: Error) => {
-      toast.error('Lỗi thiết lập Voice Keeper', err.message);
+      toast.error(t('voice.savedError'), err.message);
     },
   });
 
@@ -110,13 +110,13 @@ export const VoiceKeeperPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.info(
-        'Reconnecting...',
-        'Bot đã nhận yêu cầu đóng kết nối và tái lập kết nối Voice Channel.',
+        t('voice.reconnectSuccess'),
+        t('voice.reconnectSuccessDesc'),
       );
       void queryClient.invalidateQueries({ queryKey: ['voice-keeper', guildId] });
     },
     onError: (err: Error) => {
-      toast.error('Lỗi thực thi reconnect', err.message);
+      toast.error(t('voice.reconnectError'), err.message);
     },
   });
 
@@ -127,21 +127,21 @@ export const VoiceKeeperPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.warning(
-        'Đã dừng Voice Keeper',
-        'Bot đã nhận yêu cầu đóng kết nối.',
+        t('voice.stoppedSuccess'),
+        t('voice.stoppedSuccessDesc'),
       );
       setIsStopModalOpen(false);
       void queryClient.invalidateQueries({ queryKey: ['voice-keeper', guildId] });
     },
     onError: (err: Error) => {
-      toast.error('Lỗi thực thi dừng Voice Keeper', err.message);
+      toast.error(t('voice.stoppedError'), err.message);
     },
   });
 
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý.
+        {t('common.pleaseSelectServerDesc')}
       </div>
     );
   }
@@ -416,10 +416,10 @@ export const VoiceKeeperPage: React.FC = () => {
       >
         <div className="space-y-3 text-xs text-discord-muted">
           <p>
-            Server đang lưu cấu hình channel: <strong className="text-white">{statusData?.status?.channelName || channelId}</strong>
+            {t('voice.currentSavedChannel')} <strong className="text-white">{statusData?.status?.channelName || channelId}</strong>
           </p>
           <p>
-            Bạn có thể bật lại Voice Keeper bất kỳ lúc nào.
+            {t('voice.canReenableAnytime')}
           </p>
         </div>
       </Modal>

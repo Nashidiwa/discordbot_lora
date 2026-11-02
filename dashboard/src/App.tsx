@@ -4,6 +4,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { DashboardRedirect } from './components/layout/DashboardRedirect';
 import { GlobalOverviewPage } from './pages/GlobalOverviewPage';
 import { GlobalSwarmPage } from './pages/GlobalSwarmPage';
+import { LandminePage } from './pages/LandminePage';
 import { LoginPage } from './pages/LoginPage';
 import { OverviewPage } from './pages/OverviewPage';
 import { PerksPage } from './pages/PerksPage';
@@ -37,6 +38,7 @@ export const App: React.FC = () => {
           <Route path="perks" element={<PerksPage />} />
           <Route path="voice-keeper" element={<VoiceKeeperPage />} />
           <Route path="wordchain" element={<WordchainPage />} />
+          <Route path="landmine" element={<LandminePage />} />
           <Route path="swarm" element={<SwarmPage />} />
         </Route>
 
@@ -49,6 +51,7 @@ export const App: React.FC = () => {
         <Route path="perks" element={<DashboardRedirect subpath="perks" />} />
         <Route path="voice-keeper" element={<DashboardRedirect subpath="voice-keeper" />} />
         <Route path="wordchain" element={<DashboardRedirect subpath="wordchain" />} />
+        <Route path="landmine" element={<DashboardRedirect subpath="landmine" />} />
         <Route path="swarm" element={<DashboardRedirect subpath="swarm" />} />
 
         {/* Global Scope Management (Application-wide) */}

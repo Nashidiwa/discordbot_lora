@@ -21,10 +21,18 @@ export function formatVnd(amount: number | string | bigint): string {
 }
 
 /**
- * Format seconds into human readable duration (e.g. "12 ngày 5 giờ", "45 phút")
+ * Format seconds into human readable duration (e.g. "12 ngày 5 giờ", "45 phút" / "12 days 5 hours", "45 mins")
  */
-export function formatDurationSeconds(totalSeconds: number): string {
-  if (!totalSeconds || totalSeconds <= 0) return '0 giây';
+export function formatDurationSeconds(totalSeconds: number, lang?: 'vi' | 'en'): string {
+  const currentLang =
+    lang ||
+    (typeof window !== 'undefined'
+      ? (localStorage.getItem('lora_dashboard_locale') as 'vi' | 'en')
+      : 'vi') ||
+    'vi';
+  const isEn = currentLang === 'en';
+
+  if (!totalSeconds || totalSeconds <= 0) return isEn ? '0s' : '0 giây';
 
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
@@ -32,23 +40,36 @@ export function formatDurationSeconds(totalSeconds: number): string {
   const seconds = Math.floor(totalSeconds % 60);
 
   const parts: string[] = [];
-  if (days > 0) parts.push(`${days} ngày`);
-  if (hours > 0) parts.push(`${hours} giờ`);
-  if (minutes > 0 && days === 0) parts.push(`${minutes} phút`);
-  if (seconds > 0 && days === 0 && hours === 0) parts.push(`${seconds} giây`);
+  if (days > 0) parts.push(`${days} ${isEn ? (days === 1 ? 'day' : 'days') : 'ngày'}`);
+  if (hours > 0) parts.push(`${hours} ${isEn ? (hours === 1 ? 'hour' : 'hours') : 'giờ'}`);
+  if (minutes > 0 && days === 0)
+    parts.push(`${minutes} ${isEn ? (minutes === 1 ? 'minute' : 'minutes') : 'phút'}`);
+  if (seconds > 0 && days === 0 && hours === 0)
+    parts.push(`${seconds} ${isEn ? (seconds === 1 ? 'second' : 'seconds') : 'giây'}`);
 
-  return parts.length > 0 ? parts.join(' ') : '0 giây';
+  return parts.length > 0 ? parts.join(' ') : isEn ? '0s' : '0 giây';
 }
 
 /**
- * Format ISO Date string into localized VN date format
+ * Format ISO Date string into localized VN / US date format
  */
-export function formatDateTime(isoString: string | null | undefined): string {
-  if (!isoString) return 'Chưa có';
+export function formatDateTime(
+  isoString: string | null | undefined,
+  lang?: 'vi' | 'en',
+): string {
+  const currentLang =
+    lang ||
+    (typeof window !== 'undefined'
+      ? (localStorage.getItem('lora_dashboard_locale') as 'vi' | 'en')
+      : 'vi') ||
+    'vi';
+  const isEn = currentLang === 'en';
+
+  if (!isoString) return isEn ? 'N/A' : 'Chưa có';
   try {
     const d = new Date(isoString);
-    if (isNaN(d.getTime())) return 'Không hợp lệ';
-    return new Intl.DateTimeFormat('vi-VN', {
+    if (isNaN(d.getTime())) return isEn ? 'Invalid date' : 'Không hợp lệ';
+    return new Intl.DateTimeFormat(isEn ? 'en-US' : 'vi-VN', {
       hour: '2-digit',
       minute: '2-digit',
       day: '2-digit',
@@ -56,6 +77,6 @@ export function formatDateTime(isoString: string | null | undefined): string {
       year: 'numeric',
     }).format(d);
   } catch {
-    return 'Không hợp lệ';
+    return isEn ? 'Invalid date' : 'Không hợp lệ';
   }
 }

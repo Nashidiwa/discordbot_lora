@@ -26,6 +26,7 @@ model GuildSetting {
 
 model BoosterPerkConfig {
   guildId               String   @id
+  status                String   @default("ACTIVE")
   gracePeriodDays       Int      @default(21)
   anchorRoleId          String?
   notificationChannelId String?
@@ -46,6 +47,7 @@ model CustomRolePerk {
   roleName             String?
   roleColor            String?
   roleColor2           String?
+  isMentionable        Boolean   @default(false)
   status               String    @default("ACTIVE")
   isEquipped           Boolean   @default(true)
   gracePeriodExpiresAt DateTime?
@@ -306,3 +308,62 @@ model GuildPermitAssignment {
   @@index([guildId, tier])
   @@map("guild_permit_assignments")
 }
+
+// ==========================================
+// DOMAIN: LANDMINE CHAT ENGINE (FEAT-08)
+// ==========================================
+
+model LandmineGuildConfig {
+  guildId      String   @id @map("guild_id")
+  forcedLocale String?  @map("forced_locale")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("landmine_guild_configs")
+}
+
+model LandmineModule {
+  id                         String   @id @default(cuid())
+  guildId                    String   @map("guild_id")
+  moduleKey                  String   @map("module_key")
+  isDefault                  Boolean  @default(false) @map("is_default")
+  isEnabled                  Boolean  @default(false) @map("is_enabled")
+  note                       String?  @map("note")
+  algorithmType              String   @default("STATIC") @map("algorithm_type")
+  staticRate                 Float    @default(0.008) @map("static_rate")
+  punishmentDurationSeconds  Int      @default(60) @map("punishment_duration_seconds")
+  channelScopeType           String   @default("WHITELIST") @map("channel_scope_type")
+  channelIds                 String   @default("[]") @map("channel_ids")
+  roleScopeType              String   @default("BLACKLIST") @map("role_scope_type")
+  roleIds                    String   @default("[]") @map("role_ids")
+  includeInServerLeaderboard Boolean  @default(true) @map("include_in_server_leaderboard")
+  autoDeleteNotification     Boolean  @default(false) @map("auto_delete_notification")
+  successMessage             String?  @map("success_message")
+  failedMessage              String?  @map("failed_message")
+  createdAt                  DateTime @default(now()) @map("created_at")
+  updatedAt                  DateTime @updatedAt @map("updated_at")
+
+  @@unique([guildId, moduleKey])
+  @@index([guildId, isEnabled])
+  @@map("landmine_modules")
+}
+
+model LandmineRecord {
+  id                  String   @id @default(cuid())
+  guildId             String   @map("guild_id")
+  moduleKey           String   @map("module_key")
+  userId              String   @map("user_id")
+  totalSteps          Int      @default(0) @map("total_steps")
+  successCount        Int      @default(0) @map("success_count")
+  failedCount         Int      @default(0) @map("failed_count")
+  totalTimeoutSeconds BigInt   @default(0) @map("total_timeout_seconds")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@unique([guildId, moduleKey, userId])
+  @@index([guildId, totalSteps])
+  @@index([guildId, totalTimeoutSeconds])
+  @@index([guildId, userId])
+  @@map("landmine_records")
+}
+

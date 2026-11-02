@@ -101,14 +101,14 @@ export const WordchainPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Đã lưu cấu hình Wordchain',
-        'Channel và role đã được cập nhật.',
+        t('wordchain.savedSuccess'),
+        t('wordchain.savedSuccessDesc'),
       );
       void queryClient.invalidateQueries({
         queryKey: ['wordchain-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Lỗi lưu cấu hình', err.message),
+    onError: (err: Error) => toast.error(t('wordchain.savedError'), err.message),
   });
 
   // Mutation Reset chuỗi ván chơi
@@ -123,21 +123,21 @@ export const WordchainPage: React.FC = () => {
       ),
     onSuccess: (res) => {
       toast.success(
-        'Hoàn tất reset ván chơi',
-        res.message || 'Chuỗi nối từ đã được đưa về trạng thái khởi đầu.',
+        t('wordchain.resetSuccess'),
+        res.message || t('wordchain.resetSuccessDesc'),
       );
       setIsResetModalOpen(false);
       void queryClient.invalidateQueries({
         queryKey: ['wordchain-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Reset ván chơi thất bại', err.message),
+    onError: (err: Error) => toast.error(t('wordchain.resetError'), err.message),
   });
 
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý.
+        {t('common.pleaseSelectServerDesc')}
       </div>
     );
   }
@@ -406,14 +406,14 @@ export const WordchainPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Globe className="w-4 h-4 text-emerald-400" />
               <span className="text-discord-muted">
-                Ngôn ngữ từ điển đang áp dụng:
+                {t('wordchain.dictionaryLanguageLabel')}
               </span>
               <Badge variant="blurple" size="sm">
                 English (en) - Leipzig Wortschatz
               </Badge>
             </div>
             <span className="text-[11px] text-discord-muted">
-              3 tầng Lexicon: RAM → DB Cache → Wiktionary
+              {t('wordchain.lexiconTiersLabel')}
             </span>
           </div>
 
@@ -441,7 +441,7 @@ export const WordchainPage: React.FC = () => {
               {t('wordchain.leaderboardTitle')}
             </CardTitle>
             <CardDescription>
-              Theo dõi độ uy tín (Karma) và tổng điểm đóng góp cho server.
+              {t('wordchain.leaderboardDesc')}
             </CardDescription>
           </div>
 
@@ -650,7 +650,7 @@ export const WordchainPage: React.FC = () => {
                 )}
               >
                 <span>{t('wordchain.resetNormalOnly')}</span>
-                <span className="text-[10px] font-normal">(1 Ký Tự)</span>
+                <span className="text-[10px] font-normal">{t('wordchain.oneCharBadge')}</span>
               </button>
 
               <button
@@ -664,7 +664,7 @@ export const WordchainPage: React.FC = () => {
                 )}
               >
                 <span>{t('wordchain.resetHardOnly')}</span>
-                <span className="text-[10px] font-normal">(2 Ký Tự)</span>
+                <span className="text-[10px] font-normal">{t('wordchain.twoCharsBadge')}</span>
               </button>
 
               <button
@@ -678,7 +678,7 @@ export const WordchainPage: React.FC = () => {
                 )}
               >
                 <span>{t('wordchain.resetBoth')}</span>
-                <span className="text-[10px] font-normal">(Toàn Bộ)</span>
+                <span className="text-[10px] font-normal">{t('wordchain.allModesBadge')}</span>
               </button>
             </div>
           </div>

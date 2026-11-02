@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useI18n } from '../../i18n';
 import { ToastProvider, useToast } from '../ui/Toast';
 import { AmbientBackground } from './AmbientBackground';
 import { Navbar } from './Navbar';
@@ -20,6 +21,7 @@ const DashboardContent: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useI18n();
 
   // Reactive URL <-> State Sync
   useEffect(() => {
@@ -41,8 +43,8 @@ const DashboardContent: React.FC = () => {
           }
         } else {
           toast.error(
-            'Server không khả dụng',
-            'Bạn không có quyền truy cập hoặc server này không tồn tại.',
+            t('common.serverUnavailable'),
+            t('common.serverUnavailableDesc'),
           );
           navigate('/dashboard', { replace: true });
         }
@@ -85,6 +87,7 @@ const DashboardContent: React.FC = () => {
 
 export const DashboardLayout: React.FC = () => {
   const { user, loading } = useAuth();
+  const { t } = useI18n();
 
   if (loading) {
     return (
@@ -93,8 +96,8 @@ export const DashboardLayout: React.FC = () => {
         <div className="flex flex-col items-center gap-4 glass-panel p-8 rounded-3xl">
           <div className="w-10 h-10 border-4 border-discord-blurple border-t-transparent rounded-full animate-spin"></div>
           <div className="text-center">
-            <p className="text-sm font-semibold text-white">Đang tải Dashboard</p>
-            <p className="text-xs text-discord-muted mt-0.5">Xác thực phiên làm việc và đối soát server...</p>
+            <p className="text-sm font-semibold text-white">{t('common.loadingDashboard')}</p>
+            <p className="text-xs text-discord-muted mt-0.5">{t('common.authenticatingSession')}</p>
           </div>
         </div>
       </div>

@@ -102,7 +102,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({
       {/* Floating Toast Container (Responsive on mobile) */}
       <div
         role="region"
-        aria-label="Thông báo hệ thống"
+        aria-label="Notifications"
         className="fixed bottom-4 right-4 left-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 flex flex-col gap-2.5 sm:max-w-sm pointer-events-none"
       >
         {toasts.map((t) => (

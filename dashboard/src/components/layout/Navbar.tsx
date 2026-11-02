@@ -26,7 +26,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileSidebar }) => {
         <button
           onClick={onToggleMobileSidebar}
           className="lg:hidden p-2 rounded-xl text-discord-muted hover:text-white hover:bg-[#313338] transition"
-          aria-label="Mở menu điều hướng"
+          aria-label={t('nav.navigationMenu')}
         >
           <Menu className="w-5 h-5" />
         </button>

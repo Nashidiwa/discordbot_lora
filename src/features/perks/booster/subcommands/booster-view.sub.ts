@@ -90,6 +90,11 @@ export const execute: SubcommandExecutor = async (
       value: `**${perk.boostCount}** boost(s)`,
       inline: true,
     },
+    {
+      name: '📢 Cho Phép Mention',
+      value: perk.isMentionable ? '✅ Bật' : '❌ Tắt',
+      inline: true,
+    },
   );
 
   if (perk.status === 'GRACE_PERIOD' && perk.gracePeriodExpiresAt) {

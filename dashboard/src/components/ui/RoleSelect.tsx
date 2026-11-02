@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Search, X } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { useI18n } from '../../i18n';
 import { cn } from '../../lib/utils';
 import type { GuildRoleItem } from '../../types';
 
@@ -23,12 +24,14 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
   value,
   onChange,
   guildId,
-  placeholder = 'Chọn một vai trò...',
+  placeholder,
   hint,
   error,
   allowClear = true,
   disabled = false,
 }) => {
+  const { t } = useI18n();
+  const effectivePlaceholder = placeholder ?? t('common.selectRolePlaceholder');
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -207,7 +210,7 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
               ID: {value}
             </span>
           ) : (
-            <span className="text-discord-muted text-xs">{placeholder}</span>
+            <span className="text-discord-muted text-xs">{effectivePlaceholder}</span>
           )}
         </div>
 
@@ -220,7 +223,7 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
                 onChange(null);
               }}
               className="p-1 text-discord-muted hover:text-white rounded-lg transition"
-              title="Bỏ chọn"
+              title={t('common.deselect')}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -234,7 +237,7 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
         </div>
       </div>
 
-      {/* Portal Dropdown Menu: Nổi lên toàn màn hình, không bị overflow-hidden của Card cắt & không nhấp nháy từ (0, 0) */}
+      {/* Portal Dropdown Menu */}
       {isOpen &&
         coords.width > 0 &&
         createPortal(
@@ -259,7 +262,7 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
               <Search className="w-3.5 h-3.5 text-discord-muted absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Tìm kiếm vai trò..."
+                placeholder={t('common.searchRoles')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full bg-[#232428] border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-discord-muted outline-none focus:border-discord-blurple/60"
@@ -271,11 +274,11 @@ export const RoleSelect: React.FC<RoleSelectProps> = ({
             <div className="max-h-64 overflow-y-auto p-1.5 space-y-0.5">
               {isLoading ? (
                 <div className="p-4 text-center text-xs text-discord-muted">
-                  Đang tải danh sách vai trò...
+                  {t('common.loadingRoles')}
                 </div>
               ) : filteredRoles.length === 0 ? (
                 <div className="p-4 text-center text-xs text-discord-muted">
-                  Không tìm thấy vai trò nào phù hợp.
+                  {t('common.noRolesFound')}
                 </div>
               ) : (
                 filteredRoles.map((role) => {

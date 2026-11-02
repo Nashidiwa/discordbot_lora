@@ -64,6 +64,7 @@ export interface VoiceStatus {
 
 export interface BoosterConfig {
   guildId: string;
+  status: 'ACTIVE' | 'SUSPENDED' | 'DISABLED';
   gracePeriodDays: number;
   anchorRoleId: string | null;
   notificationChannelId: string | null;
@@ -80,6 +81,7 @@ export interface CustomRolePerk {
   roleColor: string | null;
   roleColor2: string | null;
   status: string;
+  isMentionable: boolean;
   isEquipped: boolean;
   gracePeriodExpiresAt: string | null;
   createdAt: string;
@@ -311,3 +313,79 @@ export interface WordChainOverviewData {
     totalUsedWords: number;
   };
 }
+
+// ==========================================
+// LANDMINE CHAT ENGINE (FEAT-08)
+// ==========================================
+
+export type LandmineAlgorithmType = 'STATIC' | 'DYNAMIC_CHAOS';
+export type LandmineScopeType = 'ALL' | 'WHITELIST' | 'BLACKLIST';
+export type LandmineSortType = 'count' | 'duration';
+
+export interface LandmineGuildConfig {
+  guildId: string;
+  forcedLocale: 'auto' | 'vi' | 'en';
+}
+
+export interface LandmineModule {
+  id: string;
+  guildId: string;
+  moduleKey: string;
+  isDefault: boolean;
+  isEnabled: boolean;
+  note: string | null;
+  algorithmType: LandmineAlgorithmType;
+  staticRate: number;
+  ratePercent: number;
+  punishmentDurationSeconds: number;
+  channelScopeType: LandmineScopeType;
+  channelIds: string[];
+  roleScopeType: LandmineScopeType;
+  roleIds: string[];
+  includeInServerLeaderboard: boolean;
+  autoDeleteNotification: boolean;
+  successMessage: string | null;
+  failedMessage: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LandmineConfigResponse {
+  config: LandmineGuildConfig;
+  modules: LandmineModule[];
+}
+
+export interface LandmineLeaderboardEntry {
+  userId: string;
+  totalSteps: number;
+  successCount: number;
+  failedCount: number;
+  totalTimeoutSeconds: number;
+}
+
+export interface LandmineLeaderboardResponse {
+  scope: string;
+  sortBy: LandmineSortType;
+  entries: LandmineLeaderboardEntry[];
+}
+
+export interface CreateLandmineModuleInput {
+  ratePercent: number;
+  durationSeconds: number;
+  note?: string;
+}
+
+export interface EditLandmineModuleInput {
+  ratePercent?: number;
+  durationSeconds?: number;
+  note?: string | null;
+  channelScopeType?: LandmineScopeType;
+  channelIds?: string[];
+  roleScopeType?: LandmineScopeType;
+  roleIds?: string[];
+  includeInServerLeaderboard?: boolean;
+  autoDeleteNotification?: boolean;
+  successMessage?: string | null;
+  failedMessage?: string | null;
+}
+

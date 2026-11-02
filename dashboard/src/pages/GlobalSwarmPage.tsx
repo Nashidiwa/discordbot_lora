@@ -79,15 +79,25 @@ export const GlobalSwarmPage: React.FC = () => {
         },
       ),
     onSuccess: (res) => {
+      const syncedNote = res.synced
+        ? t('swarm.metadataSynced')
+        : t('swarm.metadataNotAuthorized');
       if (res.level === 0) {
         toast.success(
-          'Hoàn tất thu hồi đặc quyền (Global)',
-          `Đã xóa đặc quyền Linked Role The Swarm của user ${targetUserId}. ${res.synced ? '(Đã gửi cập nhật metadata)' : '(User chưa ủy quyền OAuth2, bỏ qua cập nhật metadata)'}`,
+          t('swarm.revokedGlobalSuccess'),
+          t('swarm.revokedGlobalSuccessDesc', {
+            userId: targetUserId,
+            syncedNote,
+          }),
         );
       } else {
         toast.success(
-          'Hoàn tất cập nhật đặc quyền (Global)',
-          `Đã ghi lại Level ${res.level} cho user ${targetUserId}. ${res.synced ? '(Đã gửi cập nhật metadata)' : '(User chưa ủy quyền OAuth2, bỏ qua cập nhật metadata)'}`,
+          t('swarm.updatedGlobalSuccess'),
+          t('swarm.updatedGlobalSuccessDesc', {
+            level: res.level,
+            userId: targetUserId,
+            syncedNote,
+          }),
         );
       }
       setIsUpdateModalOpen(false);
@@ -96,7 +106,7 @@ export const GlobalSwarmPage: React.FC = () => {
         queryKey: ['swarm-global-overview'],
       });
     },
-    onError: (err: Error) => toast.error('Cập nhật bản ghi đặc quyền thất bại', err.message),
+    onError: (err: Error) => toast.error(t('swarm.updatedGlobalError'), err.message),
   });
 
   // Mutation thêm Operator mới (Bot Owner Only)
@@ -108,15 +118,15 @@ export const GlobalSwarmPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Hoàn tất ủy quyền',
-        `Đã cấp quyền hạn Delegated Operator cho user ${newOperatorId}.`,
+        t('globalSwarm.addOperatorSuccess'),
+        t('globalSwarm.addOperatorSuccessDesc', { userId: newOperatorId }),
       );
       setNewOperatorId('');
       void queryClient.invalidateQueries({
         queryKey: ['swarm-global-overview'],
       });
     },
-    onError: (err: Error) => toast.error('Cập nhật Delegated Operator thất bại', err.message),
+    onError: (err: Error) => toast.error(t('globalSwarm.addOperatorError'), err.message),
   });
 
   // Mutation xóa Operator (Bot Owner Only)
@@ -127,15 +137,15 @@ export const GlobalSwarmPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Thu hồi ủy quyền',
-        'Đã gỡ bỏ quyền hạn Delegated Operator thành công.',
+        t('globalSwarm.revokeOperatorSuccess'),
+        t('globalSwarm.revokeOperatorSuccessDesc'),
       );
       void queryClient.invalidateQueries({
         queryKey: ['swarm-global-overview'],
       });
     },
     onError: (err: Error) =>
-      toast.error('Thu hồi Delegated Operator thất bại', err.message),
+      toast.error(t('globalSwarm.revokeOperatorError'), err.message),
   });
 
   const handleCopyVerificationUrl = () => {
@@ -143,8 +153,8 @@ export const GlobalSwarmPage: React.FC = () => {
     const url = `${origin}/auth/discord/login`;
     void navigator.clipboard.writeText(url);
     toast.success(
-      'Đã sao chép URL ủy quyền OAuth2',
-      'Truy cập để ủy quyền OAuth2 cho phép bot cập nhật Application metadata.',
+      t('swarm.copyOAuthSuccess'),
+      t('swarm.copyOAuthSuccessDesc'),
     );
   };
 

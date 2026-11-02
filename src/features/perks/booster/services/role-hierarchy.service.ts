@@ -70,6 +70,7 @@ export class RoleHierarchyService {
     name: string,
     colorHex?: string,
     anchorRoleId?: string | null,
+    mentionable?: boolean,
   ): Promise<Role> {
     if (guild.roles.cache.size >= 250) {
       throw new AppError(
@@ -103,6 +104,7 @@ export class RoleHierarchyService {
     const role = await guild.roles.create({
       name,
       colors: parsedColor ? { primaryColor: parsedColor } : undefined,
+      mentionable: mentionable ?? false,
       reason: `Lora Perks: Booster Custom Role created for ${member.user.tag}`,
     });
 

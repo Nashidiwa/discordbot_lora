@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useI18n } from '../../i18n';
 import { cn } from '../../lib/utils';
 
 export interface ModalProps {
@@ -21,6 +22,7 @@ export const Modal: React.FC<ModalProps> = ({
   footer,
   maxWidth = 'md',
 }) => {
+  const { t } = useI18n();
   // ESC key listener & body scroll lock
   useEffect(() => {
     if (!isOpen) return;
@@ -80,7 +82,7 @@ export const Modal: React.FC<ModalProps> = ({
             <button
               onClick={onClose}
               className="p-1 rounded-lg text-discord-muted hover:text-white hover:bg-[#313338] transition-colors"
-              title="Đóng"
+              title={t('common.close')}
             >
               <X className="w-5 h-5" />
             </button>

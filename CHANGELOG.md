@@ -6,6 +6,75 @@ Tất cả các thay đổi đáng chú ý của dự án **Lora** (`discordbot_
 
 ---
 
+## [0.9.0] - 2026-11-03 [FEAT-08: Landmine Chat Engine - Native Discord Implementation]
+
+### Đã thêm & Cải tiến (Added & Enhanced)
+- **Hệ Thống Mìn Chat & Bẫy Kênh Ngẫu Nhiên (`FEAT-08: Landmine Chat Engine`):**
+  - **Kiến trúc In-Memory Cache hiệu năng cao:** Loại bỏ 100% độ trễ I/O và nghẽn cơ sở dữ liệu trên sự kiện `MessageCreate` bằng bộ nhớ RAM (`Map<guildId, GuildLandmineCache>`), tự động prime khi bot khởi động (`ClientReady`) và write-through đồng bộ khi cập nhật cấu hình.
+  - **Cơ chế đánh giá First-Hit Stop:** Hỗ trợ tối đa 10 module mìn độc lập per-server. Thứ tự kiểm tra ưu tiên tuần tự từ M1 đến M10; ngay khi trúng mìn sẽ ngắt vòng lặp ngay lập tức, triệt tiêu nguy cơ 1 tin nhắn dẫm nhiều mìn cùng lúc.
+  - **Module 1 (M1 - Landmine Foundation):** Module mặc định với thuật toán ngẫu nhiên tĩnh 0.8%, thời gian cấm ngôn 1 phút, cho phép cấu hình phạm vi kênh/role và bật/tắt tính điểm bảng xếp hạng.
+  - **Module 2 (M2 - Landmine Advanced):** Thuật toán xổ số ngẫu nhiên động đa tầng (Dynamic Chaos Lottery: 50% activation, Rate Multiplier [1, 2, 3], 3 tầng xác suất không đè 0.1%/0.3%/1.0%, Punishment Multiplier [1, 2, 3] nhân với base duration 5m/2m/1m).
+  - **Module Tùy Chỉnh (M3 - M10):** Cho phép Quản trị viên tự do tạo mới và chỉnh sửa tỉ lệ (0.01% - 100%), thời gian phạt (5s - 28 ngày), ghi chú phân biệt, và nội dung thông báo nổ/thất bại tùy biến.
+  - **Bộ lọc phạm vi Kênh & Vai trò (Scope Filters):** Hỗ trợ 3 chế độ linh hoạt `ALL` (toàn bộ), `WHITELIST` (chỉ áp dụng), và `BLACKLIST` (bỏ qua / miễn nhiễm).
+  - **Xử lý xung đột phân cấp Discord API (403 Hierarchy):** Khi bot gặp lỗi phân cấp quyền (thành viên có vai trò cao hơn bot hoặc Chủ Server), bot tự động chuyển đổi thành "Aura cao quá mìn không dám nổ" (nổ thất bại) và vinh danh chỉ số phòng thủ này trên Bảng Xếp Hạng.
+  - **Trải nghiệm người dùng văn minh & Zero DM Spam:** Tuyệt đối không gửi DM làm phiền khi bị timeout; hỗ trợ cờ tự động xóa thông báo nổ sau 15 giây cố định để giữ sạch kênh chat.
+  - **Bảng Xếp Hạng Đa Chiều (Leaderboard Engine):** Hỗ trợ xem bảng xếp hạng theo từng module hoặc tổng hợp toàn server (chỉ gom các module bật `includeInServerLeaderboard`); hỗ trợ 2 chế độ sắp xếp `sort: count` (số lần dẫm) và `sort: duration` (thời gian phạt tích lũy).
+  - **Đa ngôn ngữ linh hoạt (i18n):** Hỗ trợ thiết lập ngôn ngữ mặc định server (`auto`, `vi`, `en`) qua `/landmine set_locale`. Các thông báo mặc định tự động phân giải song ngữ, các thông báo tùy chỉnh giữ nguyên vẹn.
+  - **Bảo mật phân quyền nghiêm ngặt:** Toàn bộ lệnh cấu hình yêu cầu cờ quyền `PermissionFlagsBits.Administrator` nguyên bản của Discord.
+- **Hệ Thống Lệnh Slash `/landmine` (10 Subcommands):**
+  - `/landmine list`: Liệt kê trực quan trạng thái 10 module mìn của server.
+  - `/landmine leaderboard`: Tra cứu Bảng Xếp Hạng dẫm mìn đa chiều.
+  - `/landmine toggle`: Bật/tắt module và toggle tính điểm BXH toàn server.
+  - `/landmine create`: Tạo module tùy chỉnh vào slot trống (M3 - M10).
+  - `/landmine delete`: Xóa module tùy chỉnh (bảo vệ an toàn M1 & M2).
+  - `/landmine edit`: Chỉnh sửa tham số module (rate, punishment, note, messages).
+  - `/landmine channels`: Cấu hình danh sách kênh whitelist/blacklist.
+  - `/landmine roles`: Cấu hình danh sách vai trò whitelist/blacklist.
+  - `/landmine set_locale`: Thiết lập ngôn ngữ thông báo mặc định.
+  - `/landmine reset`: Reset thống kê leaderboard hoặc khôi phục cấu hình mặc định.
+- **Mở Rộng Schema Database Prisma:**
+  - Bổ sung 3 bảng `LandmineGuildConfig`, `LandmineModule`, `LandmineRecord` với quan hệ cascade delete an toàn.
+- **Phân Hệ Web Management Dashboard (`WEB-09: Landmine Chat Engine Dashboard & REST API`):**
+  - **Fastify REST API (`src/features/landmine/landmine.route.ts`):** Xây dựng 8 endpoints chuẩn RESTful với Zod validation & RBAC guards:
+    - `GET /api/guilds/:guildId/landmine/config`: Trả về thiết lập `forcedLocale` và danh sách DTO của 10 module mìn.
+    - `PUT /api/guilds/:guildId/landmine/config`: Cập nhật ngôn ngữ ép buộc của guild (`auto`, `vi`, `en`).
+    - `POST /api/guilds/:guildId/landmine/modules`: Khởi tạo custom module mới vào slot trống đầu tiên (M3 - M10).
+    - `PUT /api/guilds/:guildId/landmine/modules/:moduleKey`: Cập nhật cấu hình chi tiết, tỉ lệ, thời gian phạt, channel/role scope và tin nhắn tùy biến.
+    - `POST /api/guilds/:guildId/landmine/modules/:moduleKey/toggle`: Bật/tắt module tức thì.
+    - `DELETE /api/guilds/:guildId/landmine/modules/:moduleKey`: Xóa custom module an toàn (chặn M1 và M2).
+    - `GET /api/guilds/:guildId/landmine/leaderboard`: Lấy BXH đa chiều (toàn server hoặc theo module, sort `count` hoặc `duration`).
+    - `POST /api/guilds/:guildId/landmine/reset`: Xóa dữ liệu thống kê dẫm mìn theo phạm vi yêu cầu.
+  - **Giao Diện Quản Trị Web (`dashboard/src/pages/LandminePage.tsx`):**
+    - Thiết kế Dark Cybernetic / Bento Grid hiện đại theo tiêu chuẩn dự án.
+    - Header & General Settings: Huy hiệu `v0.9.0`, bộ chọn `forcedLocale` trực quan và nút xóa nhanh BXH.
+    - 3 Thẻ KPI Bento: Tổng module đang hoạt động, Tổng lượt nổ mìn, và Tổng thời gian phạt tích lũy.
+    - Tab 1 - Quản lý 10 Slots Module: Trực quan hóa M1 (Foundation - cố định 0.8% / 60s), M2 (Advanced - Dynamic Chaos Lottery), M3 - M10 (Custom Modules), và các thẻ Slot Trống kèm nút tạo mới.
+    - Modal Cấu Hình Đầy Đủ: Tích hợp chọn Channel/Role đa kênh (Scope Whitelist/Blacklist/All) và bộ soạn tin nhắn nổ mìn với nút chèn nhanh `{user}`.
+    - Tab 2 - Bảng Xếp Hạng Trực Quan: Vinh danh Top 1 🥇, Top 2 🥈, Top 3 🥉, danh tính thành viên qua `UserDisplay`, chỉ số nổ thành công, kháng mìn Aura cao và thời lượng timeout.
+  - **Bản Địa Hóa Song Ngữ Hoàn Chỉnh (`i18n`):** Cung cấp 100% bản dịch chuẩn xác trong `vi.ts` và `en.ts` với đầy đủ type definitions trong `types.ts`.
+
+
+## [0.8.7] - 2026-11-02 [FEAT-01: Booster System Control, Mentionable Role & State Preservation]
+
+### Đã thêm & Cải tiến (Added & Enhanced)
+- **Điều Khiển Trạng Thái Hệ Thống Server Booster (`/perk server_booster toggle`):**
+  - Thêm 3 chế độ vận hành: `resume` (khôi phục hoạt động), `suspend` (đóng băng hệ thống), và `purge` (tắt vĩnh viễn và xóa sạch role).
+  - Tùy chọn `clear_roles` khi suspend: Tạm thời xóa Custom Role trên Discord để giải phóng giới hạn 250 role của máy chủ; cấu hình cá nhân của thành viên vẫn được bảo lưu an toàn trong cơ sở dữ liệu.
+  - Quy trình bảo vệ 2 nút bấm khi Purge: Yêu cầu Quản trị viên xác nhận thao tác qua nút bấm tương tác an toàn (`Xác Nhận Xóa Sạch` / `Hủy Bỏ`).
+  - **Bảo lưu số lượt boost 100%:** Tuyệt đối không xóa dữ liệu số lượt boost (`boostCount`) của thành viên; Gateway events tiếp tục ghi nhận boost bình thường ngay cả khi hệ thống đang suspend hay purge.
+- **Tùy Chọn Quyền Mention Cho Custom Role:**
+  - Bổ sung tham số `mentionable: boolean` vào lệnh `/perk server_booster role_config`, cho phép thành viên tự bật hoặc tắt khả năng cho phép người khác tag (`@Role`) Custom Role của mình.
+  - Đồng bộ hiển thị trạng thái Mentionable trong `/perk server_booster role_view`.
+- **Mở Rộng Schema Database & REST API:**
+  - Bổ sung `status String @default("ACTIVE")` vào `BoosterPerkConfig` và `isMentionable Boolean @default(false)` vào `CustomRolePerk`.
+  - Cập nhật endpoint `PUT /api/guilds/:guildId/perks/booster/config` sẵn sàng tiếp nhận trường `status` phục vụ Web Dashboard.
+  - Bổ sung endpoint thực thi action hệ thống `POST /api/guilds/:guildId/perks/booster/system-action` nhận `{ action: 'resume' | 'suspend' | 'purge', clearRoles?: boolean }`.
+- **Nâng Cấp Web Management Dashboard (`dashboard/`):**
+  - Thanh trạng thái hệ thống (System Status Banner) tại đầu tab Server Booster với 3 trạng thái `ACTIVE` (🟢), `SUSPENDED` (🟡), `DISABLED` (🔴).
+  - Tích hợp cụm nút thao tác: "Khôi Phục" (Resume), "Tạm Ngưng" (Suspend kèm Modal chọn `clearRoles`), và "Xóa Sạch & Tắt" (Purge kèm Modal cảnh báo hủy bỏ an toàn).
+  - Cột và Badge trạng thái Mention (`Cho Phép Mention`: `Bật` / `Tắt`) trên cả Desktop Table và Mobile Card Stack.
+  - Bản địa hóa song ngữ (`vi` / `en`) toàn diện cho các nhãn, modal và thông báo trạng thái mới.
+
 ## [0.8.6] - 2026-11-01 [TRACK-I18N/UX: Full Bilingual Dashboard, Role Hierarchy & Wordchain Fix]
 
 ### Đã thêm & Cải tiến (Added & Enhanced)

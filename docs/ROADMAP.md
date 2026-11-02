@@ -7,7 +7,7 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
 
 ## 📊 Bảng Điều Phối Tổng Thể (Executive Status)
 
-* **Phiên bản hiện tại:** `v0.8.5`
+* **Phiên bản hiện tại:** `v0.9.0`
 * **Tiêu điểm tiếp theo:** `Đóng gói phát hành bản cập nhật & Kiểm thử thực chiến (Release Packaging & Production Readiness)`
 * **Quy ước trạng thái:**
   * `[ ]` Chưa thực hiện (Backlog)
@@ -20,11 +20,13 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
 
 > Mỗi tính năng được phát triển độc lập theo mô hình Vertical Slice. Khi hoàn thành, tài liệu chi tiết được lưu trữ tại `README.md` nội bộ của chính tính năng đó.
 
-- [x] **FEAT-01: Perks Management - Server Booster** `(v0.2.9)`
+- [x] **FEAT-01: Perks Management - Server Booster** `(v0.2.10 / v0.8.7)`
   > 📖 *Tài liệu đặc tả kiến trúc, cẩm nang vận hành và nhật ký phát triển chi tiết:* [`src/features/perks/booster/README.md`](../src/features/perks/booster/README.md)
   - Tự động hóa Custom Role đơn sắc và Gradient 2 màu qua Discord API `EnhancedRoleColors`.
+  - Tùy chọn quyền cho phép `@mention` Custom Role cá nhân qua `/perk server_booster role_config`.
+  - Điều khiển trạng thái hệ thống `/perk server_booster toggle` (`resume`, `suspend` kèm giải phóng role list, `purge` xóa sạch an toàn 2 nút bấm), bảo lưu 100% dữ liệu số lượt boost.
   - Nhận diện Booster hợp nhất (`member.premiumSince` + `boostCount > 0`).
-  - Vòng đời ân hạn 7 ngày (Grace Period) và Cron Job tự động thu hồi role hết hạn.
+  - Vòng đời ân hạn 21 ngày (Grace Period) và Cron Job tự động thu hồi role hết hạn.
   - Bộ lệnh Slash `/perk list`, `/perk status`, `/perk server_booster *`.
   - Quy trình quản trị unboost tương tác (Interactive Unboost Workflow) với 2 nút bấm xác nhận.
 
@@ -67,6 +69,19 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
   - Cây thẩm quyền 4 tầng: Bot Owner (Tier 0) $\rightarrow$ Server Owner (`guild.ownerId`, Tier 1) $\rightarrow$ Co-Owner (Tier 2) $\rightarrow$ Trusted Admin (Tier 3) $\rightarrow$ Custom Grants (Tier 4).
   - Ma trận cờ quyền bitfield linh hoạt (`VIEW_DASHBOARD`, `MANAGE_PERMITS`, `MANAGE_SETTINGS`, `MANAGE_PERKS`, `MANAGE_VOICE_KEEPER`, `MANAGE_WORDCHAIN`, `MANAGE_SWARM`).
   - Bộ lệnh Slash Discord `/permit` (`co_owner`, `trusted_admin`, `grant`, `revoke`, `list`) song song với giao diện Web Dashboard.
+
+- [x] **FEAT-08: Landmine Chat Engine (Mìn Chat / Bẫy Kênh)** `(v0.9.0)`
+  > 📖 *Tài liệu đặc tả kiến trúc & cẩm nang vận hành:* [`src/features/landmine/README.md`](../src/features/landmine/README.md) | *Đặc tả yêu cầu (FRD):* [`src/features/landmine/FRD.md`](../src/features/landmine/FRD.md)
+  - Hệ thống gài mìn chat ngẫu nhiên tối đa 10 module độc lập per-server với cơ chế First-Hit Stop.
+  - Tối ưu hiệu năng tin nhắn cực đại qua bộ nhớ In-Memory Cache và write-through đồng bộ khi cập nhật cấu hình.
+  - Module 1 (Landmine Foundation): Tỉ lệ ngẫu nhiên tĩnh 0.8%, timeout 1 phút.
+  - Module 2 (Landmine Advanced): Thuật toán xổ số ngẫu nhiên động đa tầng (Dynamic Chaos Lottery: 50% activation, RM [1,2,3], 3 tầng xác suất không đè, PM [1,2,3]).
+  - Module 3 - 10: Tùy biến linh hoạt tỉ lệ (0.01% - 100%), thời lượng phạt (5s - 28 ngày), ghi chú, và thông báo nổ/thất bại riêng.
+  - Bộ lọc phạm vi Kênh và Vai trò linh hoạt: `ALL`, `WHITELIST` (áp dụng riêng), `BLACKLIST` (bỏ qua / miễn nhiễm).
+  - Xử lý xung đột phân cấp quyền Discord API (403): Tự động chuyển đổi thành "Aura cao quá mìn không dám nổ" và ghi nhận thống kê.
+  - Bảng Xếp Hạng đa chiều (Server & Per-Module) hỗ trợ sắp xếp theo số lần dẫm (`count`) hoặc thời gian phạt (`duration`).
+  - Hỗ trợ đa ngôn ngữ linh hoạt (`auto`, `vi`, `en`) và cờ tự động xóa thông báo nổ sau 15 giây.
+  - Bộ lệnh Slash `/landmine *` 10 subcommands với bảo vệ quyền hạn `Administrator` tuyệt đối.
 
 - [ ] **FEAT-06: Server Moderation (Quản Trị Mở Rộng - Tùy Chọn)**
   - Các công cụ quản trị mở rộng: `/ban`, `/kick`, `/warn`, `/purge`.
@@ -113,6 +128,19 @@ Tài liệu được thiết kế tối giản, đóng vai trò **Executive Dash
   - **Bộ Chuyển Đổi Ngôn Ngữ (LanguageSwitcher):** Tích hợp công tắc chuyển ngôn ngữ trực quan trên Navbar và màn hình Login.
   - **Anchor Role Hierarchy Mặc Định:** Chuyển anchor role mặc định của Booster custom role về Integration Managed Role của bot.
   - **Tinh Chỉnh Bố Cục & Sửa Lỗi Leaderboard:** Đồng bộ subtitle, thanh ngăn mờ, badge các trang; sửa lỗi xếp hạng Karma trong Wordchain.
+- [x] **WEB-08: Booster System Control & Mentionable Roles** `(v0.8.7)`
+  - **Endpoint Hành Động Hệ Thống:** Bổ sung `POST /api/guilds/:guildId/perks/booster/system-action` phục vụ các thao tác `resume`, `suspend` (hỗ trợ `clearRoles`) và `purge`.
+  - **Thanh Điều Khiển Trạng Thái Hệ Thống:** Tích hợp banner trực quan với 3 trạng thái (`ACTIVE`, `SUSPENDED`, `DISABLED`), cụm nút thao tác ngữ cảnh và 2 Modal xác nhận chuyên biệt (`isSuspendModalOpen`, `isPurgeModalOpen`).
+  - **Hiển Thị Quyền Mention:** Bổ sung cột và badge nhận diện trạng thái `@mention` Custom Role (`Bật` / `Tắt`) trên cả chế độ bảng Desktop và card Mobile.
+  - **Bản Địa Hóa Toàn Diện:** Cung cấp từ điển song ngữ `vi`/`en` cho toàn bộ nhãn, modal và thông báo nghiệp vụ mới.
+- [x] **WEB-09: Landmine Chat Engine Dashboard & REST API** `(v0.9.0)`
+  - **Fastify REST API (`src/features/landmine/landmine.route.ts`):** 8 endpoints quản trị Landmine (config, modules CRUD, toggle, leaderboard, reset stats) tích hợp RBAC guards và Zod validation.
+  - **Giao Diện Quản Trị Landmine (`dashboard/src/pages/LandminePage.tsx`):**
+    - Bento Grid 10 Slots mìn per-server: M1 (Foundation - cố định 0.8% / 60s), M2 (Advanced - Dynamic Chaos Lottery), M3 - M10 (Custom Modules), và Empty Slots.
+    - Modal cấu hình chi tiết: Scope Kênh & Vai trò (Whitelist/Blacklist/All), tin nhắn tùy biến nổ mìn với nút chèn nhanh `{user}`.
+    - Tab Bảng Xếp Hạng trực quan: Bộ lọc đa chiều theo module và tiêu chí sắp xếp (`count` vs `duration`), Top 1/2/3 vinh danh, `UserDisplay` avatar.
+  - **Bản Địa Hóa Song Ngữ:** Chuẩn hóa từ điển `vi` và `en` 100% không còn hardcode text.
+
 
 ---
 

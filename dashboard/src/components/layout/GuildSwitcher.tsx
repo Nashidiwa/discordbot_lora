@@ -130,7 +130,7 @@ export const GuildSwitcher: React.FC = () => {
             <div className="p-2 border-b border-[#3f4147] bg-[#232428]/60">
               <div className="text-[10px] font-bold text-discord-muted uppercase tracking-wider px-2 py-1 flex items-center gap-1.5">
                 <Globe className="w-3 h-3 text-indigo-400" />
-                <span>Phạm Vi Cấp Ứng Dụng (Global)</span>
+                <span>{t('nav.globalScope')}</span>
               </div>
               <button
                 type="button"
@@ -190,7 +190,7 @@ export const GuildSwitcher: React.FC = () => {
           <div className="max-h-60 overflow-y-auto p-1.5 space-y-1">
             <div className="text-[10px] font-bold text-discord-muted uppercase tracking-wider px-2 py-1 flex items-center gap-1.5">
               <Server className="w-3 h-3" />
-              <span>Các Máy Chủ Của Bạn ({guilds.length})</span>
+              <span>{t('nav.yourServers')} ({guilds.length})</span>
             </div>
 
             {filteredGuilds.length === 0 ? (

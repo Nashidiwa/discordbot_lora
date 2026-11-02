@@ -13,6 +13,7 @@ import { logger } from '../../../../core/logger.js';
 import { db } from '../../../../shared/db/client.js';
 import { perksLocale } from '../../common/perks.locale.js';
 import {
+  BoosterSystemStatus,
   type ConfigCustomRoleResult,
   type CustomRoleConfigOptions,
   PerkStatus,
@@ -33,9 +34,29 @@ export class BoosterPerkService {
       update: {},
       create: {
         guildId,
+        status: BoosterSystemStatus.ACTIVE,
         gracePeriodDays: 21,
       },
     });
+  }
+
+  public async assertSystemActive(guildId: string): Promise<BoosterPerkConfig> {
+    const config = await this.getOrCreateConfig(guildId);
+    if (config.status === BoosterSystemStatus.SUSPENDED) {
+      throw new AppError(
+        perksLocale.vi.BOOSTER_PERK_SUSPENDED,
+        'BOOSTER_PERK_SUSPENDED',
+        true,
+      );
+    }
+    if (config.status === BoosterSystemStatus.DISABLED) {
+      throw new AppError(
+        perksLocale.vi.BOOSTER_PERK_DISABLED,
+        'BOOSTER_PERK_DISABLED',
+        true,
+      );
+    }
+    return config;
   }
 
   public async getPerk(
@@ -57,6 +78,8 @@ export class BoosterPerkService {
     guild: Guild,
     member: GuildMember,
   ): Promise<ClaimResult> {
+    await this.assertSystemActive(guild.id);
+
     const perk = await this.getPerk(guild.id, member.id);
     const isBooster = Boolean(
       member.premiumSince || (perk && perk.boostCount > 0),
@@ -148,6 +171,7 @@ export class BoosterPerkService {
       perk.roleName ?? member.displayName,
       perk.roleColor ?? undefined,
       config.anchorRoleId,
+      perk.isMentionable,
     );
 
     await db.customRolePerk.update({
@@ -172,6 +196,8 @@ export class BoosterPerkService {
     guild: Guild,
     member: GuildMember,
   ): Promise<{ roleId: string }> {
+    await this.assertSystemActive(guild.id);
+
     const perk = await this.getPerk(guild.id, member.id);
     if (!perk || !perk.roleId) {
       throw new AppError(
@@ -201,6 +227,8 @@ export class BoosterPerkService {
     member: GuildMember,
     options: CustomRoleConfigOptions,
   ): Promise<ConfigCustomRoleResult> {
+    await this.assertSystemActive(guild.id);
+
     const perk = await this.getPerk(guild.id, member.id);
     if (!perk || !perk.roleId) {
       throw new AppError(
@@ -283,9 +311,10 @@ export class BoosterPerkService {
       );
     }
 
-    // 3. Chuẩn bị payload theo cấu trúc colors mới của Discord.js 14.27+
+    // 3. Chuẩn bị payload theo cấu trúc colors và mentionable
     const editPayload: {
       name?: string;
+      mentionable?: boolean;
       colors?: {
         primaryColor: ReturnType<typeof roleHierarchyService.parseHexColor>;
         secondaryColor?: ReturnType<typeof roleHierarchyService.parseHexColor>;
@@ -296,7 +325,12 @@ export class BoosterPerkService {
       editPayload.name = options.name;
     }
 
-    const primaryHex = options.color1 ?? (options.color2 ? perk.roleColor : undefined);
+    if (options.mentionable !== undefined) {
+      editPayload.mentionable = options.mentionable;
+    }
+
+    const primaryHex =
+      options.color1 ?? (options.color2 ? perk.roleColor : undefined);
 
     if (options.color2 && primaryHex) {
       editPayload.colors = {
@@ -318,6 +352,9 @@ export class BoosterPerkService {
       where: { id: perk.id },
       data: {
         roleName: options.name ?? perk.roleName,
+        ...(options.mentionable !== undefined
+          ? { isMentionable: options.mentionable }
+          : {}),
         ...(options.color2 && primaryHex
           ? { roleColor: primaryHex, roleColor2: options.color2 }
           : options.color1
@@ -330,7 +367,152 @@ export class BoosterPerkService {
       roleName: updatedPerk.roleName,
       roleColor: updatedPerk.roleColor,
       roleColor2: updatedPerk.roleColor2,
+      isMentionable: updatedPerk.isMentionable,
     };
+  }
+
+  public async suspendSystem(
+    guild: Guild,
+    clearRoles: boolean,
+  ): Promise<{ clearedCount: number; keptRoles: boolean }> {
+    await db.boosterPerkConfig.upsert({
+      where: { guildId: guild.id },
+      update: { status: BoosterSystemStatus.SUSPENDED },
+      create: {
+        guildId: guild.id,
+        status: BoosterSystemStatus.SUSPENDED,
+        gracePeriodDays: 21,
+      },
+    });
+
+    let clearedCount = 0;
+    if (clearRoles) {
+      const perks = await db.customRolePerk.findMany({
+        where: {
+          guildId: guild.id,
+          perkType: PerkType.SERVER_BOOSTER,
+          roleId: { not: null },
+        },
+      });
+
+      for (const perk of perks) {
+        if (perk.roleId) {
+          const deleted = await roleHierarchyService.deleteBoosterRole(
+            guild,
+            perk.roleId,
+            'Lora Perks: System suspended with role clearing',
+          );
+          if (deleted) clearedCount++;
+        }
+      }
+
+      await db.customRolePerk.updateMany({
+        where: {
+          guildId: guild.id,
+          perkType: PerkType.SERVER_BOOSTER,
+        },
+        data: {
+          roleId: null,
+          isEquipped: false,
+          status: PerkStatus.SUSPENDED,
+        },
+      });
+    }
+
+    logger.info(
+      { guildId: guild.id, clearRoles, clearedCount },
+      'Booster perk system suspended',
+    );
+
+    return { clearedCount, keptRoles: !clearRoles };
+  }
+
+  public async resumeSystem(
+    guild: Guild,
+  ): Promise<{ restoredCount: number }> {
+    await db.boosterPerkConfig.upsert({
+      where: { guildId: guild.id },
+      update: { status: BoosterSystemStatus.ACTIVE },
+      create: {
+        guildId: guild.id,
+        status: BoosterSystemStatus.ACTIVE,
+        gracePeriodDays: 21,
+      },
+    });
+
+    const updateRes = await db.customRolePerk.updateMany({
+      where: {
+        guildId: guild.id,
+        perkType: PerkType.SERVER_BOOSTER,
+        status: PerkStatus.SUSPENDED,
+      },
+      data: {
+        status: PerkStatus.ACTIVE,
+      },
+    });
+
+    logger.info({ guildId: guild.id }, 'Booster perk system resumed to ACTIVE');
+
+    return { restoredCount: updateRes.count };
+  }
+
+  public async purgeSystem(
+    guild: Guild,
+  ): Promise<{ deletedCount: number }> {
+    await db.boosterPerkConfig.upsert({
+      where: { guildId: guild.id },
+      update: { status: BoosterSystemStatus.DISABLED },
+      create: {
+        guildId: guild.id,
+        status: BoosterSystemStatus.DISABLED,
+        gracePeriodDays: 21,
+      },
+    });
+
+    const perks = await db.customRolePerk.findMany({
+      where: {
+        guildId: guild.id,
+        perkType: PerkType.SERVER_BOOSTER,
+        roleId: { not: null },
+      },
+    });
+
+    let deletedCount = 0;
+    for (const perk of perks) {
+      if (perk.roleId) {
+        const deleted = await roleHierarchyService.deleteBoosterRole(
+          guild,
+          perk.roleId,
+          'Lora Perks: System permanently disabled and purged',
+        );
+        if (deleted) deletedCount++;
+      }
+    }
+
+    // Reset role fields but keep boostCount intact!
+    await db.customRolePerk.updateMany({
+      where: {
+        guildId: guild.id,
+        perkType: PerkType.SERVER_BOOSTER,
+      },
+      data: {
+        roleId: null,
+        roleName: null,
+        roleColor: null,
+        roleColor2: null,
+        isMentionable: false,
+        isEquipped: false,
+        status: PerkStatus.REVOKED,
+        gracePeriodExpiresAt: null,
+      },
+    });
+
+    logger.warn(
+      { guildId: guild.id, deletedCount },
+      'Booster perk system permanently disabled and purged (boost count preserved)',
+    );
+
+    return { deletedCount };
   }
 
   public async handleUnboost(guildId: string, userId: string): Promise<void> {
@@ -510,6 +692,11 @@ export class BoosterPerkService {
 
     for (const perk of expiredPerks) {
       try {
+        const config = await this.getOrCreateConfig(perk.guildId);
+        if (config.status !== BoosterSystemStatus.ACTIVE) {
+          continue;
+        }
+
         const guild =
           client.guilds.cache.get(perk.guildId) ??
           (await client.guilds.fetch(perk.guildId).catch(() => null));

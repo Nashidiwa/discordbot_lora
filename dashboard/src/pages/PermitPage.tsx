@@ -39,51 +39,65 @@ const PERMIT_FLAGS = [
     flag: 1 << 0,
     label: 'View Dashboard',
     hex: '0x01',
-    desc: 'Cho phép đăng nhập và xem cấu hình của server trên web dashboard.',
   },
   {
     key: 'MANAGE_PERMITS',
     flag: 1 << 1,
     label: 'Permit Management',
     hex: '0x02',
-    desc: '(Quyền nhạy cảm) Bổ nhiệm/thu hồi Co-Owner, Trusted Admin và Custom Grants.',
   },
   {
     key: 'MANAGE_SETTINGS',
     flag: 1 << 2,
     label: 'Server Settings',
     hex: '0x04',
-    desc: 'Điều chỉnh các cài đặt chung và channel thông báo.',
   },
   {
     key: 'MANAGE_PERKS',
     flag: 1 << 3,
     label: 'Perks Management',
     hex: '0x08',
-    desc: 'Quản lý tất cả perks dành cho thành viên server.',
   },
   {
     key: 'MANAGE_VOICE_KEEPER',
     flag: 1 << 4,
     label: 'Voice Keeper Management',
     hex: '0x10',
-    desc: 'Chọn Voice Channel, Reconnect và đổi trạng thái Voice Keeper.',
   },
   {
     key: 'MANAGE_WORDCHAIN',
     flag: 1 << 5,
     label: 'Word Chain Management',
     hex: '0x20',
-    desc: 'Quản lý và cấu hình Word Chain của server.',
   },
   {
     key: 'MANAGE_SWARM',
     flag: 1 << 6,
     label: 'View Linked Role The Swarm',
     hex: '0x40',
-    desc: 'Xem trạng thái tính năng Linked Role The Swarm trong server.',
   },
 ];
+
+const getFlagDesc = (key: string, t: ReturnType<typeof useI18n>['t']) => {
+  switch (key) {
+    case 'VIEW_DASHBOARD':
+      return t('permits.flagDescViewDashboard');
+    case 'MANAGE_PERMITS':
+      return t('permits.flagDescManagePermits');
+    case 'MANAGE_SETTINGS':
+      return t('permits.flagDescManageSettings');
+    case 'MANAGE_PERKS':
+      return t('permits.flagDescManagePerks');
+    case 'MANAGE_VOICE_KEEPER':
+      return t('permits.flagDescManageVoiceKeeper');
+    case 'MANAGE_WORDCHAIN':
+      return t('permits.flagDescManageWordchain');
+    case 'MANAGE_SWARM':
+      return t('permits.flagDescManageSwarm');
+    default:
+      return '';
+  }
+};
 
 export const PermitPage: React.FC = () => {
   const { guildId: paramGuildId } = useParams<{ guildId: string }>();
@@ -162,13 +176,13 @@ export const PermitPage: React.FC = () => {
         body: JSON.stringify(payload),
       }),
     onSuccess: () => {
-      toast.success('Hoàn tất cấp quyền', 'Danh sách Permit đã được cập nhật.');
+      toast.success(t('permits.grantSuccess'), t('permits.grantSuccessDesc'));
       setNewCoOwnerUserId('');
       setTrustedTargetId('');
       setCustomTargetId('');
       void queryClient.invalidateQueries({ queryKey: ['guild-permits', guildId] });
     },
-    onError: (err: Error) => toast.error('Cấp quyền thất bại', err.message),
+    onError: (err: Error) => toast.error(t('permits.grantError'), err.message),
   });
 
   const revokeMutation = useMutation({
@@ -178,17 +192,17 @@ export const PermitPage: React.FC = () => {
         body: JSON.stringify(payload),
       }),
     onSuccess: () => {
-      toast.warning('Đã thu hồi quyền', 'Quyền hạn của mục tiêu đã bị thu hồi.');
+      toast.warning(t('permits.revokeSuccess'), t('permits.revokeSuccessDesc'));
       setRevokeTarget(null);
       void queryClient.invalidateQueries({ queryKey: ['guild-permits', guildId] });
     },
-    onError: (err: Error) => toast.error('Thu hồi thất bại', err.message),
+    onError: (err: Error) => toast.error(t('permits.revokeError'), err.message),
   });
 
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý Permit.
+        {t('common.pleaseSelectServerDesc')}
       </div>
     );
   }
@@ -673,7 +687,7 @@ export const PermitPage: React.FC = () => {
                             </span>
                           </div>
                           <p className="text-[11px] text-discord-muted leading-tight">
-                            {f.desc}
+                            {getFlagDesc(f.key, t)}
                           </p>
                         </div>
                       </div>
@@ -808,7 +822,7 @@ export const PermitPage: React.FC = () => {
       >
         <div className="space-y-2 text-xs text-discord-muted">
           <p>
-            Mục tiêu: <strong className="text-white font-mono">{revokeTarget?.targetId}</strong> ({revokeTarget?.targetType})
+            {t('permits.targetLabel')}: <strong className="text-white font-mono">{revokeTarget?.targetId}</strong> ({revokeTarget?.targetType})
           </p>
         </div>
       </Modal>

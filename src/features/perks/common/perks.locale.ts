@@ -31,5 +31,25 @@ export const perksLocale = {
       'Đã cập nhật số lượt boost của {user} thành **{count}** lượt.',
     SERVER_LACKS_ENHANCED_ROLE_COLORS:
       'Yêu cầu bị từ chối: Server hiện chưa kích hoạt Enhanced Role Styles. Do đó server chưa thể áp dụng Custom Role 2 màu (gradient style).',
+    BOOSTER_PERK_SUSPENDED:
+      'Hệ thống Server Booster Perk hiện đang tạm ngưng hoạt động (SUSPENDED). Mọi thao tác tùy chỉnh tạm thời bị khóa.',
+    BOOSTER_PERK_DISABLED:
+      'Tính năng Server Booster Perk hiện đang bị tắt trên máy chủ này.',
+    BOOSTER_RESUME_SUCCESS:
+      'Đã khôi phục hoạt động cho hệ thống Server Booster Perk thành công! Các thành viên có thể tiếp tục nhận và tùy chỉnh Custom Role.',
+    BOOSTER_SUSPEND_SUCCESS_KEEP:
+      'Đã tạm ngưng (đóng băng) hệ thống Server Booster Perk. Các Custom Role trên Discord được giữ nguyên; mọi thao tác tạo mới/chỉnh sửa của thành viên tạm thời bị khóa. Hệ thống vẫn tiếp tục theo dõi trạng thái boost.',
+    BOOSTER_SUSPEND_SUCCESS_CLEAR:
+      'Đã tạm ngưng (đóng băng) hệ thống Server Booster Perk. Đã thu hồi và xóa **{count}** Custom Role trên Discord để giải phóng danh sách role. Cấu hình cá nhân của thành viên vẫn được bảo lưu an toàn trong Database.',
+    BOOSTER_PURGE_CONFIRM_TITLE:
+      '⚠️ Xác Nhận Xóa Sạch & Tắt Vĩnh Viễn Server Booster Perk',
+    BOOSTER_PURGE_CONFIRM_DESC:
+      'Bạn đang thực hiện thao tác nghiêm trọng: **Xóa sạch toàn bộ Custom Role** của Server Booster và tắt tính năng trên máy chủ này.\n\n• Toàn bộ Custom Role trên server Discord sẽ bị xóa vĩnh viễn.\n• Toàn bộ cấu hình role cá nhân sẽ bị hủy bỏ.\n• **Dữ liệu số lượt boost của thành viên vẫn được bảo lưu an toàn.**\n\nBạn có chắc chắn muốn thực hiện?',
+    BOOSTER_PURGE_SUCCESS:
+      'Đã tắt vĩnh viễn tính năng Server Booster Perk và xóa thành công **{count}** Custom Role trên server. Trạng thái số lượt boost của thành viên vẫn được bảo lưu.',
+    BOOSTER_PURGE_CANCELLED:
+      'Đã hủy bỏ thao tác xóa sạch Server Booster Perk.',
+    MENTIONABLE_STATUS_ON: 'Bật',
+    MENTIONABLE_STATUS_OFF: 'Tắt',
   },
 } as const;

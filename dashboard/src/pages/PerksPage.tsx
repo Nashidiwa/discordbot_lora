@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  AlertTriangle,
+  CheckCircle2,
   Clock,
   Coins,
   Crown,
@@ -11,11 +13,15 @@ import {
   Flame,
   Gift,
   History,
+  Pause,
+  Play,
   PlusCircle,
   RotateCcw,
   Save,
   Search,
+  ShieldAlert,
   Sparkles,
+  Trash2,
   Zap,
 } from 'lucide-react';
 import { apiFetch } from '../api/client';
@@ -81,6 +87,9 @@ export const PerksPage: React.FC = () => {
   const [boosterSearch, setBoosterSearch] = useState<string>('');
   const [selectedRoleForPreview, setSelectedRoleForPreview] =
     useState<CustomRolePerk | null>(null);
+  const [isSuspendModalOpen, setIsSuspendModalOpen] = useState<boolean>(false);
+  const [isPurgeModalOpen, setIsPurgeModalOpen] = useState<boolean>(false);
+  const [clearRoles, setClearRoles] = useState<boolean>(false);
 
   // Form states cho Donator
   const [isDonatorEnabled, setIsDonatorEnabled] = useState<boolean>(false);
@@ -166,14 +175,44 @@ export const PerksPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Hoàn tất cập nhật',
-        'Cấu hình Perk Server Booster đã được lưu.',
+        t('perks.boosterConfigSuccess'),
+        t('perks.boosterConfigSuccessDesc'),
       );
       void queryClient.invalidateQueries({
         queryKey: ['perks-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Lưu cấu hình Perk Booster thất bại', err.message),
+    onError: (err: Error) => toast.error(t('perks.boosterConfigError'), err.message),
+  });
+
+  const systemActionMutation = useMutation({
+    mutationFn: (payload: {
+      action: 'resume' | 'suspend' | 'purge';
+      clearRoles?: boolean;
+    }) =>
+      apiFetch(`/api/guilds/${guildId}/perks/booster/system-action`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: (_, variables) => {
+      const msgMap: Record<string, string> = {
+        resume: t('perks.statusActive'),
+        suspend: t('perks.statusSuspended'),
+        purge: t('perks.statusDisabled'),
+      };
+      toast.success(
+        t('perks.systemActionSuccess'),
+        `${t('perks.systemStatusLabel')}: ${msgMap[variables.action] || variables.action}`,
+      );
+      setIsSuspendModalOpen(false);
+      setIsPurgeModalOpen(false);
+      setClearRoles(false);
+      void queryClient.invalidateQueries({
+        queryKey: ['perks-overview', guildId],
+      });
+    },
+    onError: (err: Error) =>
+      toast.error(t('perks.systemActionError'), err.message),
   });
 
   const updateDonatorMutation = useMutation({
@@ -190,14 +229,14 @@ export const PerksPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Hoàn tất cập nhật',
-        'Cấu hình Perk Donator đã được lưu.',
+        t('perks.donatorConfigSuccess'),
+        t('perks.donatorConfigSuccessDesc'),
       );
       void queryClient.invalidateQueries({
         queryKey: ['perks-overview', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Lưu cấu hình Perk Donator thất bại', err.message),
+    onError: (err: Error) => toast.error(t('perks.donatorConfigError'), err.message),
   });
 
   const topupMutation = useMutation({
@@ -212,8 +251,8 @@ export const PerksPage: React.FC = () => {
       }),
     onSuccess: () => {
       toast.success(
-        'Hoàn tất cập nhật bản ghi',
-        `Đã cập nhật vào tài khoản member ${topupUserId}.`,
+        t('perks.topupSuccess'),
+        t('perks.topupSuccessDesc', { userId: topupUserId }),
       );
       setIsTopupModalOpen(false);
       setTopupUserId('');
@@ -225,18 +264,19 @@ export const PerksPage: React.FC = () => {
         queryKey: ['donator-transactions', guildId],
       });
     },
-    onError: (err: Error) => toast.error('Lưu bản ghi Donator thất bại', err.message),
+    onError: (err: Error) => toast.error(t('perks.topupError'), err.message),
   });
 
   if (!guildId) {
     return (
       <div className="p-8 text-center text-discord-muted glass-panel rounded-3xl border border-white/10">
-        Vui lòng chọn một Server từ thanh điều hướng phía trên để quản lý.
+        {t('common.pleaseSelectServerDesc')}
       </div>
     );
   }
 
   // Filtered Booster Roles
+  const boosterStatus = data?.booster.config?.status ?? 'ACTIVE';
   const customRoles = data?.booster.customRoles || [];
   const filteredRoles = customRoles.filter(
     (r) =>
@@ -277,22 +317,22 @@ export const PerksPage: React.FC = () => {
   const handleExportCsv = () => {
     if (filteredTransactions.length === 0) {
       toast.error(
-        'Không có dữ liệu',
-        'Không tìm thấy giao dịch nào thỏa mãn bộ lọc hiện tại.',
+        t('perks.noCsvDataTitle'),
+        t('perks.noCsvDataDesc'),
       );
       return;
     }
 
     const headers = [
-      'Mã Giao Dịch',
-      'Thời Gian',
-      'User ID',
-      'Số Tiền Nạp (VND)',
-      'Thời Gian Quy Đổi (Giây)',
-      'Thời Gian Quy Đổi (Định Dạng)',
-      'Loại Tác Vụ',
-      'Người Thực Hiện',
-      'Ghi Chú',
+      t('perks.csvTxId'),
+      t('perks.csvTimestamp'),
+      t('perks.csvUserId'),
+      t('perks.csvAmount'),
+      t('perks.csvDurationSeconds'),
+      t('perks.csvDurationFormatted'),
+      t('perks.csvActionType'),
+      t('perks.csvCreatedBy'),
+      t('perks.csvNote'),
     ];
 
     const escapeCsv = (val: unknown) => {
@@ -332,8 +372,8 @@ export const PerksPage: React.FC = () => {
     URL.revokeObjectURL(url);
 
     toast.success(
-      'Hoàn tất xuất báo cáo.',
-      `Đã tải file CSV chứa ${filteredTransactions.length} bản ghi giao dịch.`,
+      t('perks.exportCsvSuccess'),
+      t('perks.exportCsvSuccessDesc', { count: filteredTransactions.length }),
     );
   };
 
@@ -427,6 +467,99 @@ export const PerksPage: React.FC = () => {
       {/* ========================================================================= */}
       {activeTab === 'booster' && (
         <div className="space-y-8 animate-in fade-in duration-200">
+          {/* System Status Banner & Actions */}
+          <div className="rounded-3xl glass-panel p-5 border border-white/10 shadow-xl relative overflow-hidden select-none">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3.5">
+                <div
+                  className={cn(
+                    'w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border transition-all duration-300',
+                    boosterStatus === 'ACTIVE'
+                      ? 'bg-discord-green/10 text-discord-green border-discord-green/30 shadow-lg shadow-discord-green/10'
+                      : boosterStatus === 'SUSPENDED'
+                        ? 'bg-discord-yellow/10 text-discord-yellow border-discord-yellow/30 shadow-lg shadow-discord-yellow/10'
+                        : 'bg-discord-red/10 text-discord-red border-discord-red/30 shadow-lg shadow-discord-red/10',
+                  )}
+                >
+                  {boosterStatus === 'ACTIVE' && <CheckCircle2 className="w-5 h-5" />}
+                  {boosterStatus === 'SUSPENDED' && <Pause className="w-5 h-5" />}
+                  {boosterStatus === 'DISABLED' && <ShieldAlert className="w-5 h-5" />}
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <span className="text-xs font-bold text-discord-muted uppercase tracking-wider">
+                      {t('perks.systemStatusLabel')}
+                    </span>
+                    {boosterStatus === 'ACTIVE' && (
+                      <Badge variant="green" size="md" dot>
+                        {t('perks.statusActive')}
+                      </Badge>
+                    )}
+                    {boosterStatus === 'SUSPENDED' && (
+                      <Badge variant="yellow" size="md" dot>
+                        {t('perks.statusSuspended')}
+                      </Badge>
+                    )}
+                    {boosterStatus === 'DISABLED' && (
+                      <Badge variant="red" size="md" dot>
+                        {t('perks.statusDisabled')}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-discord-muted">
+                    {boosterStatus === 'ACTIVE' && t('perks.statusActiveDesc')}
+                    {boosterStatus === 'SUSPENDED' && t('perks.statusSuspendedDesc')}
+                    {boosterStatus === 'DISABLED' && t('perks.statusDisabledDesc')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons Group */}
+              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+                {(boosterStatus === 'SUSPENDED' || boosterStatus === 'DISABLED') && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => systemActionMutation.mutate({ action: 'resume' })}
+                    isLoading={systemActionMutation.isPending}
+                    className="text-xs font-bold"
+                  >
+                    <Play className="w-3.5 h-3.5 mr-1.5" />
+                    {t('perks.actionResume')}
+                  </Button>
+                )}
+
+                {boosterStatus === 'ACTIVE' && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      setClearRoles(false);
+                      setIsSuspendModalOpen(true);
+                    }}
+                    className="text-xs font-bold"
+                  >
+                    <Pause className="w-3.5 h-3.5 mr-1.5 text-discord-yellow" />
+                    {t('perks.actionSuspend')}
+                  </Button>
+                )}
+
+                {(boosterStatus === 'ACTIVE' || boosterStatus === 'SUSPENDED') && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setIsPurgeModalOpen(true)}
+                    className="text-xs font-bold"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                    {t('perks.actionPurge')}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Top Row: Live Simulator Hero Banner */}
           <DiscordChatSimulator
             activeRole={selectedRoleForPreview}
@@ -550,6 +683,7 @@ export const PerksPage: React.FC = () => {
                           <th className="py-3.5 px-4">{t('perks.boosterTableRole')}</th>
                           <th className="py-3.5 px-4 text-center">{t('perks.boosterTableBoosts')}</th>
                           <th className="py-3.5 px-4 text-center">{t('perks.boosterTableStatus')}</th>
+                          <th className="py-3.5 px-4 text-center">{t('perks.mentionableLabel')}</th>
                           <th className="py-3.5 px-4">{t('perks.boosterTableGrace')}</th>
                           <th className="py-3.5 px-4 text-center">{t('perks.boosterTableSim')}</th>
                         </tr>
@@ -597,10 +731,11 @@ export const PerksPage: React.FC = () => {
                                         ? {
                                             background: `linear-gradient(90deg, ${color1}, ${color2})`,
                                             WebkitBackgroundClip: 'text',
+                                            backgroundClip: 'text',
                                             WebkitTextFillColor: 'transparent',
                                             display: 'inline-block',
                                           }
-                                        : { color: color1 }
+                                        : { color: color1, display: 'inline-block' }
                                     }
                                   >
                                     {role.roleName || 'Unnamed Role'}
@@ -624,6 +759,17 @@ export const PerksPage: React.FC = () => {
                                   <Badge variant="yellow" size="sm">Grace</Badge>
                                 ) : (
                                   <Badge variant="red" size="sm">Revoked</Badge>
+                                )}
+                              </td>
+                              <td className="py-3.5 px-4 text-center">
+                                {role.isMentionable ? (
+                                  <Badge variant="green" size="sm" dot>
+                                    {t('perks.mentionableOn')}
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="muted" size="sm">
+                                    {t('perks.mentionableOff')}
+                                  </Badge>
                                 )}
                               </td>
                               <td className="py-3.5 px-4 text-discord-muted">
@@ -679,17 +825,29 @@ export const PerksPage: React.FC = () => {
                                   ? {
                                       background: `linear-gradient(90deg, ${color1}, ${color2})`,
                                       WebkitBackgroundClip: 'text',
+                                      backgroundClip: 'text',
                                       WebkitTextFillColor: 'transparent',
                                       display: 'inline-block',
                                     }
-                                  : { color: color1 }
+                                  : { color: color1, display: 'inline-block' }
                               }
                             >
                               {role.roleName || 'Unnamed Role'}
                             </span>
-                            <span className="text-pink-400 font-bold text-xs">
-                              🚀 {role.boostCount} boost
-                            </span>
+                            <div className="flex items-center gap-2">
+                              {role.isMentionable ? (
+                                <Badge variant="green" size="sm" dot>
+                                  @{t('perks.mentionableOn')}
+                                </Badge>
+                              ) : (
+                                <Badge variant="muted" size="sm">
+                                  @{t('perks.mentionableOff')}
+                                </Badge>
+                              )}
+                              <span className="text-pink-400 font-bold text-xs">
+                                🚀 {role.boostCount} boost
+                              </span>
+                            </div>
                           </div>
                           <div className="flex items-center justify-between text-discord-muted text-[11px]">
                             <UserDisplay userId={role.userId} showAvatar={false} />
@@ -745,7 +903,7 @@ export const PerksPage: React.FC = () => {
                   step={10000}
                   value={baseBenchmarkVnd}
                   onChange={(e) => setBaseBenchmarkVnd(Number(e.target.value))}
-                  hint={`Hiển thị: ${formatVnd(baseBenchmarkVnd)}`}
+                  hint={t('perks.displayAmountHint', { amount: formatVnd(baseBenchmarkVnd) })}
                 />
 
                 <Input
@@ -754,7 +912,7 @@ export const PerksPage: React.FC = () => {
                   min={1}
                   value={baseBenchmarkDays}
                   onChange={(e) => setBaseBenchmarkDays(Number(e.target.value))}
-                  hint={`= ${(baseBenchmarkVnd / baseBenchmarkDays).toFixed(0)} đ/${t('common.days')}`}
+                  hint={`= ${(baseBenchmarkVnd / baseBenchmarkDays).toFixed(0)} VND/${t('common.days')}`}
                 />
 
                 <Input
@@ -763,7 +921,7 @@ export const PerksPage: React.FC = () => {
                   step={10000}
                   value={weeklyMinVnd}
                   onChange={(e) => setWeeklyMinVnd(Number(e.target.value))}
-                  hint={`= ${formatVnd(weeklyMinVnd)}/tuần`}
+                  hint={`= ${formatVnd(weeklyMinVnd)}${t('perks.perWeek')}`}
                 />
 
                 <Input
@@ -1035,7 +1193,7 @@ export const PerksPage: React.FC = () => {
                         setTxStartDate('');
                         setTxEndDate('');
                       }}
-                      title="Xóa bộ lọc"
+                      title={t('common.clearFilter')}
                       className="p-2 rounded-xl text-discord-muted hover:text-white hover:bg-white/10 transition"
                     >
                       <RotateCcw className="w-4 h-4" />
@@ -1153,7 +1311,7 @@ export const PerksPage: React.FC = () => {
               step={10000}
               value={topupAmountVnd}
               onChange={(e) => setTopupAmountVnd(Number(e.target.value))}
-              hint={`Số tiền hiển thị: ${formatVnd(topupAmountVnd)}`}
+              hint={t('perks.displayAmountHint', { amount: formatVnd(topupAmountVnd) })}
             />
 
             {/* Quick Amount Buttons */}
@@ -1183,10 +1341,120 @@ export const PerksPage: React.FC = () => {
             <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-1">
               <span className="text-amber-400 font-bold block">{t('perks.estimatedTimeLabel')}</span>
               <p className="text-white font-medium">
-                ≈ {formatDurationSeconds(Math.floor((topupAmountVnd / baseBenchmarkVnd) * baseBenchmarkDays * 86400))} (tính theo tỷ lệ định mức cơ sở)
+                ≈ {formatDurationSeconds(Math.floor((topupAmountVnd / baseBenchmarkVnd) * baseBenchmarkDays * 86400))} {t('perks.basedOnBenchmarkRate')}
               </p>
             </div>
           )}
+        </div>
+      </Modal>
+
+      {/* Suspend Confirmation Modal */}
+      <Modal
+        isOpen={isSuspendModalOpen}
+        onClose={() => setIsSuspendModalOpen(false)}
+        title={
+          <div className="flex items-center gap-2 text-discord-yellow">
+            <AlertTriangle className="w-5 h-5 text-discord-yellow" />
+            <span>{t('perks.suspendModalTitle')}</span>
+          </div>
+        }
+        description={t('perks.suspendModalDesc')}
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsSuspendModalOpen(false)}
+              disabled={systemActionMutation.isPending}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() =>
+                systemActionMutation.mutate({
+                  action: 'suspend',
+                  clearRoles,
+                })
+              }
+              isLoading={systemActionMutation.isPending}
+              className="border-discord-yellow/40 text-discord-yellow hover:bg-discord-yellow/10 font-bold"
+            >
+              <Pause className="w-4 h-4 mr-1.5" />
+              {t('perks.actionSuspend')}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4 pt-2">
+          <label className="flex items-start gap-3 p-3.5 rounded-xl bg-black/40 border border-white/10 hover:border-discord-yellow/40 cursor-pointer transition select-none">
+            <input
+              type="checkbox"
+              checked={clearRoles}
+              onChange={(e) => setClearRoles(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-white/20 text-discord-blurple focus:ring-discord-blurple/50 bg-[#1e1f22]"
+            />
+            <div className="space-y-1">
+              <span className="text-xs font-medium text-white leading-relaxed block">
+                {t('perks.clearRolesCheckboxLabel')}
+              </span>
+              <span className="text-[11px] text-discord-muted block">
+                {t('perks.clearRolesHint')}
+              </span>
+            </div>
+          </label>
+        </div>
+      </Modal>
+
+      {/* Purge Confirmation Modal */}
+      <Modal
+        isOpen={isPurgeModalOpen}
+        onClose={() => setIsPurgeModalOpen(false)}
+        title={
+          <div className="flex items-center gap-2 text-discord-red">
+            <ShieldAlert className="w-5 h-5 text-discord-red" />
+            <span>{t('perks.purgeModalTitle')}</span>
+          </div>
+        }
+        description={t('perks.purgeModalDesc')}
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsPurgeModalOpen(false)}
+              disabled={systemActionMutation.isPending}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() =>
+                systemActionMutation.mutate({ action: 'purge' })
+              }
+              isLoading={systemActionMutation.isPending}
+              className="font-bold bg-discord-red text-white hover:bg-discord-red/80"
+            >
+              <Trash2 className="w-4 h-4 mr-1.5" />
+              {t('perks.actionPurge')}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3 pt-2">
+          <div className="p-3.5 rounded-xl bg-discord-red/10 border border-discord-red/30 text-xs space-y-1.5 text-discord-red">
+            <p className="font-bold flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              {t('common.operationIrreversible')}
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-white/80 pl-1">
+              <li>{t('perks.purgeWarning1')}</li>
+              <li>{t('perks.purgeWarning2')}</li>
+              <li>{t('perks.purgeWarningPreserve')}</li>
+            </ul>
+          </div>
         </div>
       </Modal>
     </div>

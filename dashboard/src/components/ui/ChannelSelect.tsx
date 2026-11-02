@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { apiFetch } from '../../api/client';
+import { useI18n } from '../../i18n';
 import { cn } from '../../lib/utils';
 import type { GuildChannelItem } from '../../types';
 
@@ -33,12 +34,14 @@ export const ChannelSelect: React.FC<ChannelSelectProps> = ({
   onChange,
   guildId,
   channelTypes,
-  placeholder = 'Chọn một kênh...',
+  placeholder,
   hint,
   error,
   allowClear = true,
   disabled = false,
 }) => {
+  const { t } = useI18n();
+  const effectivePlaceholder = placeholder ?? t('common.selectChannel');
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -231,7 +234,7 @@ export const ChannelSelect: React.FC<ChannelSelectProps> = ({
               ID: {value}
             </span>
           ) : (
-            <span className="text-discord-muted text-xs">{placeholder}</span>
+            <span className="text-discord-muted text-xs">{effectivePlaceholder}</span>
           )}
         </div>
 
@@ -244,7 +247,7 @@ export const ChannelSelect: React.FC<ChannelSelectProps> = ({
                 onChange(null);
               }}
               className="p-1 text-discord-muted hover:text-white rounded-lg transition"
-              title="Bỏ chọn"
+              title={t('common.deselect')}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -258,7 +261,7 @@ export const ChannelSelect: React.FC<ChannelSelectProps> = ({
         </div>
       </div>
 
-      {/* Portal Dropdown Menu: Nổi lên toàn màn hình, không bị overflow-hidden cắt & không nhấp nháy từ (0, 0) */}
+      {/* Portal Dropdown Menu */}
       {isOpen &&
         coords.width > 0 &&
         createPortal(
@@ -283,7 +286,7 @@ export const ChannelSelect: React.FC<ChannelSelectProps> = ({
               <Search className="w-3.5 h-3.5 text-discord-muted absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Tìm kiếm kênh..."
+                placeholder={t('common.searchChannels')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full bg-[#232428] border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-discord-muted outline-none focus:border-discord-blurple/60"
@@ -295,11 +298,11 @@ export const ChannelSelect: React.FC<ChannelSelectProps> = ({
             <div className="max-h-64 overflow-y-auto p-1.5 space-y-0.5">
               {isLoading ? (
                 <div className="p-4 text-center text-xs text-discord-muted">
-                  Đang tải danh sách kênh...
+                  {t('common.loadingChannels')}
                 </div>
               ) : filteredChannels.length === 0 ? (
                 <div className="p-4 text-center text-xs text-discord-muted">
-                  Không tìm thấy kênh nào phù hợp.
+                  {t('common.noChannelsFound')}
                 </div>
               ) : (
                 filteredChannels.map((ch) => {
